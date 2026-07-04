@@ -1,0 +1,231 @@
+import OctoPrintKit
+import SwiftUI
+
+enum EditorTarget: Identifiable {
+    case new
+    case edit(Instance)
+
+    var id: String {
+        switch self {
+        case .new: "new"
+        case .edit(let instance): instance.id.uuidString
+        }
+    }
+}
+
+enum StageTab: String, CaseIterable, Identifiable {
+    case overview, move, files, console, machine
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .overview: "Overview"
+        case .move: "Move"
+        case .files: "Files"
+        case .console: "Console"
+        case .machine: "Machine"
+        }
+    }
+}
+
+struct RootView: View {
+    @Environment(InstanceStore.self) private var store
+    @AppStorage("selectedInstance") private var selectionStorage = ""
+    @State private var selection: UUID?
+    @State private var editor: EditorTarget?
+
+    var body: some View {
+        HStack(spacing: 0) {
+            PrinterRail(selection: $selection, editor: $editor)
+                .frame(width: 260)
+
+            ZStack {
+                LayerLineBackground()
+                if let session = store.session(for: selection) {
+                    PrinterStage(session: session, editor: $editor)
+                        .id(ObjectIdentifier(session))
+                } else {
+                    EmptyStage { editor = .new }
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .sheet(item: $editor) { target in
+            InstanceEditor(target: target) { selection = $0 }
+        }
+        .onAppear {
+            selection = UUID(uuidString: selectionStorage).flatMap { id in store.instances.contains { $0.id == id } ? id : nil }
+                ?? store.instances.first?.id
+            // Demo screenshots: `--demo --select 2` picks the second printer.
+            if store.isDemo, let flag = CommandLine.arguments.firstIndex(of: "--select"),
+               CommandLine.arguments.indices.contains(flag + 1), let index = Int(CommandLine.arguments[flag + 1]),
+               store.instances.indices.contains(index - 1) {
+                selection = store.instances[index - 1].id
+            }
+        }
+        .onChange(of: selection) { _, new in selectionStorage = new?.uuidString ?? "" }
+        // The menu bar panel selects a printer by writing the stored selection.
+        .onChange(of: selectionStorage) { _, new in
+            if let id = UUID(uuidString: new), id != selection { selection = id }
+        }
+    }
+}
+
+// MARK: - Rail
+
+struct PrinterRail: View {
+    @Environment(InstanceStore.self) private var store
+    @Binding var selection: UUID?
+    @Binding var editor: EditorTarget?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Room for the window's traffic lights.
+            Color.clear.frame(height: 52)
+
+            Text("Printers")
+                .font(Typeface.caption)
+                .foregroundStyle(Palette.faint)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 10)
+
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(store.instances) { instance in
+                        if let session = store.sessions[instance.id] {
+                            Button { selection = instance.id } label: {
+                                PrinterTile(session: session, filament: store.filament(for: instance), selected: selection == instance.id)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(instance.name), \(session.stateText)")
+                                .contextMenu {
+                                    Button("Edit printer…") { editor = .edit(instance) }
+                                    Divider()
+                                    Button("Remove printer", role: .destructive) {
+                                        if selection == instance.id { selection = nil }
+                                        store.remove(instance.id)
+                                    }
+                                }
+                        }
+                    }
+                }
+                .padding(.horizontal, 12)
+            }
+
+            Spacer(minLength: 0)
+
+            Button { editor = .new } label: {
+                Label("Add a printer", systemImage: "plus")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.plateQuiet)
+            .padding(.horizontal, 16)
+
+            HStack(spacing: 8) {
+                LayerStack(fraction: 0.6, filament: Palette.pei, active: false, layers: 7)
+                    .frame(width: 16, height: 18)
+                Text("OctoMac").font(Typeface.text(13, .demibold)).foregroundStyle(Palette.dust)
+                if store.isDemo {
+                    Text("demo").font(Typeface.caption).foregroundStyle(Palette.pei)
+                }
+            }
+            .padding(20)
+        }
+        .background(Palette.rail)
+        .overlay(alignment: .trailing) { Rectangle().fill(Color.black.opacity(0.35)).frame(width: 1) }
+    }
+}
+
+struct PrinterTile: View {
+    let session: PrinterSession
+    let filament: Color
+    let selected: Bool
+    @State private var hovering = false
+
+    var body: some View {
+        let mood = PrinterMood(session)
+        HStack(alignment: .top, spacing: 12) {
+            // Filament strip: the printer's identity colour.
+            Capsule()
+                .fill(filament.opacity(selected ? 1 : 0.6))
+                .frame(width: 4)
+                .padding(.vertical, 2)
+
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text(session.instance.name)
+                        .font(Typeface.text(15, .demibold))
+                        .foregroundStyle(Palette.paper)
+                        .lineLimit(1)
+                    Spacer()
+                    StatusLamp(color: mood.color(filament: filament), lit: mood != .offline)
+                }
+
+                Text(subtitle(mood))
+                    .font(Typeface.caption)
+                    .foregroundStyle(Palette.dust)
+                    .lineLimit(1)
+
+                if mood == .printing || mood == .paused, let fraction = session.progress?.fraction {
+                    HStack(spacing: 8) {
+                        GeometryReader { geo in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(Palette.edge.opacity(0.5))
+                                Capsule().fill(filament).frame(width: geo.size.width * fraction)
+                            }
+                        }
+                        .frame(height: 4)
+                        Text("\(Int(fraction * 100))%").font(Typeface.number(12)).foregroundStyle(Palette.paper)
+                    }
+                } else if let tool = session.heaters["tool0"]?.actual, mood != .offline, mood != .locked {
+                    HStack(spacing: 10) {
+                        temp("flame.fill", tool)
+                        if let bed = session.heaters["bed"]?.actual { temp("square.3.layers.3d.bottom.filled", bed) }
+                    }
+                }
+            }
+        }
+        .padding(12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background {
+            if selected || hovering {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(selected ? Palette.extrusion : Palette.extrusion.opacity(0.5))
+            }
+        }
+        .contentShape(Rectangle())
+        .onHover { hovering = $0 }
+    }
+
+    private func subtitle(_ mood: PrinterMood) -> String {
+        switch mood {
+        case .printing, .paused:
+            let left = session.progress?.printTimeLeft.map { "\(Fmt.duration($0)) left" }
+            return [session.state?.text, left].compactMap { $0 }.joined(separator: ", ")
+        default:
+            return session.stateText
+        }
+    }
+
+    private func temp(_ symbol: String, _ value: Double) -> some View {
+        HStack(spacing: 3) {
+            Image(systemName: symbol).font(.system(size: 9)).foregroundStyle(Palette.heat(value))
+            Text("\(Int(value))°").font(Typeface.number(12)).foregroundStyle(Palette.dust)
+        }
+    }
+}
+
+struct EmptyStage: View {
+    let add: () -> Void
+
+    var body: some View {
+        VStack(spacing: 16) {
+            LayerStack(fraction: 0, filament: Palette.pei, active: false, layers: 14)
+                .frame(width: 90, height: 80)
+            Text("No printer selected").font(Typeface.title).foregroundStyle(Palette.paper)
+            Text("Pick a printer on the left, or add an OctoPrint server.").font(Typeface.body).foregroundStyle(Palette.dust)
+            Button("Add a printer", action: add).buttonStyle(.plate)
+        }
+    }
+}

@@ -1,0 +1,21 @@
+{
+  "current": {
+    "state": {"text": "Printing", "flags": {"operational": true, "printing": true, "ready": false, "closedOrError": false}},
+    "job": {
+      "file": {"name": "pet_guard.gcode", "path": "pet_guard.gcode", "display": "pet_guard.gcode", "origin": "local", "size": 1000, "date": 1774448000},
+      "estimatedPrintTime": 7740.5,
+      "filament": {"tool0": {"length": 11030.0, "volume": 26.5}},
+      "user": "pi"
+    },
+    "progress": {"completion": 63.4, "filepos": 1234, "printTime": 8040, "printTimeLeft": 4710, "printTimeLeftOrigin": "estimate"},
+    "currentZ": 18.4,
+    "offsets": {},
+    "temps": [
+      {"time": 1777548000, "tool0": {"actual": 214.6, "target": 215.0}, "bed": {"actual": 60.1, "target": 60.0}, "A": {"actual": 34.2, "target": null}, "P": {"actual": 0.0, "target": null}}
+    ],
+    "logs": ["Send: N4120 G1 X112.402 Y98.611 E0.04121*91", "Recv: ok"],
+    "messages": [],
+    "busyFiles": [],
+    "serverTime": 1777548000.5
+  }
+}

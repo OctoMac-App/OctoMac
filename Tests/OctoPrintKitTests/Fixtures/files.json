@@ -1,0 +1,28 @@
+{
+  "files": [
+    {
+      "name": "workshop", "path": "workshop", "type": "folder", "origin": "local",
+      "children": [
+        {
+          "name": "6-piece-hook-set_0.2mm_PETG_MK3S_2h16m.gcode",
+          "display": "6-piece-hook-set_0.2mm_PETG_MK3S_2h16m.gcode",
+          "path": "workshop/6-piece-hook-set_0.2mm_PETG_MK3S_2h16m.gcode",
+          "type": "machinecode", "typePath": ["machinecode", "gcode"], "origin": "local",
+          "size": 2402118, "date": 1777464390,
+          "thumbnail": "plugin/prusaslicerthumbnails/thumbnail/6-piece-hook-set_0.2mm_PETG_MK3S_2h16m.png?20260426120630",
+          "thumbnail_src": "prusaslicerthumbnails",
+          "gcodeAnalysis": {
+            "estimatedPrintTime": 8313.44,
+            "filament": {"tool0": {"length": 9522.41, "volume": 22.9}},
+            "dimensions": {"width": 127.05, "depth": 128.55, "height": 40.0}
+          },
+          "prints": {"success": 1, "failure": 3, "last": {"date": 1777548000, "success": false}},
+          "refs": {"resource": "http://octopi/api/files/local/workshop/6-piece-hook-set.gcode", "download": "http://octopi/downloads/files/local/workshop/6-piece-hook-set.gcode"}
+        }
+      ]
+    },
+    {"name": "lamp.stl", "path": "lamp.stl", "type": "model", "origin": "local", "size": 9201552, "date": 1774448000}
+  ],
+  "free": 54430000000,
+  "total": 62000000000
+}
