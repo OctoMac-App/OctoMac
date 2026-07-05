@@ -209,7 +209,8 @@ struct FilesPage: View {
 
     private var rows: [FileEntry] {
         if !search.isEmpty {
-            return alphabetical(flatten(session.files).filter { !$0.isFolder && $0.displayName.localizedCaseInsensitiveContains(search) })
+            // Match the readable title only; slicer tags like "PETG" are in every filename and would match everything.
+            return alphabetical(flatten(session.files).filter { !$0.isFolder && SlicedName($0.displayName).title.localizedCaseInsensitiveContains(search) })
         }
         var level = session.files
         for name in folder {
