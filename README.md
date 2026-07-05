@@ -1,4 +1,7 @@
-# OctoMac
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
+  <img src="docs/logo-light.png" alt="OctoMac" width="360">
+</picture>
 
 A Mac app for controlling [OctoPrint](https://octoprint.org) printers, with a layout and look built for the job rather than standard Mac chrome.
 
@@ -38,5 +41,6 @@ Use **Add a printer**, enter the address, then either **Request access** (approv
 | `Sources/OctoMac/Design` | Palette, type, shared components (layer stack, heat tiles, thumbnails) |
 | `Sources/OctoMac/Views` | Window, rail, stage and its tabs, chart, editor, menu bar |
 | `Tests/OctoPrintKitTests` | Decoding tests against OctoPrint-shaped fixtures (`swift test`) |
+| `scripts/make-icon.swift`, `scripts/make-logo.swift` | Draw the app icon, the octopus mark (`Support/OctoMark.png`) and the logo images in `docs/` |
 
 OctoPrint API reference: https://docs.octoprint.org/en/main/api/index.html

@@ -1,5 +1,6 @@
 // Draws the OctoMac app icon (a winking green octopus) and writes an .iconset.
 // Usage: swift scripts/make-icon.swift <output.iconset>   then: iconutil -c icns <output.iconset>
+//        swift scripts/make-icon.swift Support/OctoMark.png   (the octopus alone, for the in-app logo)
 // Everything is drawn as vector paths on a 1024-point canvas, so each size renders crisply.
 
 import AppKit
@@ -230,10 +231,7 @@ func drawWinkFace(_ ctx: CGContext, center: CGPoint) {
     ctx.restoreGState()
 }
 
-func drawIcon(_ ctx: CGContext) {
-    let tile = CGRect(x: 100, y: 100, width: 824, height: 824)
-    let tilePath = CGPath(roundedRect: tile, cornerWidth: 186, cornerHeight: 186, transform: nil)
-
+func drawTile(_ ctx: CGContext, _ tilePath: CGPath) {
     // Warm off-white tile
     ctx.saveGState()
     ctx.setShadow(offset: CGSize(width: 0, height: -14), blur: 32, color: color(0x000000, 0.35))
@@ -254,7 +252,16 @@ func drawIcon(_ ctx: CGContext) {
                            startCenter: .zero, startRadius: 0, endCenter: .zero, endRadius: 300, options: [])
     ctx.restoreGState()
     ctx.restoreGState()
+}
 
+/// When writing a single .png, draw just the octopus (no tile) for use as the in-app logo mark.
+let markOnly = CommandLine.arguments.dropFirst().first?.hasSuffix(".png") ?? false
+
+func drawIcon(_ ctx: CGContext) {
+    let tile = CGRect(x: 100, y: 100, width: 824, height: 824)
+    let tilePath = CGPath(roundedRect: tile, cornerWidth: 186, cornerHeight: 186, transform: nil)
+
+    if !markOnly { drawTile(ctx, tilePath) }
     // Six visible arms in mirrored pairs, splaying out from under the head and curling outward at the tips.
     // Drawn outer pair first so the inner arms overlap them, then the head on top.
     let headCenter = CGPoint(x: 512, y: 392)
@@ -291,6 +298,20 @@ func render(size: Int) -> Data {
 }
 
 let output = URL(fileURLWithPath: CommandLine.arguments.dropFirst().first ?? "AppIcon.iconset")
+if markOnly {
+    // Square crop around the octopus, transparent background.
+    let size = 512, crop = CGRect(x: 182, y: 186, width: 660, height: 660)
+    let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: size, pixelsHigh: size, bitsPerSample: 8, samplesPerPixel: 4,
+                               hasAlpha: true, isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)!
+    let ctx = NSGraphicsContext(bitmapImageRep: rep)!.cgContext
+    ctx.translateBy(x: 0, y: CGFloat(size))
+    ctx.scaleBy(x: CGFloat(size) / crop.width, y: -CGFloat(size) / crop.height)
+    ctx.translateBy(x: -crop.minX, y: -crop.minY)
+    drawIcon(ctx)
+    try rep.representation(using: .png, properties: [:])!.write(to: output)
+    print("Wrote \(output.path)")
+    exit(0)
+}
 try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
 for base in [16, 32, 128, 256, 512] {
     try render(size: base).write(to: output.appending(path: "icon_\(base)x\(base).png"))

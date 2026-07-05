@@ -123,12 +123,11 @@ struct PrinterRail: View {
             .padding(.horizontal, 16)
 
             HStack(spacing: 8) {
-                LayerStack(fraction: 0.6, filament: Palette.pei, active: false, layers: 7)
-                    .frame(width: 16, height: 18)
-                Text("OctoMac").font(Typeface.text(13, .demibold)).foregroundStyle(Palette.dust)
+                BrandLockup(markSize: 40)
                 if store.isDemo {
                     Text("demo").font(Typeface.caption).foregroundStyle(Palette.pei)
                 }
+                Spacer()
             }
             .padding(20)
         }
@@ -221,8 +220,8 @@ struct EmptyStage: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            LayerStack(fraction: 0, filament: Palette.pei, active: false, layers: 14)
-                .frame(width: 90, height: 80)
+            BrandLockup(markSize: 72)
+                .padding(.bottom, 8)
             Text("No printer selected").font(Typeface.title).foregroundStyle(Palette.paper)
             Text("Pick a printer on the left, or add an OctoPrint server.").font(Typeface.body).foregroundStyle(Palette.dust)
             Button("Add a printer", action: add).buttonStyle(.plate)

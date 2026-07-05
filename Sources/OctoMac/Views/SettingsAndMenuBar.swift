@@ -53,9 +53,7 @@ struct MenuBarView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 8) {
-                LayerStack(fraction: 0.6, filament: Palette.pei, active: false, layers: 7)
-                    .frame(width: 14, height: 16)
-                Text("OctoMac").font(Typeface.text(13, .demibold)).foregroundStyle(Palette.dust)
+                BrandLockup(markSize: 24)
                 Spacer()
                 Text(summary).font(Typeface.caption).foregroundStyle(Palette.faint)
             }
