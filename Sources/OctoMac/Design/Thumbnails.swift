@@ -33,7 +33,7 @@ final class ThumbnailStore {
 struct FileThumbnail: View {
     let file: FileEntry?
     let client: OctoPrintClient
-    var tint: Color = Palette.pei
+    var tint: Color = Palette.accent
     var radius: CGFloat = 10
     @State private var image: NSImage?
 
@@ -71,7 +71,7 @@ struct FileThumbnail: View {
 
     private var glyphTint: Color {
         guard let file else { return Palette.faint }
-        return file.isFolder ? Palette.pei : file.isModel ? Palette.dust : tint
+        return file.isFolder ? Palette.accent : file.isModel ? Palette.dust : tint
     }
 }
 

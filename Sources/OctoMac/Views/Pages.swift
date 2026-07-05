@@ -165,7 +165,7 @@ struct MovePage: View {
         HStack(spacing: 14) {
             Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).frame(width: 90, alignment: .leading)
             Slider(value: value, in: range, step: step) { editing in if !editing { apply() } }
-                .tint(Palette.pei)
+                .tint(Palette.accent)
             Text("\(Int(value.wrappedValue))\(unit)")
                 .font(Typeface.number(17))
                 .foregroundStyle(Palette.paper)
@@ -176,7 +176,7 @@ struct MovePage: View {
     private func quick(_ title: String, _ gcode: String, _ symbol: String) -> some View {
         Button { session.sendGcode(gcode) } label: {
             HStack(spacing: 10) {
-                Image(systemName: symbol).foregroundStyle(Palette.pei).frame(width: 18)
+                Image(systemName: symbol).foregroundStyle(Palette.accent).frame(width: 18)
                 VStack(alignment: .leading, spacing: 1) {
                     Text(title).font(Typeface.text(12, .demibold)).foregroundStyle(Palette.paper)
                     Text(gcode).font(Typeface.number(11)).foregroundStyle(Palette.faint)
@@ -280,10 +280,10 @@ struct FilesPage: View {
             .overlay {
                 if dropTargeted {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .strokeBorder(Palette.pei, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Palette.pei.opacity(0.08)))
+                        .strokeBorder(Palette.accent, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
+                        .background(RoundedRectangle(cornerRadius: 20).fill(Palette.accent.opacity(0.08)))
                         .overlay(Label("Drop to upload to \(folder.last ?? "All files")", systemImage: "arrow.up.doc")
-                            .font(Typeface.subhead).foregroundStyle(Palette.pei))
+                            .font(Typeface.subhead).foregroundStyle(Palette.accent))
                         .allowsHitTesting(false)
                 }
             }
@@ -518,7 +518,7 @@ struct ConsolePage: View {
             }
 
             HStack(spacing: 10) {
-                Text("›").font(.system(size: 18, weight: .bold, design: .monospaced)).foregroundStyle(Palette.pei)
+                Text("›").font(.system(size: 18, weight: .bold, design: .monospaced)).foregroundStyle(Palette.accent)
                 TextField("Send a G-code command, e.g. M115", text: $command)
                     .textFieldStyle(.plain)
                     .font(.system(size: 14, design: .monospaced))
@@ -571,7 +571,7 @@ struct ConsoleLine: View {
     private var isError: Bool { line.localizedCaseInsensitiveContains("error") || line.contains("!!") }
 
     private var direction: String { isSend ? "→" : isRecv ? "←" : "•" }
-    private var directionColor: Color { isError ? Palette.hot : isSend ? Palette.pei : isRecv ? Palette.cold : Palette.faint }
+    private var directionColor: Color { isError ? Palette.hot : isSend ? Palette.accent : isRecv ? Palette.cold : Palette.faint }
     private var content: String {
         if isSend || isRecv { return String(line.dropFirst(5)).trimmingCharacters(in: .whitespaces) }
         return line
@@ -657,7 +657,7 @@ struct MachinePage: View {
                     HStack {
                         Toggle("Remember these settings", isOn: $saveConnection)
                             .toggleStyle(.switch)
-                            .tint(Palette.pei)
+                            .tint(Palette.accent)
                             .font(Typeface.body)
                             .foregroundStyle(Palette.dust)
                         Spacer()
@@ -706,7 +706,7 @@ struct MachinePage: View {
                 }
                 ForEach(session.systemCommands) { command in
                     HStack {
-                        Image(systemName: symbol(for: command.action)).foregroundStyle(Palette.pei).frame(width: 22)
+                        Image(systemName: symbol(for: command.action)).foregroundStyle(Palette.accent).frame(width: 22)
                         Text(command.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
                         Spacer()
                         Button("Run") {
@@ -735,7 +735,7 @@ struct MachinePage: View {
     private func pickerRow<P: View>(_ title: String, @ViewBuilder picker: () -> P) -> some View {
         HStack {
             Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).frame(width: 90, alignment: .leading)
-            picker().labelsHidden().pickerStyle(.menu).tint(Palette.pei).frame(maxWidth: 300)
+            picker().labelsHidden().pickerStyle(.menu).tint(Palette.accent).frame(maxWidth: 300)
             Spacer()
         }
     }

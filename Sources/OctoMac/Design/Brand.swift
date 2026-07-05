@@ -21,7 +21,7 @@ struct BrandLockup: View {
 struct Wordmark: View {
     var size: CGFloat = 18
 
-    static let green = Color(hex: 0x5CCB66)
+    static let green = Palette.accent
 
     var body: some View {
         (Text("Octo").foregroundStyle(Self.green) + Text("Mac").foregroundStyle(Palette.paper))

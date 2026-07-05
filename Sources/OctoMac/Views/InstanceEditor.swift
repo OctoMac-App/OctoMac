@@ -77,8 +77,8 @@ struct InstanceEditor: View {
 
     private var header: some View {
         HStack(spacing: 16) {
-            LayerStack(fraction: 0.55, filament: filament, active: false, layers: 9)
-                .frame(width: 30, height: 36)
+            BrandMark()
+                .frame(width: 52, height: 52)
             VStack(alignment: .leading, spacing: 2) {
                 Text(existing == nil ? "Add a printer" : "Edit \(existing?.name ?? "printer")")
                     .font(Typeface.title)
@@ -231,7 +231,7 @@ struct InstanceEditor: View {
             HStack(spacing: 12) {
                 Image(systemName: symbol)
                     .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(selected ? Palette.pei : Palette.faint)
+                    .foregroundStyle(selected ? Palette.accent : Palette.faint)
                     .frame(width: 22)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
@@ -242,7 +242,7 @@ struct InstanceEditor: View {
             .padding(12)
             .frame(maxWidth: .infinity)
             .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(selected ? Palette.extrusionHi : Palette.graphite))
-            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(selected ? Palette.pei : Palette.edge, lineWidth: selected ? 1.5 : 1))
+            .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).strokeBorder(selected ? Palette.accent : Palette.edge, lineWidth: selected ? 1.5 : 1))
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
@@ -258,7 +258,7 @@ struct InstanceEditor: View {
             }
         case .working(let message):
             HStack(spacing: 8) {
-                ProgressView().controlSize(.small).tint(Palette.pei)
+                ProgressView().controlSize(.small).tint(Palette.accent)
                 Text(message).font(Typeface.caption).foregroundStyle(Palette.dust)
             }
         case .success(let message):

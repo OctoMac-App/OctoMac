@@ -72,10 +72,10 @@ struct HeatTile: View {
                     // Always visible so the tile reads as clickable.
                     Label("Set target", systemImage: "slider.horizontal.3")
                         .font(Typeface.text(11, .demibold))
-                        .foregroundStyle(hovering ? Palette.graphite : Palette.pei)
+                        .foregroundStyle(hovering ? Palette.graphite : Palette.accent)
                         .padding(.horizontal, 9)
                         .padding(.vertical, 4)
-                        .background(Capsule().fill(hovering ? Palette.pei : Palette.pei.opacity(0.14)))
+                        .background(Capsule().fill(hovering ? Palette.accent : Palette.accent.opacity(0.14)))
                 }
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(data.actual.map { String(format: "%.0f", $0) } ?? "–")
@@ -205,10 +205,10 @@ enum PrinterMood {
         case .paused: Palette.warm
         case .ready: Palette.ready
         case .idle: Palette.dust
-        case .busy: Palette.pei
+        case .busy: Palette.warm
         case .error: Palette.hot
         case .offline: Palette.faint
-        case .locked: Palette.pei
+        case .locked: Palette.warm  // needs attention, not "all good"
         }
     }
 }
@@ -240,14 +240,13 @@ struct CameraStage: View {
                 WebcamView(streamer: session.camera, transform: session.webcamTransform)
             } else {
                 BuildPlateTexture()
-                    .overlay(Palette.graphite.opacity(0.62))
                 VStack(spacing: 6) {
                     Image(systemName: "web.camera").font(.system(size: 28, weight: .light))
                     Text("No camera on this printer").font(Typeface.bodyStrong)
                     Text("Add one in OctoPrint's webcam settings and it'll appear here.")
                         .font(Typeface.caption)
                 }
-                .foregroundStyle(Palette.pei)
+                .foregroundStyle(Palette.accent)
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))

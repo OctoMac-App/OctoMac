@@ -486,7 +486,7 @@ struct FileBrowserPanel: View {
                 Button("All files") { tab = .files }
                     .buttonStyle(.plain)
                     .font(Typeface.bodyStrong)
-                    .foregroundStyle(Palette.pei)
+                    .foregroundStyle(Palette.accent)
             }
             .padding(.horizontal, 22)
             .padding(.top, 18)
@@ -703,7 +703,7 @@ struct ChartTooltip: View {
             ForEach(readout.events) { event in
                 Label("\(event.kind.label) at \(event.time.formatted(.dateTime.hour().minute().second()))", systemImage: "flag.fill")
                     .font(Typeface.caption)
-                    .foregroundStyle(Palette.pei)
+                    .foregroundStyle(Palette.accent)
             }
         }
         .padding(10)
@@ -800,7 +800,7 @@ struct PrinterOfflineBanner: View {
             Spacer()
             Button("Show console") { tab = .console }.buttonStyle(.plateQuiet)
             if session.isPrinterConnecting {
-                ProgressView().controlSize(.small).tint(Palette.pei)
+                ProgressView().controlSize(.small).tint(Palette.accent)
             } else {
                 Button { session.connectPrinter() } label: { Label("Connect", systemImage: "bolt.horizontal.fill") }
                     .buttonStyle(.plate)

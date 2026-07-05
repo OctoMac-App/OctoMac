@@ -125,7 +125,7 @@ struct PrinterRail: View {
             HStack(spacing: 8) {
                 BrandLockup(markSize: 40)
                 if store.isDemo {
-                    Text("demo").font(Typeface.caption).foregroundStyle(Palette.pei)
+                    Text("demo").font(Typeface.caption).foregroundStyle(Palette.accent)
                 }
                 Spacer()
             }

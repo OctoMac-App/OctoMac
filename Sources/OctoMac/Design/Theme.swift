@@ -1,7 +1,7 @@
 import SwiftUI
 
 // OctoMac's visual language: "the build plate".
-// Graphite/aluminium surfaces like a printer frame, PEI-bronze for the brand, heat colours for temperature,
+// Graphite/aluminium surfaces like a printer frame, the octopus's green for actions, heat colours for temperature,
 // and a per-printer filament colour for identity. DIN for every number, Avenir Next for words.
 
 enum Palette {
@@ -13,7 +13,8 @@ enum Palette {
     static let paper = Color(hex: 0xECE6D8)       // primary text
     static let dust = Color(hex: 0x9AA0A8)        // secondary text
     static let faint = Color(hex: 0x6B717A)       // tertiary text
-    static let pei = Color(hex: 0xC9A15B)         // brand / build plate bronze
+    /// Brand and action colour: the octopus's green. Buttons, the selected tab, links, sliders.
+    static let accent = Color(hex: 0x5CCB66)
 
     static let cold = Color(hex: 0x5EC8E5)
     static let warm = Color(hex: 0xF2C14E)
@@ -132,12 +133,12 @@ struct LayerLineBackground: View {
     }
 }
 
-/// Textured PEI sheet: bronze with a fine speckle. Used where there's nothing else to show.
+/// A dark textured print sheet: graphite with a fine speckle and a faint green cast. Used where there's nothing else to show.
 struct BuildPlateTexture: View {
     var body: some View {
         Canvas { context, size in
             context.fill(Path(CGRect(origin: .zero, size: size)),
-                         with: .linearGradient(Gradient(colors: [Color(hex: 0xB88E4C), Color(hex: 0xA27A3E), Color(hex: 0x8C6833)]),
+                         with: .linearGradient(Gradient(colors: [Color(hex: 0x2B3330), Color(hex: 0x232A28), Color(hex: 0x1B2120)]),
                                                startPoint: .zero, endPoint: CGPoint(x: size.width, y: size.height)))
             var generator = SeededGenerator(seed: 42)
             let count = Int(size.width * size.height / 90)
@@ -146,7 +147,7 @@ struct BuildPlateTexture: View {
                 let y = CGFloat.random(in: 0..<size.height, using: &generator)
                 let light = Bool.random(using: &generator)
                 context.fill(Path(ellipseIn: CGRect(x: x, y: y, width: 1.4, height: 1.4)),
-                             with: .color(light ? .white.opacity(0.10) : .black.opacity(0.14)))
+                             with: .color(light ? .white.opacity(0.07) : .black.opacity(0.22)))
             }
         }
     }
@@ -166,9 +167,9 @@ struct SeededGenerator: RandomNumberGenerator {
 
 // MARK: - Buttons
 
-/// Primary action: bronze capsule with dark text.
+/// Primary action: accent-green capsule with dark text.
 struct PlateButtonStyle: ButtonStyle {
-    var tint: Color = Palette.pei
+    var tint: Color = Palette.accent
     var prominent = true
 
     func makeBody(configuration: Configuration) -> some View {
@@ -217,7 +218,7 @@ struct KeyButtonStyle: ButtonStyle {
         var body: some View {
             configuration.label
                 .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(hovering ? Palette.pei : Palette.paper)
+                .foregroundStyle(hovering ? Palette.accent : Palette.paper)
                 .frame(width: size.width, height: size.height)
                 .machined(radius: 10, fill: configuration.isPressed ? Palette.edge : (hovering ? Palette.extrusionHi : Palette.extrusion))
                 .opacity(isEnabled ? 1 : 0.35)
@@ -250,7 +251,7 @@ struct Chip: View {
                 .foregroundStyle(selected ? Palette.graphite : Palette.dust)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Capsule().fill(selected ? Palette.pei : Palette.extrusion))
+                .background(Capsule().fill(selected ? Palette.accent : Palette.extrusion))
                 .overlay(Capsule().strokeBorder(selected ? .clear : Palette.edge, lineWidth: 1))
         }
         .buttonStyle(.plain)

@@ -122,7 +122,7 @@ struct TabTrack: View {
                         .padding(.vertical, 7)
                         .background {
                             if selection == tab {
-                                Capsule().fill(Palette.pei).matchedGeometryEffect(id: "carriage", in: carriage)
+                                Capsule().fill(Palette.accent).matchedGeometryEffect(id: "carriage", in: carriage)
                             }
                         }
                         .contentShape(Capsule())
@@ -406,7 +406,7 @@ struct LockedStage: View {
                 .opacity(0.9)
 
             VStack(alignment: .leading, spacing: 16) {
-                Image(systemName: "key.horizontal.fill").font(.system(size: 26)).foregroundStyle(Palette.pei)
+                Image(systemName: "key.horizontal.fill").font(.system(size: 26)).foregroundStyle(Palette.accent)
                 Text("Let OctoMac talk to \(session.instance.name)")
                     .font(Typeface.title)
                     .foregroundStyle(Palette.paper)
@@ -427,7 +427,7 @@ struct LockedStage: View {
 
                 HStack(spacing: 10) {
                     if requesting != nil {
-                        ProgressView().controlSize(.small).tint(Palette.pei)
+                        ProgressView().controlSize(.small).tint(Palette.accent)
                         Text("Waiting for you to approve in OctoPrint…").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
                         Spacer()
                         Button("Stop waiting") { requesting?.cancel(); requesting = nil }.buttonStyle(.plateQuiet)
