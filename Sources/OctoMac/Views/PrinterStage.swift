@@ -5,7 +5,14 @@ struct PrinterStage: View {
     @Environment(InstanceStore.self) private var store
     let session: PrinterSession
     @Binding var editor: EditorTarget?
-    @AppStorage("stageTab") private var tab: StageTab = .overview
+    /// Each printer remembers its own tab, so you can keep one on Overview and another on Files.
+    @AppStorage private var tab: StageTab
+
+    init(session: PrinterSession, editor: Binding<EditorTarget?>) {
+        self.session = session
+        _editor = editor
+        _tab = AppStorage(wrappedValue: .overview, "stageTab.\(session.instance.id.uuidString)")
+    }
     @State private var confirmingStop = false
     @State private var confirmingEmergency = false
 
@@ -78,11 +85,14 @@ struct StageHeader: View {
                     Text(session.instance.name)
                         .font(Typeface.display)
                         .foregroundStyle(Palette.paper)
-                    Button { editor = .edit(session.instance) } label: {
-                        Image(systemName: "slider.horizontal.3").foregroundStyle(Palette.faint)
+                    HStack(spacing: 2) {
+                        HeaderIconButton(symbol: "slider.horizontal.3", help: "Edit this printer") {
+                            editor = .edit(session.instance)
+                        }
+                        HeaderIconButton(symbol: "safari", help: "Open OctoPrint in your browser") {
+                            NSWorkspace.shared.open(session.instance.baseURL)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .help("Edit this printer")
                 }
                 HStack(spacing: 8) {
                     StatusLamp(color: mood.color(filament: filament), lit: mood != .offline)
@@ -101,6 +111,28 @@ struct StageHeader: View {
                 JobActions(session: session, confirmingStop: $confirmingStop, confirmingEmergency: $confirmingEmergency)
             }
         }
+    }
+}
+
+/// A small icon button beside the printer's name; quiet until hovered.
+struct HeaderIconButton: View {
+    let symbol: String
+    let help: String
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: symbol)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(hovering ? Palette.paper : Palette.faint)
+                .frame(width: 30, height: 30)
+                .background(Circle().fill(hovering ? Palette.extrusionHi : .clear))
+                .contentShape(Circle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help(help)
     }
 }
 
