@@ -89,9 +89,7 @@ struct StageHeader: View {
                         HeaderIconButton(symbol: "slider.horizontal.3", help: "Edit this printer") {
                             editor = .edit(session.instance)
                         }
-                        HeaderIconButton(symbol: "safari", help: "Open OctoPrint in your browser") {
-                            NSWorkspace.shared.open(session.instance.baseURL)
-                        }
+                        OpenInBrowserButton(url: session.instance.baseURL)
                     }
                 }
                 HStack(spacing: 8) {
@@ -133,6 +131,31 @@ struct HeaderIconButton: View {
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
         .help(help)
+    }
+}
+
+/// Opens the printer's OctoPrint web interface in the default browser.
+struct OpenInBrowserButton: View {
+    let url: URL
+    @State private var hovering = false
+
+    var body: some View {
+        Button { NSWorkspace.shared.open(url) } label: {
+            HStack(spacing: 5) {
+                Text("Open OctoPrint").font(Typeface.text(12, .demibold))
+                Image(systemName: "arrow.up.right").font(.system(size: 10, weight: .bold))
+            }
+            .foregroundStyle(hovering ? Palette.paper : Palette.dust)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(hovering ? Palette.extrusionHi : Palette.extrusion))
+            .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
+            .contentShape(Capsule())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
+        .help("Open \(url.host() ?? "OctoPrint") in your browser")
+        .padding(.leading, 6)
     }
 }
 
