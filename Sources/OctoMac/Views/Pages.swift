@@ -459,8 +459,10 @@ struct FileRow: View {
             Divider()
             Button("Delete…", role: .destructive, action: delete)
         }
-        .onTapGesture(count: 2) { if file.isFolder { open() } else if canPrint { openFile() } }
-        .onTapGesture { file.isFolder ? open() : select() }
+        // Double-click shows the file's info. The single click runs alongside it rather than waiting to rule out a
+        // double-click, so selection is instant.
+        .onTapGesture(count: 2) { if !file.isFolder { showInfo() } }
+        .simultaneousGesture(TapGesture().onEnded { file.isFolder ? open() : select() })
     }
 
     /// The thumbnail doubles as the way into the file's info popup.
