@@ -67,6 +67,14 @@ public struct FileEntry: Decodable, Sendable, Hashable, Identifiable {
     public var prints: PrintHistory?
     /// Relative URL of a preview image, provided by thumbnail plugins (e.g. PrusaSlicer Thumbnails, Cura Thumbnails).
     public var thumbnail: String?
+    /// The OctoPrint user who uploaded the file.
+    public var user: String?
+    /// SHA-1 of the file contents.
+    public var hash: String?
+    /// Average real print time in seconds from past prints, per printer profile.
+    public var averagePrintTime: [String: Double]?
+    /// Most recent real print time in seconds, per printer profile.
+    public var lastPrintTime: [String: Double]?
 
     public var id: String { "\(origin.rawValue):\(path)" }
     public var displayName: String { display ?? name }
@@ -75,7 +83,7 @@ public struct FileEntry: Decodable, Sendable, Hashable, Identifiable {
     public var isModel: Bool { type == "model" }
 
     enum CodingKeys: String, CodingKey {
-        case name, display, path, type, typePath, origin, size, date, children, gcodeAnalysis, refs, prints, thumbnail
+        case name, display, path, type, typePath, origin, size, date, children, gcodeAnalysis, refs, prints, thumbnail, user, hash, statistics
     }
 
     public init(from decoder: Decoder) throws {
@@ -95,6 +103,16 @@ public struct FileEntry: Decodable, Sendable, Hashable, Identifiable {
         refs = try? c.decodeIfPresent(FileRefs.self, forKey: .refs)
         prints = try? c.decodeIfPresent(PrintHistory.self, forKey: .prints)
         thumbnail = (try? c.decodeIfPresent(String.self, forKey: .thumbnail)).flatMap { $0.isEmpty ? nil : $0 }
+        user = try? c.decodeIfPresent(String.self, forKey: .user)
+        hash = try? c.decodeIfPresent(String.self, forKey: .hash)
+        let statistics = try? c.decodeIfPresent(Statistics.self, forKey: .statistics)
+        averagePrintTime = statistics?.averagePrintTime
+        lastPrintTime = statistics?.lastPrintTime
+    }
+
+    private struct Statistics: Decodable {
+        var averagePrintTime: [String: Double]?
+        var lastPrintTime: [String: Double]?
     }
 }
 

@@ -17,6 +17,9 @@
             "dimensions": {"width": 127.05, "depth": 128.55, "height": 40.0}
           },
           "prints": {"success": 1, "failure": 3, "last": {"date": 1777548000, "success": false}},
+          "statistics": {"averagePrintTime": {"_default": 8100.5}, "lastPrintTime": {"_default": 8200.0}},
+          "user": "pi",
+          "hash": "71b1e333d7500c7580bffa0fe04b9e6033c64676",
           "refs": {"resource": "http://octopi/api/files/local/workshop/6-piece-hook-set.gcode", "download": "http://octopi/downloads/files/local/workshop/6-piece-hook-set.gcode"}
         }
       ]

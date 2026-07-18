@@ -24,6 +24,8 @@ struct DecodingTests {
         #expect(file.gcodeAnalysis?.totalFilamentLength == 9522.41)
         #expect(file.prints?.failure == 3)
         #expect(file.prints?.last?.success == false)
+        #expect(file.user == "pi")
+        #expect(file.averagePrintTime?["_default"] == 8100.5)
 
         let model = list.files[1]
         #expect(model.isModel)

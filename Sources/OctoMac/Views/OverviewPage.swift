@@ -350,7 +350,7 @@ struct OpenedFilePanel: View {
                 FileThumbnail(file: file, client: session.client, tint: filament, radius: 16)
                     .frame(width: 200, height: 200)
                     .contentShape(Rectangle())
-                    .onTapGesture { if file.thumbnail != nil { previewing = true } }
+                    .onTapGesture { previewing = true }
                     .popover(isPresented: $previewing) {
                         FilePreview(file: file, client: session.client, filament: filament, canOpen: false, open: {})
                     }
@@ -540,7 +540,7 @@ struct FileCard: View {
             FileThumbnail(file: file, client: session.client, tint: filament, radius: 12)
                 .aspectRatio(4 / 3, contentMode: .fit)
                 .contentShape(Rectangle())
-                .onTapGesture { if file.thumbnail != nil { previewing = true } else { open() } }
+                .onTapGesture { previewing = true }
                 .popover(isPresented: $previewing, arrowEdge: .bottom) {
                     FilePreview(file: file, client: session.client, filament: filament, canOpen: session.canControl) {
                         previewing = false

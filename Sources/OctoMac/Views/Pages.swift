@@ -422,6 +422,11 @@ struct FileRow: View {
 
             HStack(spacing: 8) {
                 if hovering || selected {
+                    if !file.isFolder {
+                        Button(action: showInfo) { Image(systemName: "info.circle") }
+                            .buttonStyle(.plateQuiet)
+                            .help("Show file info")
+                    }
                     if file.isMachineCode {
                         Button("Open", action: openFile).buttonStyle(.plate(filament)).disabled(!canPrint)
                     }
@@ -444,28 +449,41 @@ struct FileRow: View {
         }
         .contentShape(Rectangle())
         .onHover { hovering = $0 }
+        .contextMenu {
+            if file.isFolder {
+                Button("Open folder", action: open)
+            } else {
+                Button("Get info", action: showInfo)
+                if file.isMachineCode { Button("Open", action: openFile).disabled(!canPrint) }
+            }
+            Divider()
+            Button("Delete…", role: .destructive, action: delete)
+        }
         .onTapGesture(count: 2) { if file.isFolder { open() } else if canPrint { openFile() } }
         .onTapGesture { file.isFolder ? open() : select() }
     }
 
+    /// The thumbnail doubles as the way into the file's info popup.
     @ViewBuilder private var thumbnail: some View {
         let view = FileThumbnail(file: file, client: client, tint: filament, radius: 9).frame(width: 44, height: 44)
-        if file.thumbnail != nil {
-            Button {
-                select()
-                previewing = true
-            } label: { view }
+        if file.isFolder {
+            view
+        } else {
+            Button(action: showInfo) { view }
                 .buttonStyle(.plain)
-                .help("Show a larger preview")
+                .help("Show file info")
                 .popover(isPresented: $previewing, arrowEdge: .trailing) {
                     FilePreview(file: file, client: client, filament: filament, canOpen: canPrint) {
                         previewing = false
                         openFile()
                     }
                 }
-        } else {
-            view
         }
+    }
+
+    private func showInfo() {
+        select()
+        previewing = true
     }
 
     private func number(_ text: String, width: CGFloat) -> some View {

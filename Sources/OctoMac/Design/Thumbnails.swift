@@ -1,6 +1,7 @@
 import AppKit
 import OctoPrintKit
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Fetches and caches thumbnail-plugin images. They sit behind OctoPrint's auth, so `AsyncImage` can't load them.
 @MainActor
@@ -115,57 +116,146 @@ struct TagRow: View {
     }
 }
 
-/// Larger look at a file: its thumbnail at full size with the details you'd check before printing.
+/// Everything about a file: a large thumbnail, the full name and location, size, upload details, the slicer's
+/// analysis and the print history, with Open and Download.
 struct FilePreview: View {
     let file: FileEntry
     let client: OctoPrintClient
     let filament: Color
-    /// False hides the Open button (e.g. the file is already open).
+    /// False hides the Open button (e.g. the file is already open, or the printer can't take it).
     let canOpen: Bool
     let open: () -> Void
+    @State private var downloading = false
+    @State private var downloadError: String?
 
     var body: some View {
         let name = SlicedName(file.displayName)
-        VStack(alignment: .leading, spacing: 16) {
-            FileThumbnail(file: file, client: client, tint: filament, radius: 14)
-                .frame(width: 440, height: 330)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                FileThumbnail(file: file, client: client, tint: filament, radius: 14)
+                    .frame(height: file.thumbnail == nil ? 100 : 220)
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(name.title).font(Typeface.title).foregroundStyle(Palette.paper).lineLimit(2)
-                if !name.tags.isEmpty { TagRow(tags: name.tags) }
-                Text(file.name).font(Typeface.caption).foregroundStyle(Palette.faint).textSelection(.enabled)
-            }
-
-            HStack(alignment: .top, spacing: 26) {
-                fact("Print time", Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime))
-                fact("Filament", Fmt.filament(file.gcodeAnalysis?.totalFilamentLength))
-                if let dimensions = file.gcodeAnalysis?.dimensions, let width = dimensions.width, let depth = dimensions.depth, let height = dimensions.height {
-                    fact("Size", "\(Fmt.number(width)) × \(Fmt.number(depth)) × \(Fmt.number(height)) mm")
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(file.isFolder ? file.displayName : name.title)
+                        .font(Typeface.title).foregroundStyle(Palette.paper).lineLimit(3)
+                    if !name.tags.isEmpty { TagRow(tags: name.tags) }
                 }
-            }
-            HStack(alignment: .top, spacing: 26) {
-                fact("Added", file.date?.formatted(date: .abbreviated, time: .shortened) ?? "–")
-                if let prints = file.prints {
-                    fact("Printed", "\(prints.success ?? 0) ok, \(prints.failure ?? 0) failed")
-                }
-            }
 
-            if file.isMachineCode && canOpen {
-                HStack {
+                section("File") {
+                    row("Name", file.name, selectable: true)
+                    row("Folder", folder)
+                    row("Stored on", file.origin == .sdcard ? "Printer's SD card" : "OctoPrint (Raspberry Pi)")
+                    if let size = file.size {
+                        row("Size", "\(Fmt.bytes(size))  (\(size.formatted()) bytes)")
+                    }
+                    if let date = file.date {
+                        row("Added", "\(date.formatted(date: .long, time: .shortened))  (\(date.formatted(.relative(presentation: .named))))")
+                    }
+                    if let user = file.user { row("Added by", user) }
+                    if let kind = file.typePath?.last { row("Type", kind.uppercased()) }
+                }
+
+                if let analysis = file.gcodeAnalysis {
+                    section("Slicer estimate") {
+                        row("Print time", Fmt.duration(analysis.estimatedPrintTime))
+                        ForEach(analysis.filament.keys.sorted(), id: \.self) { tool in
+                            let usage = analysis.filament[tool]
+                            row(analysis.filament.count > 1 ? "Filament (\(HeaterKind(key: tool).displayName))" : "Filament",
+                                [usage?.length.map { Fmt.filament($0) }, usage?.volume.map { String(format: "%.1f cm³", $0) }]
+                                    .compactMap { $0 }.joined(separator: ", "))
+                        }
+                        if let d = analysis.dimensions, let w = d.width, let dp = d.depth, let h = d.height {
+                            row("Model size", "\(Fmt.number(w)) × \(Fmt.number(dp)) × \(Fmt.number(h)) mm")
+                        }
+                    }
+                }
+
+                if let prints = file.prints, (prints.success ?? 0) + (prints.failure ?? 0) > 0 {
+                    section("Print history") {
+                        row("Finished", "\(prints.success ?? 0)")
+                        row("Failed or stopped", "\(prints.failure ?? 0)")
+                        if let average = file.averagePrintTime?.values.first {
+                            row("Average real time", Fmt.duration(average))
+                        }
+                        if let last = prints.last {
+                            let when = last.date.map { Date(timeIntervalSince1970: $0).formatted(date: .abbreviated, time: .shortened) } ?? "–"
+                            let result = last.success.map { $0 ? "finished" : "failed or stopped" } ?? "unknown result"
+                            let duration = last.printTime.map { ", took \(Fmt.duration($0))" } ?? ""
+                            row("Last print", "\(when), \(result)\(duration)")
+                        }
+                    }
+                }
+
+                if let hash = file.hash {
+                    row("SHA-1", hash, selectable: true, monospaced: true)
+                }
+
+                HStack(spacing: 10) {
+                    if let downloadError {
+                        Text(downloadError).font(Typeface.caption).foregroundStyle(Palette.hot).lineLimit(2)
+                    }
                     Spacer()
-                    Button("Open", action: open).buttonStyle(.plate(filament))
+                    if !file.isFolder && file.refs?.download != nil {
+                        Button(action: download) {
+                            if downloading { ProgressView().controlSize(.small) } else { Label("Download…", systemImage: "arrow.down.circle") }
+                        }
+                        .buttonStyle(.plateQuiet)
+                        .disabled(downloading)
+                    }
+                    if file.isMachineCode && canOpen {
+                        Button("Open", action: open).buttonStyle(.plate(filament))
+                    }
                 }
             }
+            .padding(22)
         }
-        .padding(22)
-        .frame(width: 484)
+        .frame(width: 520)
+        .frame(maxHeight: 980)
+        .fixedSize(horizontal: false, vertical: true)
         .background(Palette.extrusion)
     }
 
-    private func fact(_ title: String, _ value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
-            Text(value).font(Typeface.number(16)).foregroundStyle(Palette.paper)
+    private var folder: String {
+        let parts = file.path.split(separator: "/").dropLast()
+        return parts.isEmpty ? "Top level" : parts.joined(separator: " / ")
+    }
+
+    @ViewBuilder
+    private func section<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
+            VStack(alignment: .leading, spacing: 7) { content() }
+                .padding(14)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .machined(radius: 12, fill: Palette.graphite)
+        }
+    }
+
+    private func row(_ label: String, _ value: String, selectable: Bool = false, monospaced: Bool = false) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 12) {
+            Text(label).font(Typeface.caption).foregroundStyle(Palette.faint).frame(width: 110, alignment: .leading)
+            Group {
+                if selectable { Text(value).textSelection(.enabled) } else { Text(value) }
+            }
+            .font(monospaced ? .system(size: 11, design: .monospaced) : Typeface.body)
+            .foregroundStyle(Palette.paper)
+            .fixedSize(horizontal: false, vertical: true)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private func download() {
+        downloading = true
+        downloadError = nil
+        Task {
+            do {
+                let data = try await client.download(file)
+                let type = UTType(filenameExtension: (file.name as NSString).pathExtension) ?? .data
+                SaveFile.present(data: data, name: file.name, type: type)
+            } catch {
+                downloadError = "Couldn't download: \(error.localizedDescription)"
+            }
+            downloading = false
         }
     }
 }
