@@ -9,6 +9,7 @@ A Mac app for controlling [OctoPrint](https://octoprint.org) printers, with a la
 - Live updates over OctoPrint's push connection (no polling), camera streams kept warm for instant switching
 - Overview: camera with cinema mode and snapshots, layer-stack progress, opened file with thumbnail, temperature presets, and a chart with hover readouts, event markers and PNG/SVG export
 - Move, Files (folders, upload by drag and drop, thumbnails), Console and Machine (connection, profile, system commands) tabs
+- G-code preview in its own window: a layer-by-layer view and a 3D view (Metal) you can rotate, with a layer slider and per-feature colours
 - Stop with a clear confirmation, plus a separate emergency stop (M112)
 
 ## Requirements

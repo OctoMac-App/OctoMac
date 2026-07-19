@@ -149,7 +149,11 @@ struct GCodeLayerViewer: View {
     let profile: PrinterProfile?
     let filament: Color
 
+    enum Mode: String { case layer, threeD }
+
+    @AppStorage("gcodePreviewMode") private var mode: Mode = .threeD
     @State private var layer = 0
+    @State private var resetToken = 0
     @State private var hidden: Set<GCodeToolpath.Feature> = [.travel]
     @State private var showPreviousLayer = true
     @State private var zoom: CGFloat = 1
@@ -169,7 +173,11 @@ struct GCodeLayerViewer: View {
         HStack(spacing: 20) {
             VStack(spacing: 14) {
                 header
-                plate
+                if mode == .threeD {
+                    plate3D
+                } else {
+                    plate
+                }
                 layerBar
             }
             sidebar.frame(width: 250)
@@ -182,7 +190,9 @@ struct GCodeLayerViewer: View {
         .onKeyPress(.downArrow) { step(-1) }
         .onKeyPress(.rightArrow) { step(1) }
         .onKeyPress(.leftArrow) { step(-1) }
-        .onAppear { layer = 0 }
+        // 3D starts with the whole print; the layer view starts at the first layer.
+        .onAppear { layer = mode == .threeD ? path.layers.count - 1 : 0 }
+        .onChange(of: mode) { _, new in if new == .threeD && layer == 0 { layer = path.layers.count - 1 } }
     }
 
     private func step(_ delta: Int) -> KeyPress.Result {
@@ -194,10 +204,15 @@ struct GCodeLayerViewer: View {
 
     private var header: some View {
         let name = SlicedName(file.displayName)
-        return HStack(alignment: .firstTextBaseline, spacing: 12) {
+        return HStack(alignment: .center, spacing: 12) {
             Text(name.title).font(Typeface.title).foregroundStyle(Palette.paper).lineLimit(1)
             if !name.tags.isEmpty { TagRow(tags: name.tags) }
             Spacer()
+            HStack(spacing: 6) {
+                Chip(title: "Layer", selected: mode == .layer) { mode = .layer }
+                Chip(title: "3D", selected: mode == .threeD) { mode = .threeD }
+            }
+            .padding(.trailing, 8)
             Text("Layer \(layer + 1) of \(path.layers.count)").font(Typeface.number(17)).foregroundStyle(Palette.paper)
             Text(String(format: "Z %.2f mm", current.z)).font(Typeface.number(17)).foregroundStyle(filament)
         }
@@ -273,6 +288,28 @@ struct GCodeLayerViewer: View {
         .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Palette.rail))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(.white.opacity(0.05), lineWidth: 1))
+    }
+
+    private var plate3D: some View {
+        GCode3DView(path: path, bed: bed, maxLayer: layer, hidden: hidden,
+                    nozzleWidth: Float(profile?.extruder?.nozzleDiameter ?? 0.4) * 1.12, resetToken: resetToken)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(.white.opacity(0.05), lineWidth: 1))
+            .overlay(alignment: .bottomTrailing) {
+                Button { resetToken += 1 } label: {
+                    Label("Reset view", systemImage: "arrow.counterclockwise")
+                        .font(Typeface.text(12, .demibold))
+                        .padding(.horizontal, 12)
+                        .frame(height: 32)
+                        .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Palette.paper)
+                .background(Capsule().fill(Palette.extrusion.opacity(0.92)))
+                .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
+                .padding(14)
+                .help("Reset the camera (or double-click the model)")
+            }
     }
 
     private func drawBed(_ context: inout GraphicsContext, origin: CGPoint, scale: CGFloat) {
@@ -382,12 +419,14 @@ struct GCodeLayerViewer: View {
                     }
                     .buttonStyle(.plain)
                 }
-                Divider().overlay(Palette.edge)
-                Toggle("Show the layer below", isOn: $showPreviousLayer)
-                    .toggleStyle(.switch)
-                    .tint(Palette.accent)
-                    .font(Typeface.body)
-                    .foregroundStyle(Palette.dust)
+                if mode == .layer {
+                    Divider().overlay(Palette.edge)
+                    Toggle("Show the layer below", isOn: $showPreviousLayer)
+                        .toggleStyle(.switch)
+                        .tint(Palette.accent)
+                        .font(Typeface.body)
+                        .foregroundStyle(Palette.dust)
+                }
             }
             .padding(16)
             .machined(radius: 16)
@@ -404,7 +443,9 @@ struct GCodeLayerViewer: View {
 
             Spacer()
 
-            Text("Pinch or use the buttons to zoom, drag to move, double-click to fit. Arrow keys step through layers.")
+            Text(mode == .threeD
+                 ? "Drag to rotate, scroll or pinch to zoom, right-drag or ⌥-drag to move. Double-click to reset. The slider cuts the print off at any layer."
+                 : "Pinch or use the buttons to zoom, drag to move, double-click to fit. Arrow keys step through layers.")
                 .font(Typeface.caption)
                 .foregroundStyle(Palette.faint)
                 .fixedSize(horizontal: false, vertical: true)
