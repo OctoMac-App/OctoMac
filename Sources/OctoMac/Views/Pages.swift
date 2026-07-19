@@ -194,6 +194,7 @@ struct MovePage: View {
 // MARK: - Files
 
 struct FilesPage: View {
+    @Environment(\.openWindow) private var openWindow
     let session: PrinterSession
     let filament: Color
     @State private var folder: [String] = []
@@ -251,6 +252,7 @@ struct FilesPage: View {
                                     select: { selectedFile = file.id },
                                     open: { folder.append(file.name) },
                                     openFile: { session.select(file, print: false) },
+                                    preview: { openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path)) },
                                     delete: { pendingDelete = file })
                         }
                     }
@@ -378,6 +380,7 @@ struct FileRow: View {
     let select: () -> Void
     let open: () -> Void
     let openFile: () -> Void
+    let preview: () -> Void
     let delete: () -> Void
     @State private var hovering = false
     @State private var previewing = false
@@ -454,7 +457,10 @@ struct FileRow: View {
                 Button("Open folder", action: open)
             } else {
                 Button("Get info", action: showInfo)
-                if file.isMachineCode { Button("Open", action: openFile).disabled(!canPrint) }
+                if file.isMachineCode {
+                    Button("Preview G-code", action: preview)
+                    Button("Open", action: openFile).disabled(!canPrint)
+                }
             }
             Divider()
             Button("Delete…", role: .destructive, action: delete)
@@ -475,7 +481,8 @@ struct FileRow: View {
                 .buttonStyle(.plain)
                 .help("Show file info")
                 .popover(isPresented: $previewing, arrowEdge: .trailing) {
-                    FilePreview(file: file, client: client, filament: filament, canOpen: canPrint) {
+                    FilePreview(file: file, client: client, filament: filament, canOpen: canPrint,
+                                preview: { previewing = false; preview() }) {
                         previewing = false
                         openFile()
                     }

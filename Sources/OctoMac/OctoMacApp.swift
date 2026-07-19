@@ -20,6 +20,16 @@ struct OctoMacApp: App {
             CommandGroup(replacing: .newItem) {}
         }
 
+        // G-code previews open in their own windows, so they can sit beside the printer view.
+        WindowGroup("G-code preview", id: "gcode-preview", for: GCodePreviewRequest.self) { $request in
+            if let request {
+                GCodePreviewWindow(request: request)
+                    .environment(store)
+            }
+        }
+        .windowStyle(.hiddenTitleBar)
+        .defaultSize(width: 1280, height: 860)
+
         Settings {
             SettingsView()
                 .environment(store)

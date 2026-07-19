@@ -124,6 +124,8 @@ struct FilePreview: View {
     let filament: Color
     /// False hides the Open button (e.g. the file is already open, or the printer can't take it).
     let canOpen: Bool
+    /// Shows a "Preview" button for G-code when set.
+    var preview: (() -> Void)? = nil
     let open: () -> Void
     @State private var downloading = false
     @State private var downloadError: String?
@@ -201,6 +203,10 @@ struct FilePreview: View {
                         }
                         .buttonStyle(.plateQuiet)
                         .disabled(downloading)
+                    }
+                    if file.isMachineCode, let preview {
+                        Button(action: preview) { Label("Preview", systemImage: "square.stack.3d.up") }
+                            .buttonStyle(.plateQuiet)
                     }
                     if file.isMachineCode && canOpen {
                         Button("Open", action: open).buttonStyle(.plate(filament))

@@ -182,9 +182,13 @@ final class PrinterSession {
     /// Finds the file-list entry (with analysis and thumbnail) for a job's file.
     func fileEntry(for jobFile: JobFile?) -> FileEntry? {
         guard let path = jobFile?.path else { return nil }
+        return fileEntry(path: path, origin: jobFile?.origin ?? "local")
+    }
+
+    func fileEntry(path: String, origin: String) -> FileEntry? {
         func search(_ entries: [FileEntry]) -> FileEntry? {
             for entry in entries {
-                if entry.path == path, entry.origin.rawValue == (jobFile?.origin ?? "local") { return entry }
+                if entry.path == path, entry.origin.rawValue == origin { return entry }
                 if let found = search(entry.children ?? []) { return found }
             }
             return nil

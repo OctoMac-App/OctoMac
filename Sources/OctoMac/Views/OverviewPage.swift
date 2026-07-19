@@ -336,6 +336,7 @@ struct ReadyPanel: View {
 
 /// The open (selected) file, ready to print: everything you'd check first, and a big Print button.
 struct OpenedFilePanel: View {
+    @Environment(\.openWindow) private var openWindow
     let session: PrinterSession
     let file: FileEntry
     let filament: Color
@@ -352,7 +353,8 @@ struct OpenedFilePanel: View {
                     .contentShape(Rectangle())
                     .onTapGesture { previewing = true }
                     .popover(isPresented: $previewing) {
-                        FilePreview(file: file, client: session.client, filament: filament, canOpen: false, open: {})
+                        FilePreview(file: file, client: session.client, filament: filament, canOpen: false,
+                                    preview: { previewing = false; openPreview() }, open: {})
                     }
 
                 VStack(alignment: .leading, spacing: 12) {
@@ -403,6 +405,14 @@ struct OpenedFilePanel: View {
                 }
                 .buttonStyle(.plate(filament))
                 .disabled(!session.canControl)
+                Button(action: openPreview) {
+                    Label("Preview", systemImage: "square.stack.3d.up")
+                        .font(Typeface.text(15, .demibold))
+                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 2)
+                }
+                .buttonStyle(.plateQuiet)
                 Button(action: chooseAnother) {
                     Label("Choose another file", systemImage: "square.grid.2x2")
                         .font(Typeface.text(15, .demibold))
@@ -415,6 +425,10 @@ struct OpenedFilePanel: View {
         }
         .padding(24)
         .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private func openPreview() {
+        openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path))
     }
 
     private var modelSize: String {
@@ -527,6 +541,7 @@ struct FileBrowserPanel: View {
 /// A file as a card: big thumbnail, readable title, slicer tags. Clicking the title (or Open on hover) opens it;
 /// clicking the thumbnail shows a larger preview.
 struct FileCard: View {
+    @Environment(\.openWindow) private var openWindow
     let session: PrinterSession
     let file: FileEntry
     let filament: Color
@@ -542,7 +557,11 @@ struct FileCard: View {
                 .contentShape(Rectangle())
                 .onTapGesture { previewing = true }
                 .popover(isPresented: $previewing, arrowEdge: .bottom) {
-                    FilePreview(file: file, client: session.client, filament: filament, canOpen: session.canControl) {
+                    FilePreview(file: file, client: session.client, filament: filament, canOpen: session.canControl,
+                                preview: {
+                                    previewing = false
+                                    openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path))
+                                }) {
                         previewing = false
                         open()
                     }
