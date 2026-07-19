@@ -12,6 +12,8 @@ struct GCode3DView: NSViewRepresentable {
     let path: GCodeToolpath
     let bed: CGRect
     let maxLayer: Int
+    /// While printing: layers above this are drawn as dark "not printed yet" ghosts.
+    var printedLayer: Int? = nil
     let hidden: Set<GCodeToolpath.Feature>
     let nozzleWidth: Float
     /// Changing this resets the camera.
@@ -39,6 +41,7 @@ struct GCode3DView: NSViewRepresentable {
 
     private func apply(to renderer: GCodeRenderer, view: MTKView) {
         renderer.maxLayer = maxLayer
+        renderer.printedLayer = printedLayer ?? -1
         renderer.hiddenMask = hidden.reduce(0) { $0 | (1 << UInt32($1.rawValue)) }
         renderer.halfWidth = nozzleWidth / 2
         view.needsDisplay = true
@@ -140,12 +143,15 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     private let device: MTLDevice
     private let queue: MTLCommandQueue
     private let segmentPipeline: MTLRenderPipelineState
+    private let ghostPipeline: MTLRenderPipelineState
     private let bedPipeline: MTLRenderPipelineState
     private let depthState: MTLDepthStencilState
+    private let ghostDepthState: MTLDepthStencilState
     private var segmentBuffer: MTLBuffer?
     private var segmentCount = 0
 
     var maxLayer = 0
+    var printedLayer = -1
     var hiddenMask: UInt32 = 0
     var halfWidth: Float = 0.225
     private var bed = CGRect(x: 0, y: 0, width: 200, height: 200)
@@ -163,16 +169,25 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         self.queue = queue
         do {
             let library = try device.makeLibrary(source: Self.shaderSource, options: nil)
-            func pipeline(_ vertex: String, _ fragment: String) throws -> MTLRenderPipelineState {
+            func pipeline(_ vertex: String, _ fragment: String, blended: Bool = false) throws -> MTLRenderPipelineState {
                 let descriptor = MTLRenderPipelineDescriptor()
                 descriptor.vertexFunction = library.makeFunction(name: vertex)
                 descriptor.fragmentFunction = library.makeFunction(name: fragment)
                 descriptor.colorAttachments[0].pixelFormat = view.colorPixelFormat
+                if blended {
+                    let attachment = descriptor.colorAttachments[0]!
+                    attachment.isBlendingEnabled = true
+                    attachment.sourceRGBBlendFactor = .sourceAlpha
+                    attachment.destinationRGBBlendFactor = .oneMinusSourceAlpha
+                    attachment.sourceAlphaBlendFactor = .one
+                    attachment.destinationAlphaBlendFactor = .oneMinusSourceAlpha
+                }
                 descriptor.depthAttachmentPixelFormat = view.depthStencilPixelFormat
                 descriptor.rasterSampleCount = view.sampleCount
                 return try device.makeRenderPipelineState(descriptor: descriptor)
             }
             segmentPipeline = try pipeline("segmentVertex", "segmentFragment")
+            ghostPipeline = try pipeline("segmentVertex", "ghostFragment", blended: true)
             bedPipeline = try pipeline("bedVertex", "bedFragment")
         } catch {
             NSLog("OctoMac: Metal setup failed: \(error)")
@@ -181,8 +196,14 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         let depth = MTLDepthStencilDescriptor()
         depth.depthCompareFunction = .less
         depth.isDepthWriteEnabled = true
-        guard let depthState = device.makeDepthStencilState(descriptor: depth) else { return nil }
+        // Ghosts are tested against the solid print but don't hide each other.
+        let ghostDepth = MTLDepthStencilDescriptor()
+        ghostDepth.depthCompareFunction = .less
+        ghostDepth.isDepthWriteEnabled = false
+        guard let depthState = device.makeDepthStencilState(descriptor: depth),
+              let ghostDepthState = device.makeDepthStencilState(descriptor: ghostDepth) else { return nil }
         self.depthState = depthState
+        self.ghostDepthState = ghostDepthState
         super.init()
     }
 
@@ -270,7 +291,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         var uniforms = Self.flatten(viewProj)
         let e = eye
         uniforms += [e.x, e.y, e.z, halfWidth]
-        uniforms += [Float(maxLayer), Float(hiddenMask), 0, 0]
+        uniforms += [Float(maxLayer), Float(hiddenMask), Float(printedLayer), 0]
         uniforms += [Float(bed.minX), Float(bed.minY), Float(bed.maxX), Float(bed.maxY)]
         for feature in GCodeToolpath.Feature.allCases {
             let c = NSColor(feature.color).usingColorSpace(.sRGB) ?? .gray
@@ -287,13 +308,18 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         encoder.setFragmentBytes(uniforms, length: uniforms.count * 4, index: 1)
         encoder.drawPrimitives(type: .triangleStrip, vertexStart: 0, vertexCount: 4)
 
-        // Every printing move as an instanced box (6 faces of 2 triangles)
+        // Every printing move as an instanced box (6 faces of 2 triangles). Printed moves first, solid; then, while
+        // printing, the moves still to come as a faint translucent ghost that doesn't hide the current layer.
         if let segmentBuffer, segmentCount > 0 {
-            encoder.setRenderPipelineState(segmentPipeline)
             encoder.setVertexBuffer(segmentBuffer, offset: 0, index: 0)
-            encoder.setVertexBytes(uniforms, length: uniforms.count * 4, index: 1)
-            encoder.setFragmentBytes(uniforms, length: uniforms.count * 4, index: 1)
-            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 36, instanceCount: segmentCount)
+            for ghostPass in printedLayer >= 0 ? [false, true] : [false] {
+                uniforms[16 + 4 + 3] = ghostPass ? 1 : 0
+                encoder.setRenderPipelineState(ghostPass ? ghostPipeline : segmentPipeline)
+                encoder.setDepthStencilState(ghostPass ? ghostDepthState : depthState)
+                encoder.setVertexBytes(uniforms, length: uniforms.count * 4, index: 1)
+                encoder.setFragmentBytes(uniforms, length: uniforms.count * 4, index: 1)
+                encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 36, instanceCount: segmentCount)
+            }
         }
 
         encoder.endEncoding()
@@ -333,7 +359,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     struct Uniforms {
         float4x4 viewProj;
         float4 eyeHalf;     // eye.xyz, half the bead width
-        float4 params;      // max layer, hidden feature mask, -, -
+        float4 params;      // max layer, hidden feature mask, printed layer (-1 when not printing), 1 in the ghost pass
         float4 bed;         // minX, minY, maxX, maxY
         float4 colors[16];
     };
@@ -345,7 +371,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         float3 world;
         float3 normal;
         float3 color;
-        float top;          // 1 for the layer at the cut-off height
+        float top;          // 1 for the highlighted layer
     };
 
     constant uint2 faceCorners[6] = { uint2(0,0), uint2(1,0), uint2(0,1), uint2(0,1), uint2(1,0), uint2(1,1) };
@@ -356,7 +382,9 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         Segment s = segments[iid];
         VOut out;
         uint feature = uint(s.feature);
-        if (s.layer > u.params.x + 0.5 || ((uint(u.params.y) >> feature) & 1u) != 0u) {
+        bool notPrintedYet = u.params.z >= 0 && s.layer > u.params.z + 0.5;
+        bool ghostPass = u.params.w > 0.5;
+        if (s.layer > u.params.x + 0.5 || ((uint(u.params.y) >> feature) & 1u) != 0u || notPrintedYet != ghostPass) {
             out.position = float4(0, 0, 2, 1);   // outside the clip volume: not drawn
             return out;
         }
@@ -390,7 +418,9 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         out.world = p;
         out.normal = n;
         out.color = u.colors[feature].rgb;
-        out.top = abs(s.layer - u.params.x) < 0.5 ? 1.0 : 0.0;
+        bool printing = u.params.z >= 0;
+        float highlight = printing ? u.params.z : u.params.x;
+        out.top = abs(s.layer - highlight) < 0.5 ? 1.0 : 0.0;
         return out;
     }
 
@@ -402,6 +432,14 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         float3 color = in.color * (0.28 + diffuse);
         color = mix(color, min(color * 1.35 + 0.08, float3(1.0)), in.top);
         return float4(color, 1);
+    }
+
+    // Not printed yet: a faint glass-like outline of the rest of the part.
+    fragment float4 ghostFragment(VOut in [[stage_in]], constant Uniforms& u [[buffer(1)]]) {
+        float3 n = normalize(in.normal);
+        float3 toEye = normalize(u.eyeHalf.xyz - in.world);
+        float rim = 1.0 - abs(dot(n, toEye));
+        return float4(float3(0.80, 0.84, 0.90), 0.035 + rim * 0.05);
     }
 
     struct BedOut { float4 position [[position]]; float2 world; };

@@ -188,6 +188,7 @@ struct CinemaHUD: View {
 // MARK: - Printing
 
 struct JobPanel: View {
+    @Environment(\.openWindow) private var openWindow
     let session: PrinterSession
     let filament: Color
     @Binding var tab: StageTab
@@ -260,14 +261,29 @@ struct JobPanel: View {
 
                 Spacer(minLength: 0)
 
-                Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 14) {
-                    GridRow {
-                        stat("Time left", Fmt.duration(session.progress?.printTimeLeft), big: true)
-                        stat("Done at", Fmt.eta(session.progress?.printTimeLeft), big: true)
+                HStack(alignment: .bottom) {
+                    Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 14) {
+                        GridRow {
+                            stat("Time left", Fmt.duration(session.progress?.printTimeLeft), big: true)
+                            stat("Done at", Fmt.eta(session.progress?.printTimeLeft), big: true)
+                        }
+                        GridRow {
+                            stat("Printing for", Fmt.duration(session.progress?.printTime))
+                            stat("Filament", Fmt.filament(session.job?.filament.values.compactMap(\.length).reduce(0, +)))
+                        }
                     }
-                    GridRow {
-                        stat("Printing for", Fmt.duration(session.progress?.printTime))
-                        stat("Filament", Fmt.filament(session.job?.filament.values.compactMap(\.length).reduce(0, +)))
+                    Spacer(minLength: 12)
+                    if let entry {
+                        Button {
+                            openWindow(id: "gcode-preview",
+                                       value: GCodePreviewRequest(instanceID: session.instance.id, origin: entry.origin.rawValue, path: entry.path))
+                        } label: {
+                            Label("Live preview", systemImage: "square.stack.3d.up")
+                                .lineLimit(1)
+                        }
+                        .buttonStyle(.plateQuiet)
+                        .fixedSize()
+                        .help("Watch the print build up layer by layer in 3D")
                     }
                 }
             }

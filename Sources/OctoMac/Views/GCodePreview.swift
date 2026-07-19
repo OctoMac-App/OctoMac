@@ -49,7 +49,7 @@ final class GCodePreviewLoader {
     /// Parsed files, kept while the app runs so reopening a preview is instant. Keyed by path + date.
     private static var cache: [String: GCodeToolpath] = [:]
 
-    func load(_ file: FileEntry, client: OctoPrintClient) async {
+    func load(_ file: FileEntry, client: OctoPrintClient, demo: Bool = false) async {
         let key = "\(client.baseURL.absoluteString)|\(file.id)|\(file.date?.timeIntervalSince1970 ?? 0)"
         if let cached = Self.cache[key] {
             phase = .ready(cached)
@@ -57,7 +57,8 @@ final class GCodePreviewLoader {
         }
         phase = .downloading
         do {
-            let data = try await client.download(file)
+            // Demo mode has no real server, so it previews a generated part instead.
+            let data = demo ? Data(DemoGCode.box().utf8) : try await client.download(file)
             phase = .reading(0)
             let path = await Task.detached(priority: .userInitiated) {
                 GCodeParser.parse(data) { fraction in
@@ -91,7 +92,7 @@ struct GCodePreviewWindow: View {
             LayerLineBackground()
             if let session, let file {
                 content(session: session, file: file)
-                    .task(id: file.id) { await loader.load(file, client: session.client) }
+                    .task(id: file.id) { await loader.load(file, client: session.client, demo: store.isDemo) }
             } else {
                 message("This file is no longer on the printer.", symbol: "doc.questionmark")
             }
@@ -114,9 +115,20 @@ struct GCodePreviewWindow: View {
             if path.layers.isEmpty {
                 message("This file doesn't contain any printing moves.", symbol: "square.stack.3d.up.slash")
             } else {
-                GCodeLayerViewer(path: path, file: file, profile: session.currentProfile, filament: store.filament(for: session.instance))
+                GCodeLayerViewer(path: path, file: file, profile: session.currentProfile, filament: store.filament(for: session.instance),
+                                 liveLayer: liveLayer(session: session, file: file, path: path))
             }
         }
+    }
+
+    /// The layer being printed right now, when this file is the printer's current job.
+    private func liveLayer(session: PrinterSession, file: FileEntry, path: GCodeToolpath) -> Int? {
+        guard session.flags.isJobActive, session.job?.file.path == file.path,
+              session.job?.file.origin.map({ $0 == file.origin.rawValue }) ?? true else { return nil }
+        // OctoPrint reports the byte position it has sent up to; fall back to the completion percentage.
+        let offset = session.progress?.filepos
+            ?? session.progress?.completion.map { Int(Double(path.byteCount) * $0 / 100) }
+        return offset.flatMap(path.layerIndex(atFileOffset:))
     }
 
     private func progress(_ text: String, value: Double?) -> some View {
@@ -148,12 +160,16 @@ struct GCodeLayerViewer: View {
     let file: FileEntry
     let profile: PrinterProfile?
     let filament: Color
+    /// Layer the printer is on, when this file is printing now.
+    var liveLayer: Int? = nil
 
     enum Mode: String { case layer, threeD }
 
     @AppStorage("gcodePreviewMode") private var mode: Mode = .threeD
     @State private var layer = 0
     @State private var resetToken = 0
+    /// While printing, the view follows the printer until the user moves the slider.
+    @State private var following = true
     @State private var hidden: Set<GCodeToolpath.Feature> = [.travel]
     @State private var showPreviousLayer = true
     @State private var zoom: CGFloat = 1
@@ -190,12 +206,17 @@ struct GCodeLayerViewer: View {
         .onKeyPress(.downArrow) { step(-1) }
         .onKeyPress(.rightArrow) { step(1) }
         .onKeyPress(.leftArrow) { step(-1) }
-        // 3D starts with the whole print; the layer view starts at the first layer.
-        .onAppear { layer = mode == .threeD ? path.layers.count - 1 : 0 }
-        .onChange(of: mode) { _, new in if new == .threeD && layer == 0 { layer = path.layers.count - 1 } }
+        // While printing, start on (and follow) the printer's layer. Otherwise 3D starts with the whole print and the
+        // layer view at the first layer.
+        .onAppear { layer = liveLayer ?? (mode == .threeD ? path.layers.count - 1 : 0) }
+        .onChange(of: mode) { _, new in if new == .threeD && layer == 0 && liveLayer == nil { layer = path.layers.count - 1 } }
+        .onChange(of: liveLayer) { _, new in if following, let new { layer = new } }
     }
 
+    private var isFollowing: Bool { liveLayer != nil && following }
+
     private func step(_ delta: Int) -> KeyPress.Result {
+        following = false
         layer = max(0, min(path.layers.count - 1, layer + delta))
         return .handled
     }
@@ -208,6 +229,18 @@ struct GCodeLayerViewer: View {
             Text(name.title).font(Typeface.title).foregroundStyle(Palette.paper).lineLimit(1)
             if !name.tags.isEmpty { TagRow(tags: name.tags) }
             Spacer()
+            if let liveLayer {
+                if following {
+                    LiveBadge(text: "Printing now")
+                } else {
+                    Button { following = true; layer = liveLayer } label: {
+                        Label("Follow print", systemImage: "dot.radiowaves.left.and.right")
+                    }
+                    .buttonStyle(.plate)
+                    .controlSize(.small)
+                    .help("Jump to the layer being printed and keep up with it")
+                }
+            }
             HStack(spacing: 6) {
                 Chip(title: "Layer", selected: mode == .layer) { mode = .layer }
                 Chip(title: "3D", selected: mode == .threeD) { mode = .threeD }
@@ -291,7 +324,7 @@ struct GCodeLayerViewer: View {
     }
 
     private var plate3D: some View {
-        GCode3DView(path: path, bed: bed, maxLayer: layer, hidden: hidden,
+        GCode3DView(path: path, bed: bed, maxLayer: isFollowing ? path.layers.count - 1 : layer, printedLayer: liveLayer, hidden: hidden,
                     nozzleWidth: Float(profile?.extruder?.nozzleDiameter ?? 0.4) * 1.12, resetToken: resetToken)
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(.white.opacity(0.05), lineWidth: 1))
@@ -372,7 +405,7 @@ struct GCodeLayerViewer: View {
         HStack(spacing: 12) {
             stepButton("chevron.left", help: "Previous layer (←)") { _ = step(-1) }
             // Continuous slider (rounded to whole layers) — a stepped one draws a tick per layer.
-            Slider(value: Binding(get: { Double(layer) }, set: { layer = Int($0.rounded()) }),
+            Slider(value: Binding(get: { Double(layer) }, set: { following = false; layer = Int($0.rounded()) }),
                    in: 0...Double(max(1, path.layers.count - 1)))
                 .tint(Palette.accent)
             stepButton("chevron.right", help: "Next layer (→)") { _ = step(1) }
@@ -462,5 +495,69 @@ struct GCodeLayerViewer: View {
             Spacer()
             Text(value).font(Typeface.number(14)).foregroundStyle(Palette.paper)
         }
+    }
+}
+
+/// A small "live" pill with a pulsing dot.
+struct LiveBadge: View {
+    let text: String
+    @State private var pulse = false
+
+    var body: some View {
+        HStack(spacing: 7) {
+            Circle().fill(Palette.accent).frame(width: 8, height: 8)
+                .scaleEffect(pulse ? 1.25 : 0.8)
+                .opacity(pulse ? 1 : 0.55)
+            Text(text).font(Typeface.text(12, .demibold)).foregroundStyle(Palette.paper)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Capsule().fill(Palette.accent.opacity(0.16)))
+        .overlay(Capsule().strokeBorder(Palette.accent.opacity(0.5), lineWidth: 1))
+        .onAppear { withAnimation(.easeInOut(duration: 0.9).repeatForever(autoreverses: true)) { pulse = true } }
+    }
+}
+
+/// Generated G-code for demo mode: a 60 × 40 × 24 mm tray with walls, a solid floor and alternating infill.
+enum DemoGCode {
+    static func box() -> String {
+        var lines = ["; generated by OctoMac for demo mode", "M83", "G28"]
+        let x0 = 70.0, y0 = 80.0, width = 60.0, depth = 40.0, layerHeight = 0.2, layers = 120
+        func loop(_ inset: Double) {
+            let a = (x0 + inset, y0 + inset), b = (x0 + width - inset, y0 + depth - inset)
+            lines.append("G1 X\(a.0) Y\(a.1)")
+            for p in [(b.0, a.1), (b.0, b.1), (a.0, b.1), (a.0, a.1)] {
+                lines.append("G1 X\(p.0) Y\(p.1) E0.5")
+            }
+        }
+        for n in 0..<layers {
+            let z = Double(n + 1) * layerHeight
+            lines.append(";LAYER_CHANGE")
+            lines.append(String(format: "G1 Z%.2f", z))
+            lines.append(";TYPE:External perimeter")
+            loop(0)
+            lines.append(";TYPE:Perimeter")
+            loop(0.45)
+            let solid = n < 4
+            lines.append(solid ? ";TYPE:Solid infill" : ";TYPE:Internal infill")
+            let spacing = solid ? 0.45 : 4.0
+            var i = 0
+            var x = x0 + 1.2
+            while x < x0 + width - 1.2 {
+                let (from, to) = i % 2 == 0 ? (y0 + 1.2, y0 + depth - 1.2) : (y0 + depth - 1.2, y0 + 1.2)
+                if n % 2 == 0 {
+                    lines.append(String(format: "G1 X%.2f Y%.2f", x, from))
+                    lines.append(String(format: "G1 X%.2f Y%.2f E0.3", x, to))
+                } else {
+                    let yy = y0 + 1.2 + (x - x0 - 1.2) * (depth - 2.4) / (width - 2.4)
+                    let (l, r) = i % 2 == 0 ? (x0 + 1.2, x0 + width - 1.2) : (x0 + width - 1.2, x0 + 1.2)
+                    lines.append(String(format: "G1 X%.2f Y%.2f", l, yy))
+                    lines.append(String(format: "G1 X%.2f Y%.2f E0.3", r, yy))
+                }
+                x += spacing
+                i += 1
+            }
+        }
+        return lines.joined(separator: "\n")
     }
 }
