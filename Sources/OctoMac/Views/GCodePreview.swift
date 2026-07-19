@@ -304,7 +304,9 @@ struct GCodeLayerViewer: View {
         HStack(spacing: 4) {
             zoomButton("minus") { zoom = max(0.5, zoom / 1.5) }
             Button { withAnimation(.snappy) { zoom = 1; pan = .zero } } label: {
-                Text("\(Int((zoom * 100).rounded()))%").font(Typeface.number(12)).frame(minWidth: 44)
+                Text("\(Int((zoom * 100).rounded()))%").font(Typeface.number(12))
+                    .frame(minWidth: 48, minHeight: 32)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
             .foregroundStyle(Palette.dust)
@@ -319,7 +321,9 @@ struct GCodeLayerViewer: View {
 
     private func zoomButton(_ symbol: String, action: @escaping () -> Void) -> some View {
         Button { withAnimation(.snappy) { action() } } label: {
-            Image(systemName: symbol).font(.system(size: 11, weight: .bold)).frame(width: 26, height: 26)
+            Image(systemName: symbol).font(.system(size: 12, weight: .bold))
+                .frame(width: 36, height: 32)
+                .contentShape(Rectangle()) // the whole button is clickable, not just the glyph
         }
         .buttonStyle(.plain)
         .foregroundStyle(Palette.paper)
@@ -343,7 +347,9 @@ struct GCodeLayerViewer: View {
 
     private func stepButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
-            Image(systemName: symbol).font(.system(size: 12, weight: .bold)).frame(width: 30, height: 26)
+            Image(systemName: symbol).font(.system(size: 12, weight: .bold))
+                .frame(width: 36, height: 32)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(Palette.paper)
