@@ -199,7 +199,7 @@ public enum GCodeParser {
                 return // travel before anything is printed
             }
             path.segments.append(.init(x0: Float(a.0), y0: Float(a.1), x1: Float(b.0), y1: Float(b.1),
-                                       feature: extruding ? feature : .travel))
+                                       feature: extruding ? feature : .travel, offset: Int32(clamping: offset)))
         }
 
         mutating func finishLayer() {

@@ -116,19 +116,19 @@ struct GCodePreviewWindow: View {
                 message("This file doesn't contain any printing moves.", symbol: "square.stack.3d.up.slash")
             } else {
                 GCodeLayerViewer(path: path, file: file, profile: session.currentProfile, filament: store.filament(for: session.instance),
-                                 liveLayer: liveLayer(session: session, file: file, path: path))
+                                 liveSegment: liveSegment(session: session, file: file, path: path))
             }
         }
     }
 
-    /// The layer being printed right now, when this file is the printer's current job.
-    private func liveLayer(session: PrinterSession, file: FileEntry, path: GCodeToolpath) -> Int? {
+    /// The move being printed right now, when this file is the printer's current job.
+    private func liveSegment(session: PrinterSession, file: FileEntry, path: GCodeToolpath) -> Int? {
         guard session.flags.isJobActive, session.job?.file.path == file.path,
               session.job?.file.origin.map({ $0 == file.origin.rawValue }) ?? true else { return nil }
         // OctoPrint reports the byte position it has sent up to; fall back to the completion percentage.
         let offset = session.progress?.filepos
             ?? session.progress?.completion.map { Int(Double(path.byteCount) * $0 / 100) }
-        return offset.flatMap(path.layerIndex(atFileOffset:))
+        return offset.flatMap(path.segmentIndex(atFileOffset:))
     }
 
     private func progress(_ text: String, value: Double?) -> some View {
@@ -160,8 +160,10 @@ struct GCodeLayerViewer: View {
     let file: FileEntry
     let profile: PrinterProfile?
     let filament: Color
-    /// Layer the printer is on, when this file is printing now.
-    var liveLayer: Int? = nil
+    /// The move the printer is on, when this file is printing now.
+    var liveSegment: Int? = nil
+
+    private var liveLayer: Int? { liveSegment.flatMap(path.layerIndex(ofSegment:)) }
 
     enum Mode: String { case layer, threeD }
 
@@ -290,9 +292,26 @@ struct GCodeLayerViewer: View {
 
                 // One path per feature, so each layer is a handful of draw calls rather than thousands.
                 var byFeature: [GCodeToolpath.Feature: Path] = [:]
-                for s in path.segments(in: current) where !hidden.contains(s.feature) {
+                // While printing, the layer being printed is drawn only up to the nozzle.
+                let liveCut = (liveLayer == layer) ? liveSegment : nil
+                let range = current.segments
+                let upTo = liveCut.map { min(range.upperBound, $0 + 1) } ?? range.upperBound
+                for s in path.segments[range.lowerBound..<max(range.lowerBound, upTo)] where !hidden.contains(s.feature) {
                     byFeature[s.feature, default: Path()].move(to: point(s.x0, s.y0))
                     byFeature[s.feature, default: Path()].addLine(to: point(s.x1, s.y1))
+                }
+                defer {
+                    if let liveCut, liveCut < path.segments.count {
+                        let s = path.segments[liveCut]
+                        let tip = point(s.x1, s.y1)
+                        let glow = max(12, lineWidth * 4)
+                        context.fill(Path(ellipseIn: CGRect(x: tip.x - glow, y: tip.y - glow, width: glow * 2, height: glow * 2)),
+                                     with: .radialGradient(Gradient(colors: [Color(hex: 0xFF9430).opacity(0.75), .clear]),
+                                                           center: tip, startRadius: 0, endRadius: glow))
+                        let dot = max(4.5, lineWidth * 1.2)
+                        context.fill(Path(ellipseIn: CGRect(x: tip.x - dot, y: tip.y - dot, width: dot * 2, height: dot * 2)),
+                                     with: .color(Color(hex: 0xFFD27A)))
+                    }
                 }
                 for (feature, featurePath) in byFeature {
                     if feature == .travel {
@@ -324,7 +343,7 @@ struct GCodeLayerViewer: View {
     }
 
     private var plate3D: some View {
-        GCode3DView(path: path, bed: bed, maxLayer: isFollowing ? path.layers.count - 1 : layer, printedLayer: liveLayer, hidden: hidden,
+        GCode3DView(path: path, bed: bed, maxLayer: isFollowing ? path.layers.count - 1 : layer, liveSegment: liveSegment, hidden: hidden,
                     nozzleWidth: Float(profile?.extruder?.nozzleDiameter ?? 0.4) * 1.12, resetToken: resetToken)
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).strokeBorder(.white.opacity(0.05), lineWidth: 1))

@@ -12,8 +12,9 @@ struct GCode3DView: NSViewRepresentable {
     let path: GCodeToolpath
     let bed: CGRect
     let maxLayer: Int
-    /// While printing: layers above this are drawn as dark "not printed yet" ghosts.
-    var printedLayer: Int? = nil
+    /// While printing: the move the printer is on. Everything after it is drawn as a faint "not printed yet" ghost,
+    /// and a nozzle glides along the toolpath to it.
+    var liveSegment: Int? = nil
     let hidden: Set<GCodeToolpath.Feature>
     let nozzleWidth: Float
     /// Changing this resets the camera.
@@ -41,7 +42,7 @@ struct GCode3DView: NSViewRepresentable {
 
     private func apply(to renderer: GCodeRenderer, view: MTKView) {
         renderer.maxLayer = maxLayer
-        renderer.printedLayer = printedLayer ?? -1
+        renderer.setLive(target: liveSegment, view: view)
         renderer.hiddenMask = hidden.reduce(0) { $0 | (1 << UInt32($1.rawValue)) }
         renderer.halfWidth = nozzleWidth / 2
         view.needsDisplay = true
@@ -147,11 +148,26 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     private let bedPipeline: MTLRenderPipelineState
     private let depthState: MTLDepthStencilState
     private let ghostDepthState: MTLDepthStencilState
+    private let nozzlePipeline: MTLRenderPipelineState
+    private let nozzleBuffer: MTLBuffer?
+    private let nozzleVertexCount: Int
     private var segmentBuffer: MTLBuffer?
     private var segmentCount = 0
 
+    private var path = GCodeToolpath()
+    /// For each move, how many drawn (non-travel) moves come before it — maps a move to its instance in the buffer.
+    private var instancesBefore: [Int32] = []
+    /// Height of each move's layer.
+    private var segmentZ: [Float] = []
+
+    // Live printing: the nozzle eases from where it was to the latest reported move.
+    private var liveTarget: Int?
+    private var displayed: Double = 0
+    private var animationFrom: Double = 0
+    private var animationStart: TimeInterval = 0
+    private let animationDuration: TimeInterval = 0.6
+
     var maxLayer = 0
-    var printedLayer = -1
     var hiddenMask: UInt32 = 0
     var halfWidth: Float = 0.225
     private var bed = CGRect(x: 0, y: 0, width: 200, height: 200)
@@ -189,6 +205,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
             segmentPipeline = try pipeline("segmentVertex", "segmentFragment")
             ghostPipeline = try pipeline("segmentVertex", "ghostFragment", blended: true)
             bedPipeline = try pipeline("bedVertex", "bedFragment")
+            nozzlePipeline = try pipeline("nozzleVertex", "nozzleFragment")
         } catch {
             NSLog("OctoMac: Metal setup failed: \(error)")
             return nil
@@ -204,20 +221,32 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
               let ghostDepthState = device.makeDepthStencilState(descriptor: ghostDepth) else { return nil }
         self.depthState = depthState
         self.ghostDepthState = ghostDepthState
+        let mesh = NozzleMesh.make()
+        nozzleVertexCount = mesh.count / 10
+        nozzleBuffer = device.makeBuffer(bytes: mesh, length: mesh.count * 4, options: .storageModeShared)
         super.init()
     }
 
     /// Packs the printing moves (travel is never drawn in 3D) into one GPU buffer: x0, y0, x1, y1, z, height, layer, feature.
     func load(_ path: GCodeToolpath, bed: CGRect) {
         self.bed = bed
+        self.path = path
         var floats: [Float] = []
         floats.reserveCapacity(path.segments.count * 8)
+        instancesBefore = [Int32](repeating: 0, count: path.segments.count)
+        segmentZ = [Float](repeating: 0, count: path.segments.count)
         var previousZ: Float = 0
+        var drawn: Int32 = 0
         for (index, layer) in path.layers.enumerated() {
             let height = max(0.05, min(0.6, index == 0 ? layer.z : layer.z - previousZ))
             previousZ = layer.z
-            for s in path.segments(in: layer) where s.feature != .travel {
+            for i in layer.segments {
+                instancesBefore[i] = drawn
+                segmentZ[i] = layer.z
+                let s = path.segments[i]
+                guard s.feature != .travel else { continue }
                 floats.append(contentsOf: [s.x0, s.y0, s.x1, s.y1, layer.z, height, Float(index), Float(s.feature.rawValue)])
+                drawn += 1
             }
         }
         segmentCount = floats.count / 8
@@ -235,6 +264,33 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         modelCenter = SIMD3((b.minX + b.maxX) / 2, (b.minY + b.maxY) / 2, top / 2)
         modelRadius = max(20, simd_length(SIMD3(b.maxX - b.minX, b.maxY - b.minY, top)) / 2)
         resetCamera()
+    }
+
+    /// Points the nozzle at a new move. Small steps forward animate; big jumps (or going backwards) snap.
+    func setLive(target: Int?, view: MTKView) {
+        let wasLive = liveTarget != nil
+        guard let target, !path.segments.isEmpty else {
+            liveTarget = nil
+            if wasLive { view.isPaused = true; view.enableSetNeedsDisplay = true }
+            return
+        }
+        let clamped = min(target, path.segments.count - 1)
+        guard clamped != liveTarget else { return }
+        let jump = Double(clamped) - displayed
+        if !wasLive || jump < -2 || jump > 4000 {
+            displayed = Double(clamped)
+            animationFrom = displayed
+        } else {
+            animationFrom = displayed
+        }
+        animationStart = CACurrentMediaTime()
+        liveTarget = clamped
+        if !wasLive {
+            // While live, draw continuously so the nozzle glides.
+            view.enableSetNeedsDisplay = false
+            view.preferredFramesPerSecond = 60
+            view.isPaused = false
+        }
     }
 
     func resetCamera() {
@@ -288,16 +344,32 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         let aspect = Float(max(1, view.drawableSize.width) / max(1, view.drawableSize.height))
         let viewProj = perspective(fovy: fov, aspect: aspect, near: max(0.5, distance * 0.01), far: distance * 10 + 2000)
             * lookAt(eye: eye, target: target, up: SIMD3(0, 0, 1))
+        // Live position: ease along the toolpath towards the latest reported move.
+        var cutoff: Float = -1, printedLayer: Float = -1
+        var nozzle: SIMD3<Float>?
+        if let liveTarget {
+            let t = min(1, (CACurrentMediaTime() - animationStart) / animationDuration)
+            displayed = animationFrom + (Double(liveTarget) - animationFrom) * t
+            let index = max(0, min(path.segments.count - 1, Int(displayed)))
+            let fraction = Float(displayed - Double(index))
+            let s = path.segments[index]
+            nozzle = SIMD3(s.x0 + (s.x1 - s.x0) * fraction, s.y0 + (s.y1 - s.y0) * fraction, segmentZ[index])
+            // The current move counts as printed once the nozzle is on it.
+            cutoff = Float(instancesBefore[index]) + (s.feature == .travel ? 0 : 1)
+            printedLayer = Float(path.layerIndex(ofSegment: index) ?? 0)
+        }
+
         var uniforms = Self.flatten(viewProj)
         let e = eye
         uniforms += [e.x, e.y, e.z, halfWidth]
-        uniforms += [Float(maxLayer), Float(hiddenMask), Float(printedLayer), 0]
+        uniforms += [Float(maxLayer), Float(hiddenMask), cutoff, 0]
         uniforms += [Float(bed.minX), Float(bed.minY), Float(bed.maxX), Float(bed.maxY)]
+        uniforms += [printedLayer, nozzle?.x ?? 0, nozzle?.y ?? 0, nozzle?.z ?? 0]
         for feature in GCodeToolpath.Feature.allCases {
             let c = NSColor(feature.color).usingColorSpace(.sRGB) ?? .gray
             uniforms += [Float(c.redComponent), Float(c.greenComponent), Float(c.blueComponent), 1]
         }
-        while uniforms.count < 16 + 12 + 16 * 4 { uniforms.append(0) }
+        while uniforms.count < 16 + 16 + 16 * 4 { uniforms.append(0) }
 
         encoder.setDepthStencilState(depthState)
         encoder.setCullMode(.none)
@@ -312,7 +384,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         // printing, the moves still to come as a faint translucent ghost that doesn't hide the current layer.
         if let segmentBuffer, segmentCount > 0 {
             encoder.setVertexBuffer(segmentBuffer, offset: 0, index: 0)
-            for ghostPass in printedLayer >= 0 ? [false, true] : [false] {
+            for ghostPass in cutoff >= 0 ? [false, true] : [false] {
                 uniforms[16 + 4 + 3] = ghostPass ? 1 : 0
                 encoder.setRenderPipelineState(ghostPass ? ghostPipeline : segmentPipeline)
                 encoder.setDepthStencilState(ghostPass ? ghostDepthState : depthState)
@@ -320,6 +392,17 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
                 encoder.setFragmentBytes(uniforms, length: uniforms.count * 4, index: 1)
                 encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 36, instanceCount: segmentCount)
             }
+        }
+
+        // The nozzle, unless the slider has cut the view below the layer being printed.
+        if nozzle != nil, printedLayer <= Float(maxLayer), let nozzleBuffer {
+            uniforms[16 + 4 + 3] = 0
+            encoder.setRenderPipelineState(nozzlePipeline)
+            encoder.setDepthStencilState(depthState)
+            encoder.setVertexBuffer(nozzleBuffer, offset: 0, index: 0)
+            encoder.setVertexBytes(uniforms, length: uniforms.count * 4, index: 1)
+            encoder.setFragmentBytes(uniforms, length: uniforms.count * 4, index: 1)
+            encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: nozzleVertexCount)
         }
 
         encoder.endEncoding()
@@ -359,8 +442,9 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     struct Uniforms {
         float4x4 viewProj;
         float4 eyeHalf;     // eye.xyz, half the bead width
-        float4 params;      // max layer, hidden feature mask, printed layer (-1 when not printing), 1 in the ghost pass
+        float4 params;      // max layer, hidden feature mask, printed-move cutoff (-1 when not printing), 1 in the ghost pass
         float4 bed;         // minX, minY, maxX, maxY
+        float4 live;        // layer being printed, nozzle x, y, z
         float4 colors[16];
     };
 
@@ -382,7 +466,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         Segment s = segments[iid];
         VOut out;
         uint feature = uint(s.feature);
-        bool notPrintedYet = u.params.z >= 0 && s.layer > u.params.z + 0.5;
+        bool notPrintedYet = u.params.z >= 0 && float(iid) >= u.params.z;
         bool ghostPass = u.params.w > 0.5;
         if (s.layer > u.params.x + 0.5 || ((uint(u.params.y) >> feature) & 1u) != 0u || notPrintedYet != ghostPass) {
             out.position = float4(0, 0, 2, 1);   // outside the clip volume: not drawn
@@ -419,7 +503,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         out.normal = n;
         out.color = u.colors[feature].rgb;
         bool printing = u.params.z >= 0;
-        float highlight = printing ? u.params.z : u.params.x;
+        float highlight = printing ? u.live.x : u.params.x;
         out.top = abs(s.layer - highlight) < 0.5 ? 1.0 : 0.0;
         return out;
     }
@@ -442,6 +526,33 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         return float4(float3(0.80, 0.84, 0.90), 0.035 + rim * 0.05);
     }
 
+    // Nozzle: a small mesh (position, normal, colour, emissive) placed at the live position.
+    struct NozzleVertex { float px, py, pz, nx, ny, nz, r, g, b, emissive; };
+    struct NozzleOut { float4 position [[position]]; float3 world; float3 normal; float3 color; float emissive; };
+
+    vertex NozzleOut nozzleVertex(uint vid [[vertex_id]], const device NozzleVertex* vertices [[buffer(0)]],
+                                  constant Uniforms& u [[buffer(1)]]) {
+        NozzleVertex v = vertices[vid];
+        NozzleOut out;
+        out.world = float3(v.px, v.py, v.pz) + u.live.yzw + float3(0, 0, 0.05);
+        out.position = u.viewProj * float4(out.world, 1);
+        out.normal = float3(v.nx, v.ny, v.nz);
+        out.color = float3(v.r, v.g, v.b);
+        out.emissive = v.emissive;
+        return out;
+    }
+
+    fragment float4 nozzleFragment(NozzleOut in [[stage_in]], constant Uniforms& u [[buffer(1)]]) {
+        if (in.emissive > 0.5) { return float4(in.color, 1); }
+        float3 n = normalize(in.normal);
+        float3 toEye = normalize(u.eyeHalf.xyz - in.world);
+        float3 sun = normalize(float3(-0.35, -0.55, 0.75));
+        float diffuse = 0.55 * max(dot(n, sun), 0.0) + 0.30 * abs(dot(n, toEye));
+        float3 halfway = normalize(sun + toEye);
+        float specular = pow(max(dot(n, halfway), 0.0), 24.0) * 0.45;
+        return float4(in.color * (0.30 + diffuse) + specular, 1);
+    }
+
     struct BedOut { float4 position [[position]]; float2 world; };
 
     vertex BedOut bedVertex(uint vid [[vertex_id]], constant Uniforms& u [[buffer(1)]]) {
@@ -462,4 +573,61 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         return float4(color, 1);
     }
     """
+}
+
+/// A simple hot-end, modelled in millimetres with the nozzle tip at the origin: glowing tip, brass nozzle and hex,
+/// aluminium heater block, steel heat break and a finned heatsink.
+enum NozzleMesh {
+    static func make() -> [Float] {
+        var out: [Float] = []
+        func vertex(_ p: SIMD3<Float>, _ n: SIMD3<Float>, _ c: SIMD3<Float>, _ emissive: Float = 0) {
+            out += [p.x, p.y, p.z, n.x, n.y, n.z, c.x, c.y, c.z, emissive]
+        }
+        func rgb(_ hex: UInt32) -> SIMD3<Float> {
+            SIMD3(Float((hex >> 16) & 0xFF) / 255, Float((hex >> 8) & 0xFF) / 255, Float(hex & 0xFF) / 255)
+        }
+        /// A (possibly tapered) cylinder with caps, centred on (cx, cy).
+        func cylinder(_ r0: Float, _ r1: Float, _ z0: Float, _ z1: Float, sides: Int, _ color: SIMD3<Float>,
+                      cx: Float = 0, cy: Float = 0, emissive: Float = 0) {
+            for i in 0..<sides {
+                let a0 = Float(i) / Float(sides) * 2 * .pi, a1 = Float(i + 1) / Float(sides) * 2 * .pi
+                let d0 = SIMD2(cos(a0), sin(a0)), d1 = SIMD2(cos(a1), sin(a1))
+                let p00 = SIMD3(cx + d0.x * r0, cy + d0.y * r0, z0), p01 = SIMD3(cx + d1.x * r0, cy + d1.y * r0, z0)
+                let p10 = SIMD3(cx + d0.x * r1, cy + d0.y * r1, z1), p11 = SIMD3(cx + d1.x * r1, cy + d1.y * r1, z1)
+                let slope = (r0 - r1) / max(0.001, z1 - z0)
+                let n0 = simd_normalize(SIMD3(d0.x, d0.y, slope)), n1 = simd_normalize(SIMD3(d1.x, d1.y, slope))
+                vertex(p00, n0, color, emissive); vertex(p01, n1, color, emissive); vertex(p10, n0, color, emissive)
+                vertex(p10, n0, color, emissive); vertex(p01, n1, color, emissive); vertex(p11, n1, color, emissive)
+                vertex(SIMD3(cx, cy, z1), SIMD3(0, 0, 1), color, emissive); vertex(p10, SIMD3(0, 0, 1), color, emissive); vertex(p11, SIMD3(0, 0, 1), color, emissive)
+                vertex(SIMD3(cx, cy, z0), SIMD3(0, 0, -1), color, emissive); vertex(p01, SIMD3(0, 0, -1), color, emissive); vertex(p00, SIMD3(0, 0, -1), color, emissive)
+            }
+        }
+        func box(_ minP: SIMD3<Float>, _ maxP: SIMD3<Float>, _ color: SIMD3<Float>) {
+            let faces: [(SIMD3<Float>, [SIMD3<Float>])] = [
+                (SIMD3(0, 0, 1), [SIMD3(minP.x, minP.y, maxP.z), SIMD3(maxP.x, minP.y, maxP.z), SIMD3(maxP.x, maxP.y, maxP.z), SIMD3(minP.x, maxP.y, maxP.z)]),
+                (SIMD3(0, 0, -1), [SIMD3(minP.x, minP.y, minP.z), SIMD3(minP.x, maxP.y, minP.z), SIMD3(maxP.x, maxP.y, minP.z), SIMD3(maxP.x, minP.y, minP.z)]),
+                (SIMD3(1, 0, 0), [SIMD3(maxP.x, minP.y, minP.z), SIMD3(maxP.x, maxP.y, minP.z), SIMD3(maxP.x, maxP.y, maxP.z), SIMD3(maxP.x, minP.y, maxP.z)]),
+                (SIMD3(-1, 0, 0), [SIMD3(minP.x, minP.y, minP.z), SIMD3(minP.x, minP.y, maxP.z), SIMD3(minP.x, maxP.y, maxP.z), SIMD3(minP.x, maxP.y, minP.z)]),
+                (SIMD3(0, 1, 0), [SIMD3(minP.x, maxP.y, minP.z), SIMD3(minP.x, maxP.y, maxP.z), SIMD3(maxP.x, maxP.y, maxP.z), SIMD3(maxP.x, maxP.y, minP.z)]),
+                (SIMD3(0, -1, 0), [SIMD3(minP.x, minP.y, minP.z), SIMD3(maxP.x, minP.y, minP.z), SIMD3(maxP.x, minP.y, maxP.z), SIMD3(minP.x, minP.y, maxP.z)]),
+            ]
+            for (n, q) in faces {
+                vertex(q[0], n, color); vertex(q[1], n, color); vertex(q[2], n, color)
+                vertex(q[0], n, color); vertex(q[2], n, color); vertex(q[3], n, color)
+            }
+        }
+
+        let brass = rgb(0xD4A94A), aluminium = rgb(0xB9BFC7), steel = rgb(0x8C939C), heatsink = rgb(0x3C424C)
+        cylinder(0.75, 0.75, 0.0, 0.5, sides: 16, SIMD3(1.0, 0.58, 0.18), emissive: 1)  // hot tip
+        cylinder(0.6, 3.0, 0.4, 4.2, sides: 24, brass)                                    // nozzle cone
+        cylinder(4.0, 4.0, 4.2, 7.0, sides: 6, brass)                                     // hex
+        box(SIMD3(-11, -6, 7), SIMD3(5, 6, 18), aluminium)                                // heater block
+        cylinder(1.6, 1.6, 18, 22, sides: 16, steel)                                      // heat break
+        for fin in 0..<7 {                                                                // heatsink fins
+            let z = 22 + Float(fin) * 2.6
+            cylinder(8.5, 8.5, z, z + 1.2, sides: 24, heatsink)
+        }
+        cylinder(4.5, 4.5, 22, 40, sides: 20, heatsink)                                   // heatsink core
+        return out
+    }
 }

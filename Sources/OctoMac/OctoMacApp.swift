@@ -29,6 +29,8 @@ struct OctoMacApp: App {
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 1280, height: 860)
+        // Previews are quick to reopen and may refer to files that have since changed; don't restore them at launch.
+        .restorationBehavior(.disabled)
 
         Settings {
             SettingsView()

@@ -516,6 +516,7 @@ extension PrinterSession {
             "logs": .array(Self.demoTerminal.map(JSONValue.string)),
         ]
         if let payload = try? current.decode(CurrentPayload.self) { apply(payload) }
+        if printing { startDemoProgress() }
 
         // 30 minutes of history: heat-up then hold (printing) or ambient (ready).
         let now = Date.now
@@ -597,6 +598,21 @@ extension PrinterSession {
             ["name": "PETG", "extruder": 240, "bed": 85],
             ["name": "ABS", "extruder": 255, "bed": 100],
         ]]]
+    }
+
+    /// Demo mode: nudge the print forward every half second, like OctoPrint's pushes, so live views have motion.
+    private func startDemoProgress() {
+        Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(500))
+                guard let self, var progress = self.progress else { return }
+                let completion = (progress.completion ?? 0) + 0.03
+                progress.completion = completion > 99.5 ? 30 : completion
+                progress.printTime = (progress.printTime ?? 0) + 0.5
+                progress.printTimeLeft = max(0, (progress.printTimeLeft ?? 0) - 0.5)
+                self.progress = progress
+            }
+        }
     }
 
     private static func demoFile(_ name: String, folder: String?, time: Double?, length: Double?, size: Int, daysAgo: Double, success: Bool?, model: Bool = false) -> JSONValue {

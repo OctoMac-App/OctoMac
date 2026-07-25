@@ -54,6 +54,8 @@ public struct GCodeToolpath: Sendable {
     public struct Segment: Sendable {
         public var x0: Float, y0: Float, x1: Float, y1: Float
         public var feature: Feature
+        /// Byte offset of the G-code line that made this move.
+        public var offset: Int32
     }
 
     public struct Layer: Sendable {
@@ -75,6 +77,28 @@ public struct GCodeToolpath: Sendable {
     public init() {}
 
     public func segments(in layer: Layer) -> ArraySlice<Segment> { segments[layer.segments] }
+
+    /// The move being made at a byte position in the file (the last move starting at or before it).
+    public func segmentIndex(atFileOffset offset: Int) -> Int? {
+        guard !segments.isEmpty, offset >= Int(segments[0].offset) else { return segments.isEmpty ? nil : 0 }
+        var low = 0, high = segments.count - 1
+        while low < high {
+            let mid = (low + high + 1) / 2
+            if Int(segments[mid].offset) <= offset { low = mid } else { high = mid - 1 }
+        }
+        return low
+    }
+
+    /// The layer a move belongs to.
+    public func layerIndex(ofSegment index: Int) -> Int? {
+        guard !layers.isEmpty else { return nil }
+        var low = 0, high = layers.count - 1
+        while low < high {
+            let mid = (low + high + 1) / 2
+            if layers[mid].segments.lowerBound <= index { low = mid } else { high = mid - 1 }
+        }
+        return low
+    }
 
     /// The layer being printed at a byte position in the file (e.g. OctoPrint's `progress.filepos`).
     public func layerIndex(atFileOffset offset: Int) -> Int? {

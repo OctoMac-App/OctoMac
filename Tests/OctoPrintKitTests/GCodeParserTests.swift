@@ -65,6 +65,18 @@ struct GCodeParserTests {
         #expect(path.layerIndex(atFileOffset: text.utf8.count) == 2)
     }
 
+    @Test func moveForFileOffset() {
+        let text = "M83\nG1 Z0.2\nG1 X1 E1\nG1 X2 E1\nG1 Z0.4\nG1 X3 E1\n"
+        let path = parse(text)
+        let offsets = path.segments.map(\.offset)
+        #expect(offsets == offsets.sorted())
+        // Halfway into the "G1 X2" line is still the second move.
+        let second = Int(path.segments[1].offset)
+        #expect(path.segmentIndex(atFileOffset: second + 3) == 1)
+        #expect(path.layerIndex(ofSegment: 2) == 1)
+        #expect(path.segmentIndex(atFileOffset: 0) == 0)
+    }
+
     @Test func featureLabelsFromSeveralSlicers() {
         #expect(GCodeToolpath.Feature(label: "WALL-OUTER") == .outerWall)       // Cura
         #expect(GCodeToolpath.Feature(label: " Outer wall") == .outerWall)      // Orca / Bambu
