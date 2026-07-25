@@ -423,7 +423,7 @@ struct GCodeLayerViewer: View {
     private var layerBar: some View {
         HStack(spacing: 12) {
             stepButton("chevron.left", help: "Previous layer (←)") { _ = step(-1) }
-            // Continuous slider (rounded to whole layers) — a stepped one draws a tick per layer.
+            // Continuous slider (rounded to whole layers); a stepped one draws a tick per layer.
             Slider(value: Binding(get: { Double(layer) }, set: { following = false; layer = Int($0.rounded()) }),
                    in: 0...Double(max(1, path.layers.count - 1)))
                 .tint(Palette.accent)

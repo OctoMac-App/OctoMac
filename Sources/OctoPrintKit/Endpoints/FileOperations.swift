@@ -25,10 +25,12 @@ extension OctoPrintClient {
         to origin: FileOrigin = .local,
         folder: String? = nil,
         select: Bool = false,
-        print: Bool = false
+        print: Bool = false,
+        progress: (@Sendable (Double) -> Void)? = nil
     ) async throws -> UploadResponse {
         let data = try Data(contentsOf: fileURL)
-        return try await upload(data: data, filename: fileURL.lastPathComponent, to: origin, folder: folder, select: select, print: print)
+        return try await upload(data: data, filename: fileURL.lastPathComponent, to: origin, folder: folder, select: select, print: print,
+                                progress: progress)
     }
 
     @discardableResult
@@ -38,15 +40,18 @@ extension OctoPrintClient {
         to origin: FileOrigin = .local,
         folder: String? = nil,
         select: Bool = false,
-        print: Bool = false
+        print: Bool = false,
+        progress: (@Sendable (Double) -> Void)? = nil
     ) async throws -> UploadResponse {
         var form = MultipartForm()
         form.addFile(name: "file", filename: filename, contentType: "application/octet-stream", data: data)
         if let folder, !folder.isEmpty { form.addField(name: "path", value: folder) }
         if select { form.addField(name: "select", value: "true") }
         if print { form.addField(name: "print", value: "true") }
-        let request = makeRequest(.post, "api/files/\(origin.rawValue)", body: form.encoded(), contentType: form.contentType)
-        let (responseData, _) = try await send(request)
+        let body = form.encoded()
+        var request = makeRequest(.post, "api/files/\(origin.rawValue)")
+        request.setValue(form.contentType, forHTTPHeaderField: "Content-Type")
+        let (responseData, _) = try await upload(request, body: body, progress: progress ?? { _ in })
         return (try? Self.decoder.decode(UploadResponse.self, from: responseData)) ?? UploadResponse()
     }
 

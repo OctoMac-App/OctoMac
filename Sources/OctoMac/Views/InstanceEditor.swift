@@ -63,13 +63,13 @@ struct InstanceEditor: View {
         .frame(width: 560, height: 680)
         .background(Palette.extrusion)
         .onAppear(perform: load)
-        .confirmationDialog("Remove \(existing?.name ?? "this printer")?", isPresented: $confirmRemove) {
-            Button("Remove printer", role: .destructive) {
+        .sheet(isPresented: $confirmRemove) {
+            ConfirmSheet(symbol: "minus.circle", title: "Remove \(existing?.name ?? "this printer")?",
+                         message: "OctoMac forgets this server and its API key. Nothing changes on the printer, and you can add it again later.",
+                         confirmTitle: "Remove printer") {
                 if let existing { store.remove(existing.id) }
                 dismiss()
             }
-        } message: {
-            Text("OctoMac forgets this server and its API key. Nothing changes on the printer.")
         }
     }
 

@@ -4,7 +4,7 @@ import Foundation
 // Free-form areas return `JSONValue`; promote to typed models as the UI grows into them.
 
 extension OctoPrintClient {
-    // MARK: Settings — https://docs.octoprint.org/en/main/api/settings.html
+    // MARK: Settings: https://docs.octoprint.org/en/main/api/settings.html
 
     public func settings() async throws -> JSONValue {
         try await get("api/settings")
@@ -20,7 +20,7 @@ extension OctoPrintClient {
         try await post("api/settings/apikey", body: CommandBody())
     }
 
-    // MARK: System — https://docs.octoprint.org/en/main/api/system.html
+    // MARK: System: https://docs.octoprint.org/en/main/api/system.html
 
     public func systemCommands() async throws -> SystemCommandList {
         try await get("api/system/commands")
@@ -30,7 +30,7 @@ extension OctoPrintClient {
         try await post("api/system/commands/\(command.source)/\(command.action)", body: CommandBody())
     }
 
-    // MARK: Printer profiles — https://docs.octoprint.org/en/main/api/printerprofiles.html
+    // MARK: Printer profiles: https://docs.octoprint.org/en/main/api/printerprofiles.html
 
     public func printerProfiles() async throws -> [PrinterProfile] {
         let list: PrinterProfileList = try await get("api/printerprofiles")
@@ -55,7 +55,7 @@ extension OctoPrintClient {
         try await delete("api/printerprofiles/\(id)")
     }
 
-    // MARK: Timelapse — https://docs.octoprint.org/en/main/api/timelapse.html
+    // MARK: Timelapse: https://docs.octoprint.org/en/main/api/timelapse.html
 
     public func timelapses(includeUnrendered: Bool = true) async throws -> TimelapseList {
         try await get("api/timelapse", query: [URLQueryItem(name: "unrendered", value: includeUnrendered ? "true" : "false")])
@@ -77,7 +77,7 @@ extension OctoPrintClient {
         try await post("api/timelapse", body: config)
     }
 
-    // MARK: Logs — https://docs.octoprint.org/en/main/bundledplugins/logging.html
+    // MARK: Logs: https://docs.octoprint.org/en/main/bundledplugins/logging.html
 
     public func logFiles() async throws -> LogFileList {
         try await get("plugin/logging/logs")
@@ -87,7 +87,7 @@ extension OctoPrintClient {
         try await delete("plugin/logging/logs/\(name)")
     }
 
-    // MARK: Access control — https://docs.octoprint.org/en/main/api/access.html
+    // MARK: Access control: https://docs.octoprint.org/en/main/api/access.html
 
     public func permissions() async throws -> JSONValue { try await get("api/access/permissions") }
     public func groups() async throws -> JSONValue { try await get("api/access/groups") }
@@ -108,22 +108,22 @@ extension OctoPrintClient {
         try await delete("api/access/users/\(name)")
     }
 
-    // MARK: Slicing — https://docs.octoprint.org/en/main/api/slicing.html
+    // MARK: Slicing: https://docs.octoprint.org/en/main/api/slicing.html
 
     public func slicers() async throws -> JSONValue { try await get("api/slicing") }
 
-    // MARK: Languages — https://docs.octoprint.org/en/main/api/languages.html
+    // MARK: Languages: https://docs.octoprint.org/en/main/api/languages.html
 
     public func languages() async throws -> JSONValue { try await get("api/languages") }
 
-    // MARK: Util — https://docs.octoprint.org/en/main/api/util.html
+    // MARK: Util: https://docs.octoprint.org/en/main/api/util.html
 
     /// Lets OctoPrint test a path/url/server on our behalf (`POST /api/util/test`).
     public func test(_ body: JSONValue) async throws -> JSONValue {
         try await post("api/util/test", body: body)
     }
 
-    // MARK: Wizard — https://docs.octoprint.org/en/main/api/wizard.html
+    // MARK: Wizard: https://docs.octoprint.org/en/main/api/wizard.html
 
     public func wizard() async throws -> JSONValue { try await get("setup/wizard") }
 

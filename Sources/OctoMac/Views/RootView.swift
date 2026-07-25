@@ -46,7 +46,7 @@ struct RootView: View {
                     PrinterStage(session: session, editor: $editor)
                         .id(ObjectIdentifier(session))
                 } else {
-                    EmptyStage { editor = .new }
+                    EmptyStage(firstRun: store.instances.isEmpty) { editor = .new }
                 }
             }
         }
@@ -216,15 +216,23 @@ struct PrinterTile: View {
 }
 
 struct EmptyStage: View {
+    /// No printers added yet: greet rather than ask for a selection.
+    var firstRun = false
     let add: () -> Void
 
     var body: some View {
         VStack(spacing: 16) {
             BrandLockup(markSize: 72)
                 .padding(.bottom, 8)
-            Text("No printer selected").font(Typeface.title).foregroundStyle(Palette.paper)
-            Text("Pick a printer on the left, or add an OctoPrint server.").font(Typeface.body).foregroundStyle(Palette.dust)
-            Button("Add a printer", action: add).buttonStyle(.plate)
+            Text(firstRun ? "Welcome to OctoMac" : "No printer selected")
+                .font(Typeface.title).foregroundStyle(Palette.paper)
+            Text(firstRun
+                 ? "Add your first OctoPrint server to get started. You'll need its address, like octopi.local."
+                 : "Pick a printer on the left, or add an OctoPrint server.")
+                .font(Typeface.body).foregroundStyle(Palette.dust)
+                .multilineTextAlignment(.center)
+            Button(firstRun ? "Add your first printer" : "Add a printer", action: add).buttonStyle(.plate)
         }
+        .frame(maxWidth: 420)
     }
 }

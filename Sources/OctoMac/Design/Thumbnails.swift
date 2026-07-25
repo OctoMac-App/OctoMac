@@ -84,7 +84,11 @@ struct SlicedName {
     let tags: [String]
 
     init(_ filename: String) {
-        let base = (filename as NSString).deletingPathExtension
+        // Drop the extension, and any repeat of it ("part.gcode.gcode" from an earlier download/re-upload).
+        var base = filename
+        while ["gcode", "gco", "g", "bgcode"].contains((base as NSString).pathExtension.lowercased()) {
+            base = (base as NSString).deletingPathExtension
+        }
         let parts = base.split(separator: "_").map(String.init)
         if parts.count >= 5,
            parts[parts.count - 4].range(of: #"^\d+(\.\d+)?mm$"#, options: .regularExpression) != nil,

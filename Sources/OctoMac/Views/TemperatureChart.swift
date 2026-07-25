@@ -298,7 +298,13 @@ enum SaveFile {
     static func present(data: Data, name: String, type: UTType) {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = name
-        panel.allowedContentTypes = [type]
+        // Only constrain to types macOS knows. For others (e.g. .gcode) the panel would append its own extension
+        // to a name that already has one, saving "part.gcode.gcode".
+        if !type.isDynamic {
+            panel.allowedContentTypes = [type]
+        }
+        panel.allowsOtherFileTypes = true
+        panel.isExtensionHidden = false
         panel.canCreateDirectories = true
         panel.begin { response in
             guard response == .OK, let url = panel.url else { return }

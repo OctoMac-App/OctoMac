@@ -201,7 +201,6 @@ struct FilesPage: View {
     @State private var search = ""
     @State private var importing = false
     @State private var dropTargeted = false
-    @State private var newFolder = ""
     @State private var creatingFolder = false
     @State private var pendingDelete: FileEntry?
     @State private var selectedFile: FileEntry.ID?
@@ -298,18 +297,19 @@ struct FilesPage: View {
         .fileImporter(isPresented: $importing, allowedContentTypes: Self.uploadTypes, allowsMultipleSelection: true) { result in
             if case .success(let urls) = result { session.upload(urls, folder: folderPath) }
         }
-        .alert("New folder", isPresented: $creatingFolder) {
-            TextField("Name", text: $newFolder)
-            Button("Create") { session.createFolder(newFolder, in: folderPath); newFolder = "" }
-            Button("Cancel", role: .cancel) { newFolder = "" }
-        }
-        .confirmationDialog("Delete “\(pendingDelete?.displayName ?? "")”?", isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } })) {
-            Button("Delete", role: .destructive) {
-                if let file = pendingDelete { session.delete(file) }
-                pendingDelete = nil
+        .sheet(isPresented: $creatingFolder) {
+            NameSheet(title: "New folder", placeholder: "Folder name", confirmTitle: "Create folder") { name in
+                session.createFolder(name, in: folderPath)
             }
-        } message: {
-            Text(pendingDelete?.isFolder == true ? "The folder and everything in it will be deleted from the printer." : "The file will be deleted from the printer.")
+        }
+        .sheet(item: $pendingDelete) { file in
+            ConfirmSheet(symbol: "trash", title: file.isFolder ? "Delete this folder?" : "Delete this file?",
+                         message: file.isFolder
+                            ? "The folder and everything in it will be deleted from the printer. This can't be undone."
+                            : "The file will be deleted from the printer. This can't be undone.",
+                         confirmTitle: "Delete", onConfirm: { session.delete(file) }) {
+                FileSummaryCard(file: file, client: session.client, tint: filament)
+            }
         }
     }
 
@@ -633,10 +633,10 @@ struct MachinePage: View {
         }
         .onAppear(perform: syncConnection)
         .onChange(of: session.connection) { syncConnection() }
-        .confirmationDialog(pendingCommand?.name ?? "", isPresented: Binding(get: { pendingCommand != nil }, set: { if !$0 { pendingCommand = nil } }), presenting: pendingCommand) { command in
-            Button(command.name, role: .destructive) { session.run(command) }
-        } message: { command in
-            Text(command.confirm ?? "")
+        .sheet(item: $pendingCommand) { command in
+            ConfirmSheet(symbol: symbol(for: command.action), tint: Palette.warm, title: "\(command.name)?",
+                         message: (command.confirm ?? "") + " Any print in progress will stop.",
+                         confirmTitle: command.name, onConfirm: { session.run(command) })
         }
     }
 

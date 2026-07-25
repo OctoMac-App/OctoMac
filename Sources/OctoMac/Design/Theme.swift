@@ -276,7 +276,7 @@ extension View {
     func plateField() -> some View { modifier(PlateField()) }
 }
 
-/// Small section heading used inside panels — sentence case, quiet.
+/// Small section heading used inside panels: sentence case, quiet.
 struct PanelHeading: View {
     let title: String
     var detail: String?

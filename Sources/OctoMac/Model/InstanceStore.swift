@@ -82,13 +82,8 @@ final class InstanceStore {
            let decoded = try? JSONDecoder().decode([Instance].self, from: data)
         {
             instances = decoded
-        } else {
-            // First launch: pre-populate the known servers; they still need authorising.
-            instances = [
-                Instance(name: "OctoPrint 1", baseURL: URL(string: "https://octoprint1.dir.to/")!),
-                Instance(name: "OctoPrint 2", baseURL: URL(string: "https://octoprint2.dir.to/")!),
-            ]
         }
+        // On first launch there are no printers; the window invites you to add one.
         // Give older/seeded entries an identity colour.
         for index in instances.indices where instances[index].filamentHex == nil {
             instances[index].filamentHex = suggestedFilamentHex()
@@ -105,8 +100,8 @@ final class InstanceStore {
 
     private func loadDemo() {
         let scenarios: [(String, String, PrinterSession.DemoScenario)] = [
-            ("OctoPrint 1", "https://octoprint1.dir.to/", .printing),
-            ("OctoPrint 2", "https://octoprint2.dir.to/", .ready),
+            ("Workshop MK4", "http://octopi-workshop.local/", .printing),
+            ("Studio Ender", "http://octopi-studio.local/", .ready),
             ("Garage Voron", "http://voron.local/", .locked),
         ]
         for (index, (name, url, scenario)) in scenarios.enumerated() {

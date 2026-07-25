@@ -27,7 +27,7 @@ struct Instance: Codable, Identifiable, Hashable, Sendable {
 
 /// API keys, stored in `~/Library/Application Support/OctoMac/api-keys.dat`: JSON sealed with AES-GCM under a
 /// key compiled into the app, with owner-only (0600) permissions. This keeps keys out of plain text (backups,
-/// grep, screenshots) but isn't protection against someone who has the app binary — an accepted trade-off for
+/// grep, screenshots) but isn't protection against someone who has the app binary, an accepted trade-off for
 /// printer API keys. Deliberately not the Keychain: ad-hoc signed builds trigger a Keychain prompt after every rebuild.
 enum CredentialStore {
     static let fileURL: URL = {

@@ -22,10 +22,7 @@ struct LayerStack: View {
                 for index in 0..<layers {
                     // index 0 is the bottom layer
                     let y = size.height - CGFloat(index + 1) * pitch + (pitch - thickness) / 2
-                    // Slight width wobble so it reads as extruded plastic, not a bar chart.
-                    var generator = SeededGenerator(seed: UInt64(index) &* 2654435761)
-                    let inset = CGFloat.random(in: 0...3, using: &generator)
-                    let rect = CGRect(x: inset, y: y, width: size.width - inset * 2, height: thickness)
+                    let rect = CGRect(x: 0, y: y, width: size.width, height: thickness)
                     let path = Path(roundedRect: rect, cornerRadius: thickness / 2)
 
                     if index < filled {

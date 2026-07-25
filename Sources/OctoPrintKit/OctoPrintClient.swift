@@ -99,6 +99,23 @@ public struct OctoPrintClient: Sendable {
         return (data, http)
     }
 
+    /// Uploads a request body, reporting how much has been sent (0–1) as it goes.
+    @discardableResult
+    public func upload(_ request: URLRequest, body: Data, progress: @escaping @Sendable (Double) -> Void) async throws -> (Data, HTTPURLResponse) {
+        let delegate = UploadProgressDelegate(onProgress: progress)
+        let (data, response) = try await session.upload(for: request, from: body, delegate: delegate)
+        guard let http = response as? HTTPURLResponse else { throw OctoPrintError.invalidResponse }
+        guard (200..<300).contains(http.statusCode) else {
+            let message = Self.errorMessage(from: data)
+            switch http.statusCode {
+            case 401, 403: throw OctoPrintError.unauthorized(message: message)
+            case 409: throw OctoPrintError.conflict(message: message)
+            default: throw OctoPrintError.http(status: http.statusCode, message: message)
+            }
+        }
+        return (data, http)
+    }
+
     public func get<T: Decodable>(_ path: String, query: [URLQueryItem] = [], as type: T.Type = T.self) async throws -> T {
         let (data, _) = try await send(makeRequest(.get, path, query: query))
         return try Self.decode(T.self, from: data)
@@ -150,3 +167,17 @@ public struct OctoPrintClient: Sendable {
 
 /// Body for the many `{"command": "..."}`-style endpoints.
 public typealias CommandBody = [String: JSONValue]
+
+final class UploadProgressDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let onProgress: @Sendable (Double) -> Void
+
+    init(onProgress: @escaping @Sendable (Double) -> Void) {
+        self.onProgress = onProgress
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64,
+                    totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        guard totalBytesExpectedToSend > 0 else { return }
+        onProgress(Double(totalBytesSent) / Double(totalBytesExpectedToSend))
+    }
+}

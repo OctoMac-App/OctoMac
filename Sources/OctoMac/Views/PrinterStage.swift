@@ -42,6 +42,15 @@ struct PrinterStage: View {
             .padding(.bottom, 28)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
+        .overlay(alignment: .bottomTrailing) {
+            if !session.uploads.isEmpty {
+                UploadPanel(session: session)
+                    .padding(.trailing, 32)
+                    .padding(.bottom, 36)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.snappy, value: session.uploads.isEmpty)
         .overlay(alignment: .bottom) {
             if let error = session.error {
                 ErrorToast(message: error.message) { session.error = nil }
@@ -423,6 +432,78 @@ struct ConnectionButton: View {
         .fixedSize()
         .help(session.isPrinterConnected ? "Printer connected (\(session.connection?.current.port ?? "serial"))" : "Printer not connected")
         .disabled(session.link != .online)
+    }
+}
+
+/// Uploads in progress, bottom right of the printer view.
+struct UploadPanel: View {
+    let session: PrinterSession
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: "arrow.up.circle.fill").foregroundStyle(Palette.accent)
+                Text(heading).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                Spacer()
+            }
+            ForEach(session.uploads) { item in
+                UploadRow(item: item) { session.dismissUpload(item.id) }
+            }
+        }
+        .padding(16)
+        .frame(width: 360)
+        .machined(radius: 16, fill: Palette.extrusionHi)
+        .shadow(color: .black.opacity(0.4), radius: 20, y: 8)
+    }
+
+    private var heading: String {
+        let active = session.uploads.filter { $0.state == .uploading }.count
+        if active == 0 { return session.uploads.contains { if case .failed = $0.state { true } else { false } } ? "Upload problem" : "Uploaded" }
+        return active == 1 ? "Uploading 1 file" : "Uploading \(active) files"
+    }
+}
+
+struct UploadRow: View {
+    let item: UploadItem
+    let dismiss: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 8) {
+                Text(SlicedName(item.filename).title)
+                    .font(Typeface.body).foregroundStyle(Palette.paper)
+                    .lineLimit(1).truncationMode(.middle)
+                Spacer(minLength: 6)
+                switch item.state {
+                case .uploading:
+                    Text("\(Int((item.fraction * 100).rounded()))%").font(Typeface.number(13)).foregroundStyle(Palette.dust)
+                case .done:
+                    Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.accent)
+                case .failed:
+                    Button(action: dismiss) { Image(systemName: "xmark").font(.system(size: 10, weight: .bold)) }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Palette.faint)
+                        .help("Dismiss")
+                }
+            }
+            switch item.state {
+            case .failed(let reason):
+                Text(reason).font(Typeface.caption).foregroundStyle(Palette.hot).lineLimit(2)
+            default:
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(Palette.graphite)
+                        Capsule().fill(Palette.accent).frame(width: max(4, geo.size.width * item.fraction))
+                    }
+                }
+                .frame(height: 5)
+                .animation(.linear(duration: 0.2), value: item.fraction)
+                if let size = item.size, item.state == .uploading {
+                    Text("\(Fmt.bytes(Int(Double(size) * item.fraction))) of \(Fmt.bytes(size))")
+                        .font(Typeface.caption).foregroundStyle(Palette.faint)
+                }
+            }
+        }
     }
 }
 

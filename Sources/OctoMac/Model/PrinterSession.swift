@@ -51,6 +51,16 @@ struct ChartEvent: Identifiable, Hashable {
     let kind: Kind
 }
 
+/// A file being uploaded to the printer, for the upload panel.
+struct UploadItem: Identifiable, Equatable {
+    enum State: Equatable { case uploading, done, failed(String) }
+    let id = UUID()
+    let filename: String
+    let size: Int?
+    var fraction: Double = 0
+    var state: State = .uploading
+}
+
 struct ErrorBanner: Identifiable, Equatable {
     let id = UUID()
     let message: String
@@ -97,6 +107,8 @@ final class PrinterSession {
     private(set) var settings: JSONValue?
 
     var error: ErrorBanner?
+    /// Uploads in progress (and briefly after they finish), shown in the upload panel.
+    private(set) var uploads: [UploadItem] = []
 
     /// The printer's camera stream. Owned here (not by a view) so it stays connected while other printers are shown.
     let camera = MJPEGStreamer()
@@ -462,14 +474,45 @@ final class PrinterSession {
     }
 
     func upload(_ urls: [URL], folder: String? = nil, print: Bool = false) {
-        perform { [client, weak self] in
-            for url in urls {
+        let items = urls.map { url in
+            UploadItem(filename: url.lastPathComponent,
+                       size: (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize)
+        }
+        uploads.append(contentsOf: items)
+        let client = self.client
+        let handlers = items.map { uploadProgressHandler($0.id) }
+        Task { [weak self] in
+            for ((url, item), onProgress) in zip(zip(urls, items), handlers) {
                 let scoped = url.startAccessingSecurityScopedResource()
                 defer { if scoped { url.stopAccessingSecurityScopedResource() } }
-                try await client.upload(fileURL: url, folder: folder, select: print, print: print && urls.count == 1)
+                do {
+                    try await client.upload(fileURL: url, folder: folder, select: print, print: print && urls.count == 1,
+                                            progress: onProgress)
+                    self?.updateUpload(item.id) { $0.fraction = 1; $0.state = .done }
+                } catch {
+                    self?.updateUpload(item.id) { $0.state = .failed(error.localizedDescription) }
+                }
             }
             await self?.refreshFiles()
+            // Leave finished uploads on screen briefly so the result is seen; failures stay until dismissed.
+            try? await Task.sleep(for: .seconds(2.5))
+            self?.uploads.removeAll { item in items.contains { $0.id == item.id } && item.state == .done }
         }
+    }
+
+    private func uploadProgressHandler(_ id: UUID) -> @Sendable (Double) -> Void {
+        { [weak self] fraction in
+            Task { @MainActor in self?.updateUpload(id) { $0.fraction = fraction } }
+        }
+    }
+
+    private func updateUpload(_ id: UUID, _ change: (inout UploadItem) -> Void) {
+        guard let index = uploads.firstIndex(where: { $0.id == id }) else { return }
+        change(&uploads[index])
+    }
+
+    func dismissUpload(_ id: UUID) {
+        uploads.removeAll { $0.id == id }
     }
 
     func createFolder(_ name: String, in parent: String?) {
@@ -490,7 +533,7 @@ extension PrinterSession {
     func loadDemo(_ scenario: DemoScenario) {
         guard scenario != .locked else { return }
         link = .online
-        user = "roger"
+        user = "maker"
         version = try? (["api": "0.1", "server": "1.10.3", "text": "OctoPrint 1.10.3"] as JSONValue).decode(VersionInfo.self)
 
         let printing = scenario == .printing

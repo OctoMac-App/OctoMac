@@ -155,7 +155,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     private var segmentCount = 0
 
     private var path = GCodeToolpath()
-    /// For each move, how many drawn (non-travel) moves come before it — maps a move to its instance in the buffer.
+    /// For each move, how many drawn (non-travel) moves come before it. Maps a move to its instance in the buffer.
     private var instancesBefore: [Int32] = []
     /// Height of each move's layer.
     private var segmentZ: [Float] = []
