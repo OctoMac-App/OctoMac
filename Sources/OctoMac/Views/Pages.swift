@@ -247,6 +247,12 @@ struct FilesPage: View {
                 Divider().overlay(Palette.edge)
                 ScrollView {
                     LazyVStack(spacing: 2) {
+                        if !folder.isEmpty && search.isEmpty {
+                            UpRow(parentName: folder.count > 1 ? folder[folder.count - 2] : "All files", tint: filament) { goUp() }
+                                .modifier(FolderDropTarget(enabled: true, folderPath: folder.dropLast().joined(separator: "/"), tint: filament) { payload in
+                                    moveDropped(payload, to: folder.dropLast().joined(separator: "/"))
+                                })
+                        }
                         ForEach(rows) { file in
                             FileRow(file: file, client: session.client, filament: filament, showPath: !search.isEmpty, canPrint: session.canControl,
                                     selected: selectedFile == file.id,
@@ -269,6 +275,16 @@ struct FilesPage: View {
                         }
                     }
                     .padding(8)
+                    .frame(maxWidth: .infinity, alignment: .top)
+                }
+                // Right-click on empty space (rows have their own menus).
+                .contextMenu {
+                    Button("New folder…") { creatingFolder = true }
+                    Button("Upload files…") { importing = true }
+                    if !folder.isEmpty {
+                        Divider()
+                        Button("Back to \(folder.count > 1 ? folder[folder.count - 2] : "All files")") { goUp() }
+                    }
                 }
                 .overlay {
                     if rows.isEmpty {
@@ -326,8 +342,32 @@ struct FilesPage: View {
         }
     }
 
+    private func goUp() {
+        guard !folder.isEmpty else { return }
+        folder.removeLast()
+        search = ""
+    }
+
     private var breadcrumbs: some View {
         HStack(spacing: 6) {
+            Button(action: goUp) {
+                Image(systemName: "chevron.left")
+                    .font(.system(size: 13, weight: .bold))
+                    .frame(width: 30, height: 30)
+                    .background(Circle().fill(folder.isEmpty ? Color.clear : Palette.extrusion))
+                    .overlay(Circle().strokeBorder(folder.isEmpty ? Color.clear : Palette.edge, lineWidth: 1))
+                    .contentShape(Circle())
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(folder.isEmpty ? Palette.faint.opacity(0.4) : Palette.paper)
+            .disabled(folder.isEmpty)
+            .keyboardShortcut(.upArrow, modifiers: .command)
+            .help("Back to the previous folder (⌘↑ or ⌘[)")
+            .background {
+                // Second shortcut for the same action.
+                Button("", action: goUp).keyboardShortcut("[", modifiers: .command).opacity(0).allowsHitTesting(false)
+            }
+            .padding(.trailing, 4)
             crumb("All files", depth: 0)
             ForEach(Array(folder.enumerated()), id: \.offset) { index, name in
                 Image(systemName: "chevron.right").font(.system(size: 10, weight: .bold)).foregroundStyle(Palette.faint)
@@ -869,5 +909,35 @@ struct FolderDropTarget: ViewModifier {
         } else {
             content
         }
+    }
+}
+
+/// The first row inside a folder: goes back up a level (and accepts drops to move files up).
+struct UpRow: View {
+    let parentName: String
+    let tint: Color
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                Image(systemName: "arrow.turn.up.left")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundStyle(Palette.dust)
+                    .frame(width: 44, height: 44)
+                    .background(RoundedRectangle(cornerRadius: 9, style: .continuous).fill(Palette.graphite))
+                Text("Back to \(parentName)")
+                    .font(Typeface.text(14, .demibold))
+                    .foregroundStyle(hovering ? Palette.paper : Palette.dust)
+                Spacer()
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(hovering ? Palette.extrusionHi : .clear))
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
     }
 }

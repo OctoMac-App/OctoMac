@@ -15,7 +15,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Live updates.** OctoMac listens to OctoPrint's live connection, so temperatures, progress and events appear the moment they happen. No waiting, no refreshing.
 - **A clear overview.** See the webcam (with a cinema mode and one-click snapshots), the current print with time left and when it'll finish, and a temperature chart you can hover over and export as PNG or SVG.
 - **Print in a couple of clicks.** Browse your files as thumbnails, filter by name, open one to check its print time, filament and history, then press Print.
-- **Easy uploads.** Drag G-code onto the Files tab and watch the progress as it uploads.
+- **Easy uploads and tidy folders.** Drag G-code onto the Files tab to upload it, and drag files onto folders to organise them.
 - **G-code preview.** See exactly what will be printed, layer by layer or as a 3D model you can spin around.
 - **Watch prints live.** While printing, the 3D preview follows along, with a little animated nozzle laying down the current layer.
 - **Full control.** Heat up with your saved presets, move the print head, extrude filament, adjust fan and speed, send G-code from the console, and manage the connection and the Raspberry Pi.
@@ -74,7 +74,7 @@ OctoMac works with a standard OctoPrint install, and it gets better with a few p
 | Application Keys (built in) | Lets you connect a printer by approving OctoMac in your browser, with no copying and pasting of API keys. | Supported |
 | Classic Webcam (built in) | Shows your camera stream, including your flip and rotate settings. | Supported |
 | Logging (built in) | Used for log file access. | Supported |
-| [Prusa MMU](https://plugins.octoprint.org/plugins/prusammu/) | Asks which filament slot to use when you start a print on a printer with a Prusa Multi Material Unit, just like OctoPrint's own prompt. | Coming soon |
+| [Prusa MMU](https://plugins.octoprint.org/plugins/prusammu/) | When a print starts on a printer with a Prusa Multi Material Unit, asks which filament to use, showing your filament names and colours and a countdown. You can answer from any screen, or press the slot's number. The loaded filament also shows next to the printer's name. | Supported |
 
 Don't have a plugin installed? No problem. OctoMac simply skips that feature. For example, without Slicer Thumbnails your files show a tidy icon instead of a picture.
 

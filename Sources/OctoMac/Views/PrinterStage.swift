@@ -107,6 +107,14 @@ struct StageHeader: View {
                     if let profile = session.currentProfile?.name, session.link == .online {
                         Text(profile).font(Typeface.body).foregroundStyle(Palette.faint)
                     }
+                    if let mmu = session.mmu, let tool = session.mmuTool,
+                       let filament = mmu.filaments.first(where: { $0.index == tool }) {
+                        HStack(spacing: 5) {
+                            Circle().fill(filament.color.flatMap(Color.init(hexString:)) ?? Palette.dust).frame(width: 9, height: 9)
+                            Text(mmu.label(for: filament)).font(Typeface.body).foregroundStyle(Palette.dust)
+                        }
+                        .help("Loaded in the MMU: slot \(mmu.number(for: filament))")
+                    }
                 }
             }
 

@@ -83,3 +83,37 @@ struct DecodingTests {
         #expect(event.payload["name"]?.stringValue == "x.gcode")
     }
 }
+
+struct PrusaMMUTests {
+    @Test func settingsFromOctoPrint() throws {
+        let settings: JSONValue = ["plugins": ["prusammu": [
+            "filament": [
+                ["color": "#808080", "enabled": true, "id": 1, "name": "Urban Grey PETG"],
+                ["color": "", "enabled": true, "id": 2, "name": ""],
+                ["color": "#000000", "enabled": false, "id": 3, "name": "Jet Black PETG"],
+            ],
+            "filamentCount": 3, "timeout": 30, "indexAtZero": false, "enablePrompt": true,
+        ]]]
+        let mmu = try #require(PrusaMMU.Settings(settings: settings))
+        #expect(mmu.filaments.map(\.index) == [0, 1])
+        #expect(mmu.label(for: mmu.filaments[0]) == "Urban Grey PETG")
+        #expect(mmu.label(for: mmu.filaments[1]) == "Filament 2")
+        #expect(mmu.filaments[0].color == "#808080")
+        #expect(mmu.filaments[1].color == nil)
+        #expect(mmu.timeout == 30)
+        #expect(PrusaMMU.Settings(settings: ["plugins": [:]]) == nil)
+    }
+
+    @Test func messages() {
+        #expect(PrusaMMU.Message(["action": "show"]) == .showPrompt)
+        #expect(PrusaMMU.Message(["action": "close"]) == .closePrompt)
+        #expect(PrusaMMU.Message(["action": "nav", "tool": "2", "prusaVersion": "MK3"]) == .state(tool: 2, prusaVersion: "MK3"))
+        #expect(PrusaMMU.Message(["action": "debug", "msg": "x"]) == nil)
+    }
+
+    @Test func selectBody() throws {
+        let body: CommandBody = ["command": "select", "choice": JSONValue(2)]
+        let encoded = String(decoding: try JSONEncoder().encode(body), as: UTF8.self)
+        #expect(encoded.contains("\"choice\":2"))
+    }
+}

@@ -107,6 +107,15 @@ final class PrinterSession {
     private(set) var settings: JSONValue?
 
     var error: ErrorBanner?
+
+    // Prusa MMU plugin
+    /// Set while the plugin is waiting for a filament choice; the date is when it asked.
+    private(set) var mmuPromptSince: Date?
+    /// The slot the MMU has loaded, if known.
+    private(set) var mmuTool: Int?
+    private(set) var mmuPrusaVersion: String?
+    /// Demo sessions have no server to talk to.
+    private var isDemoSession = false
     /// Uploads in progress (and briefly after they finish), shown in the upload panel.
     private(set) var uploads: [UploadItem] = []
 
@@ -208,6 +217,12 @@ final class PrinterSession {
         return search(files)
     }
 
+    /// The Prusa MMU plugin's filament list and options, when the plugin is installed.
+    var mmu: PrusaMMU.Settings? { PrusaMMU.Settings(settings: settings) }
+
+    /// The MK3 family can't skip the prompt (the printer then asks on its own screen); later models can.
+    var mmuCanSkip: Bool { mmuPrusaVersion.map { $0 != "MK3" } ?? false }
+
     var currentProfile: PrinterProfile? {
         profiles.first { $0.id == connection?.current.printerProfile } ?? profiles.first { $0.current == true } ?? profiles.first
     }
@@ -301,7 +316,10 @@ final class PrinterSession {
         case .connected(let user):
             link = .online
             self.user = user
-            Task { await refreshAll() }
+            Task {
+                await refreshAll()
+                if mmu != nil { try? await client.refreshMMUState() }
+            }
         case .disconnected(let reason):
             if link != .needsAPIKey { link = .offline(reason) }
         case .message(let message):
@@ -318,6 +336,8 @@ final class PrinterSession {
             terminal = Array(payload.logs.suffix(Self.terminalLimit))
         case .event(let event):
             handle(event)
+        case .plugin(let id, let data) where id == PrusaMMU.pluginID:
+            handleMMU(data)
         default:
             break
         }
@@ -341,6 +361,28 @@ final class PrinterSession {
             terminal.append(contentsOf: payload.logs)
             if terminal.count > Self.terminalLimit { terminal.removeFirst(terminal.count - Self.terminalLimit) }
         }
+    }
+
+    private func handleMMU(_ data: JSONValue) {
+        switch PrusaMMU.Message(data) {
+        case .showPrompt:
+            mmuPromptSince = .now
+        case .closePrompt:
+            mmuPromptSince = nil
+        case .state(let tool, let version):
+            mmuTool = tool
+            if let version, !version.isEmpty { mmuPrusaVersion = version }
+        case nil:
+            break
+        }
+    }
+
+    /// Answers the MMU prompt with a slot, or `nil` to skip.
+    func chooseMMUFilament(_ index: Int?) {
+        mmuPromptSince = nil
+        if let index { mmuTool = index }
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.selectMMUFilament(index) }
     }
 
     private func handle(_ event: ServerEvent) {
@@ -648,11 +690,29 @@ extension PrinterSession {
         ]
         systemCommands = (try? systemJSON.decode(SystemCommandList.self))?.all ?? []
 
-        settings = ["temperature": ["profiles": [
+        isDemoSession = true
+        if printing {
+            mmuTool = 1
+            mmuPrusaVersion = "MK3"
+            if CommandLine.arguments.contains("--demo-mmu") { mmuPromptSince = .now }
+        }
+        settings = [
+            "plugins": printing ? ["prusammu": [
+                "filament": [
+                    ["color": "#808080", "enabled": true, "id": 1, "name": "Urban Grey PETG"],
+                    ["color": "#FFD60A", "enabled": true, "id": 2, "name": "Mango Yellow PETG"],
+                    ["color": "#AEC89F", "enabled": true, "id": 3, "name": "Pistachio PETG"],
+                    ["color": "#1C1C1C", "enabled": true, "id": 4, "name": "Jet Black PETG"],
+                    ["color": "#008080", "enabled": true, "id": 5, "name": "Ocean Blue PETG"],
+                ],
+                "filamentCount": 5, "timeout": 30, "indexAtZero": false, "enablePrompt": true,
+            ]] : [:],
+            "temperature": ["profiles": [
             ["name": "PLA", "extruder": 215, "bed": 60],
             ["name": "PETG", "extruder": 240, "bed": 85],
             ["name": "ABS", "extruder": 255, "bed": 100],
-        ]]]
+        ]],
+        ]
     }
 
     /// Demo mode: nudge the print forward every half second, like OctoPrint's pushes, so live views have motion.

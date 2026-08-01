@@ -51,6 +51,15 @@ struct RootView: View {
             }
         }
         .ignoresSafeArea()
+        // The Prusa MMU plugin is waiting for a filament choice on some printer: ask, whichever printer is on screen.
+        .overlay {
+            if let session = store.instances.compactMap({ store.sessions[$0.id] }).first(where: { $0.mmuPromptSince != nil }),
+               let since = session.mmuPromptSince, let settings = session.mmu {
+                MMUPromptOverlay(session: session, settings: settings, since: since)
+                    .id(since)
+            }
+        }
+        .animation(.easeOut(duration: 0.2), value: store.instances.compactMap { store.sessions[$0.id]?.mmuPromptSince })
         .sheet(item: $editor) { target in
             InstanceEditor(target: target) { selection = $0 }
         }
