@@ -110,3 +110,7 @@ The OctoPrint API is documented at [docs.octoprint.org](https://docs.octoprint.o
 ## Thanks
 
 OctoMac stands on the shoulders of the wonderful [OctoPrint](https://octoprint.org) project and its community of plugin authors. OctoMac is an independent project and isn't affiliated with OctoPrint.
+
+## Licence
+
+OctoMac is open source under the [MIT Licence](LICENSE).
