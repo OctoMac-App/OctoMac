@@ -253,6 +253,13 @@ struct FilesPage: View {
                                     openFile: { session.select(file, print: false) },
                                     preview: { openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path)) },
                                     delete: { pendingDelete = file })
+                                // Drag a file or folder onto a folder (or a folder name in the path above) to move it there.
+                                .draggable(FileDrag.payload(for: file, instance: session.instance.id)) {
+                                    FileDragPreview(file: file, client: session.client, tint: filament)
+                                }
+                                .modifier(FolderDropTarget(enabled: file.isFolder, folderPath: file.path, tint: filament) { payload in
+                                    moveDropped(payload, to: file.path)
+                                })
                         }
                     }
                     .padding(8)
@@ -324,12 +331,26 @@ struct FilesPage: View {
     }
 
     private func crumb(_ title: String, depth: Int) -> some View {
-        Button { folder = Array(folder.prefix(depth)); search = "" } label: {
+        let path = folder.prefix(depth).joined(separator: "/")
+        return Button { folder = Array(folder.prefix(depth)); search = "" } label: {
             Text(title)
                 .font(Typeface.text(17, .demibold))
                 .foregroundStyle(depth == folder.count ? Palette.paper : Palette.dust)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
         }
         .buttonStyle(.plain)
+        // Dropping on a parent in the path moves the item up to it.
+        .modifier(FolderDropTarget(enabled: depth < folder.count, folderPath: path, tint: filament, radius: 8) { payload in
+            moveDropped(payload, to: path)
+        })
+    }
+
+    private func moveDropped(_ payload: String, to destination: String) -> Bool {
+        guard let path = FileDrag.path(from: payload, instance: session.instance.id),
+              let file = flatten(session.files).first(where: { $0.path == path }) else { return false }
+        session.move(file, toFolder: destination)
+        return true
     }
 
     private func flatten(_ files: [FileEntry]) -> [FileEntry] {
@@ -782,5 +803,65 @@ struct MachinePage: View {
         port = connection.current.port ?? connection.options.portPreference ?? ""
         baudrate = connection.current.baudrate ?? connection.options.baudratePreference ?? 0
         profile = connection.current.printerProfile ?? connection.options.printerProfilePreference ?? ""
+    }
+}
+
+/// Drag-and-drop payloads for moving files between folders. Tagged with the printer, so dropping on another
+/// printer's file list does nothing.
+enum FileDrag {
+    static let prefix = "octomac-file:"
+
+    static func payload(for file: FileEntry, instance: UUID) -> String { "\(prefix)\(instance.uuidString):\(file.path)" }
+
+    /// The dragged file's path, if the drag came from this printer's file list.
+    static func path(from payload: String, instance: UUID) -> String? {
+        let tag = "\(prefix)\(instance.uuidString):"
+        guard payload.hasPrefix(tag) else { return nil }
+        let path = String(payload.dropFirst(tag.count))
+        return path.isEmpty ? nil : path
+    }
+}
+
+/// What follows the pointer while dragging a file.
+struct FileDragPreview: View {
+    let file: FileEntry
+    let client: OctoPrintClient
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 10) {
+            FileThumbnail(file: file, client: client, tint: tint, radius: 8).frame(width: 36, height: 36)
+            Text(file.isFolder ? file.displayName : SlicedName(file.displayName).title)
+                .font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+        }
+        .padding(8)
+        .padding(.trailing, 6)
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Palette.extrusionHi))
+    }
+}
+
+/// Highlights a folder while something is dragged over it, and moves the dropped item into it.
+struct FolderDropTarget: ViewModifier {
+    let enabled: Bool
+    let folderPath: String
+    let tint: Color
+    var radius: CGFloat = 12
+    let onDrop: (String) -> Bool
+    @State private var targeted = false
+
+    func body(content: Content) -> some View {
+        if enabled {
+            content
+                .background(RoundedRectangle(cornerRadius: radius, style: .continuous).fill(targeted ? tint.opacity(0.18) : .clear))
+                .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous)
+                    .strokeBorder(tint, style: StrokeStyle(lineWidth: 1.5, dash: [5, 4]))
+                    .opacity(targeted ? 1 : 0))
+                .dropDestination(for: String.self) { items, _ in
+                    guard let payload = items.first else { return false }
+                    return onDrop(payload)
+                } isTargeted: { targeted = $0 }
+        } else {
+            content
+        }
     }
 }

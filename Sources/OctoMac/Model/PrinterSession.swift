@@ -515,6 +515,18 @@ final class PrinterSession {
         uploads.removeAll { $0.id == id }
     }
 
+    /// Moves a file or folder into `folder` ("" for the top level).
+    func move(_ file: FileEntry, toFolder folder: String) {
+        let currentParent = file.path.split(separator: "/").dropLast().joined(separator: "/")
+        guard currentParent != folder else { return }
+        // A folder can't go inside itself.
+        guard !(file.isFolder && (folder == file.path || folder.hasPrefix(file.path + "/"))) else { return }
+        perform { [client, weak self] in
+            try await client.move(file.path, to: folder, origin: file.origin)
+            await self?.refreshFiles()
+        }
+    }
+
     func createFolder(_ name: String, in parent: String?) {
         perform { [client, weak self] in
             try await client.createFolder(name, in: parent)
