@@ -32,7 +32,7 @@ struct PrinterStage: View {
                     switch tab {
                     case .overview: OverviewPage(session: session, filament: filament, tab: $tab)
                     case .move: MovePage(session: session)
-                    case .files: FilesPage(session: session, filament: filament)
+                    case .files: FilesPage(session: session, filament: filament) { tab = .overview }
                     case .console: ConsolePage(session: session)
                     case .machine: MachinePage(session: session, filament: filament)
                     }

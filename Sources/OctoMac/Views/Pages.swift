@@ -197,6 +197,8 @@ struct FilesPage: View {
     @Environment(\.openWindow) private var openWindow
     let session: PrinterSession
     let filament: Color
+    /// Called after a file is opened, so the stage can switch to the Overview where it's ready to print.
+    var onOpened: () -> Void = {}
     @State private var folder: [String] = []
     @State private var search = ""
     @State private var importing = false
@@ -250,7 +252,11 @@ struct FilesPage: View {
                                     selected: selectedFile == file.id,
                                     select: { selectedFile = file.id },
                                     open: { folder.append(file.name) },
-                                    openFile: { session.select(file, print: false) },
+                                    openFile: {
+                                        guard session.canControl else { return }
+                                        session.select(file, print: false)
+                                        onOpened()
+                                    },
                                     preview: { openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path)) },
                                     delete: { pendingDelete = file })
                                 // Drag a file or folder onto a folder (or a folder name in the path above) to move it there.
