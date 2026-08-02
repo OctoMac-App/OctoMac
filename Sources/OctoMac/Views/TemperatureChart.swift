@@ -217,7 +217,10 @@ struct TemperatureChart: View {
             AxisMarks(values: .automatic(desiredCount: 6)) { value in
                 AxisValueLabel {
                     if let date = value.as(Date.self) {
-                        Text(date, format: .dateTime.hour().minute()).font(Typeface.number(11)).foregroundStyle(Palette.faint)
+                        // With only a few minutes of history, ticks are closer than a minute apart.
+                        let short = (data.timeRange.map { $0.upperBound.timeIntervalSince($0.lowerBound) } ?? 0) < 6 * 60
+                        Text(date, format: short ? .dateTime.hour().minute().second() : .dateTime.hour().minute())
+                            .font(Typeface.number(11)).foregroundStyle(Palette.faint)
                     }
                 }
             }

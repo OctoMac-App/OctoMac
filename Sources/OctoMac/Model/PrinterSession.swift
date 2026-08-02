@@ -270,7 +270,19 @@ final class PrinterSession {
             camera.stop()
         }
     }
-    func refreshProfiles() async { profiles = await attempt { try await client.printerProfiles() } ?? profiles }
+    func refreshProfiles() async {
+        profiles = await attempt { try await client.printerProfiles() } ?? profiles
+        // Drop duplicate tool readings we may already have taken in before the profile arrived.
+        heaters = heaters.filter { !isDuplicateTool($0.key) }
+        temperatureHistory.removeAll { isDuplicateTool($0.heater) }
+    }
+
+    /// Printers whose extruders share one nozzle (e.g. a Prusa MMU, set up as 5 extruders) report the same
+    /// hotend once per extruder. Only the first is real.
+    private func isDuplicateTool(_ key: String) -> Bool {
+        guard currentProfile?.extruder?.sharedNozzle == true, case .tool(let index) = HeaterKind(key: key) else { return false }
+        return index > 0
+    }
 
     func refreshSystemCommands() async {
         // Not every user may run system commands; don't nag about it.
@@ -302,7 +314,7 @@ final class PrinterSession {
         guard let status = try? await client.printerStatus(history: true, limit: 600) else { return }
         if let state = status.state { self.state = state }
         if let temperature = status.temperature {
-            heaters = temperature.current.heaters
+            heaters = temperature.current.heaters.filter { !isDuplicateTool($0.key) }
             appendTemperatures(temperature.history)
         }
     }
@@ -355,7 +367,9 @@ final class PrinterSession {
         if let job = payload.job { self.job = job }
         if let progress = payload.progress { self.progress = progress }
         if payload.state?.flags.closedOrError != true { currentZ = payload.currentZ }
-        if let latest = payload.temps.last { heaters.merge(latest.heaters) { _, new in new } }
+        if let latest = payload.temps.last {
+            heaters.merge(latest.heaters.filter { !isDuplicateTool($0.key) }) { _, new in new }
+        }
         appendTemperatures(payload.temps)
         if !payload.logs.isEmpty {
             terminal.append(contentsOf: payload.logs)
@@ -408,7 +422,7 @@ final class PrinterSession {
         for snapshot in snapshots {
             let time = snapshot.time ?? .now
             if let last = temperatureHistory.last?.time, time <= last { continue }
-            for (heater, data) in snapshot.heaters {
+            for (heater, data) in snapshot.heaters where !isDuplicateTool(heater) {
                 temperatureHistory.append(TemperaturePoint(time: time, heater: heater, actual: data.actual, target: data.target))
             }
         }
