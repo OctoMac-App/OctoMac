@@ -102,6 +102,7 @@ final class InstanceStore {
         let scenarios: [(String, String, PrinterSession.DemoScenario)] = [
             ("Workshop MK4", "http://octopi-workshop.local/", .printing),
             ("Studio Ender", "http://octopi-studio.local/", .ready),
+            ("Lab XL", "http://octopi-lab.local/", .toolchanger),
             ("Garage Voron", "http://voron.local/", .locked),
         ]
         for (index, (name, url, scenario)) in scenarios.enumerated() {

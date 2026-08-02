@@ -62,7 +62,7 @@ Try OctoMac without a printer:
 open build/OctoMac.app --args --demo
 ```
 
-Demo mode shows three pretend printers, including one that's busy printing, so you can explore every screen safely.
+Demo mode shows four pretend printers, including one that's busy printing and a four-hotend tool-changer, so you can explore every screen safely.
 
 ## Plugin support
 

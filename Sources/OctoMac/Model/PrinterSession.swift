@@ -596,7 +596,7 @@ final class PrinterSession {
 // MARK: - Demo data (`--demo`)
 
 extension PrinterSession {
-    enum DemoScenario { case printing, ready, locked }
+    enum DemoScenario { case printing, ready, toolchanger, locked }
 
     func loadDemo(_ scenario: DemoScenario) {
         guard scenario != .locked else { return }
@@ -605,6 +605,7 @@ extension PrinterSession {
         version = try? (["api": "0.1", "server": "1.10.3", "text": "OctoPrint 1.10.3"] as JSONValue).decode(VersionInfo.self)
 
         let printing = scenario == .printing
+        let toolCount = scenario == .toolchanger ? 4 : 1
         let current: JSONValue = [
             "state": [
                 "text": printing ? "Printing" : "Operational",
@@ -644,7 +645,19 @@ extension PrinterSession {
                 tool = TemperatureData(actual: 24.2 + sin(t / 90) * 0.3, target: 0)
                 bed = TemperatureData(actual: 23.1 + sin(t / 120) * 0.2, target: 0)
             }
-            snapshots.append(TemperatureSnapshot(time: now.addingTimeInterval(-Double(step)), heaters: ["tool0": tool, "bed": bed]))
+            var readings = ["tool0": tool, "bed": bed]
+            // Tool-changer demo: four independent hotends, two of them heating.
+            for index in 1..<toolCount {
+                let target: Double = index == 1 ? 240 : 0
+                let actual = target > 0 ? 24 + 214 * min(1, t / 300) + sin(t / 17) * 0.5 : 24.5 + Double(index) * 0.4 + sin(t / 70) * 0.3
+                readings["tool\(index)"] = TemperatureData(actual: actual, target: target)
+            }
+            if toolCount > 1 {
+                readings["tool0"] = TemperatureData(actual: 24 + 186 * min(1, t / 280) + sin(t / 13) * 0.6, target: 210)
+                readings["bed"] = TemperatureData(actual: 23 + 47 * min(1, t / 500), target: 70)
+                readings["chamber"] = TemperatureData(actual: 23 + 17 * min(1, t / 900), target: 40)
+            }
+            snapshots.append(TemperatureSnapshot(time: now.addingTimeInterval(-Double(step)), heaters: readings))
         }
         temperatureHistory = []
         appendTemperatures(snapshots)
@@ -687,10 +700,12 @@ extension PrinterSession {
         connection = try? connectionJSON.decode(ConnectionInfo.self)
 
         let profileJSON: JSONValue = [
-            "id": "_default", "name": printing ? "Prusa MK4" : "Ender 3 V3", "model": printing ? "Original Prusa MK4" : "Creality Ender 3 V3",
-            "heatedBed": true, "heatedChamber": false,
+            "id": "_default",
+            "name": .string(toolCount > 1 ? "Prusa XL 4-tool" : printing ? "Prusa MK4" : "Ender 3 V3"),
+            "model": .string(toolCount > 1 ? "Original Prusa XL" : printing ? "Original Prusa MK4" : "Creality Ender 3 V3"),
+            "heatedBed": true, "heatedChamber": .bool(toolCount > 1),
             "volume": ["width": printing ? 250 : 220, "depth": 210, "height": printing ? 220 : 250, "formFactor": "rectangular", "origin": "lowerleft"],
-            "extruder": ["count": 1, "nozzleDiameter": 0.4, "sharedNozzle": false],
+            "extruder": ["count": JSONValue(toolCount), "nozzleDiameter": 0.4, "sharedNozzle": false],
         ]
         profiles = (try? profileJSON.decode(PrinterProfile.self)).map { [$0] } ?? []
 

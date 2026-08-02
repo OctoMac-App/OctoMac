@@ -53,45 +53,88 @@ struct HeatTile: View {
     let session: PrinterSession
     let key: String
     let data: TemperatureData
+    /// A single-row version for printers with several heaters.
+    var compact = false
     @State private var editing = false
     @State private var hovering = false
 
     private var kind: HeaterKind { HeaterKind(key: key) }
 
+    private var setTargetBadge: some View {
+        // Always visible so the tile reads as clickable.
+        Label("Set target", systemImage: "slider.horizontal.3")
+            .labelStyle(.titleAndIcon)
+            .font(Typeface.text(11, .demibold))
+            .foregroundStyle(hovering ? Palette.graphite : Palette.accent)
+            .padding(.horizontal, 9)
+            .padding(.vertical, 4)
+            .background(Capsule().fill(hovering ? Palette.accent : Palette.accent.opacity(0.14)))
+    }
+
+    private var targetText: some View {
+        Group {
+            if let target = data.target, target > 0 {
+                Text("to \(Int(target))°").font(Typeface.number(compact ? 13 : 17)).foregroundStyle(Palette.dust)
+            } else {
+                Text("off").font(Typeface.text(compact ? 12 : 13, .medium)).foregroundStyle(Palette.faint)
+            }
+        }
+    }
+
+    private var fullBody: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                Image(systemName: kind.symbol).foregroundStyle(kind.color)
+                Text(kind.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
+                Spacer()
+                setTargetBadge
+            }
+            HStack(alignment: .firstTextBaseline, spacing: 6) {
+                Text(data.actual.map { String(format: "%.0f", $0) } ?? "–")
+                    .font(Typeface.number(44))
+                    .foregroundStyle(Palette.paper)
+                    .contentTransition(.numericText(value: data.actual ?? 0))
+                Text("°C").font(Typeface.number(16)).foregroundStyle(Palette.faint)
+                Spacer()
+                targetText
+            }
+            HeatBar(actual: data.actual, target: data.target, tint: kind.color)
+        }
+        .padding(16)
+    }
+
+    private var compactBody: some View {
+        VStack(spacing: 7) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Image(systemName: kind.symbol).font(.system(size: 11)).foregroundStyle(kind.color)
+                Text(kind.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).lineLimit(1)
+                Spacer(minLength: 4)
+                Text(data.actual.map { String(format: "%.0f°", $0) } ?? "–")
+                    .font(Typeface.number(22))
+                    .foregroundStyle(Palette.paper)
+                    .contentTransition(.numericText(value: data.actual ?? 0))
+                targetText.frame(minWidth: 48, alignment: .trailing)
+                Image(systemName: "slider.horizontal.3")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(hovering ? Palette.graphite : Palette.accent)
+                    .frame(width: 24, height: 22)
+                    .background(Capsule().fill(hovering ? Palette.accent : Palette.accent.opacity(0.14)))
+                    .help("Set target")
+            }
+            HeatBar(actual: data.actual, target: data.target, tint: kind.color)
+                .frame(height: 4)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+    }
+
     var body: some View {
         Button { editing = true } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Image(systemName: kind.symbol)
-                        .foregroundStyle(kind.color)
-                    Text(kind.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
-                    Spacer()
-                    // Always visible so the tile reads as clickable.
-                    Label("Set target", systemImage: "slider.horizontal.3")
-                        .font(Typeface.text(11, .demibold))
-                        .foregroundStyle(hovering ? Palette.graphite : Palette.accent)
-                        .padding(.horizontal, 9)
-                        .padding(.vertical, 4)
-                        .background(Capsule().fill(hovering ? Palette.accent : Palette.accent.opacity(0.14)))
-                }
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(data.actual.map { String(format: "%.0f", $0) } ?? "–")
-                        .font(Typeface.number(44))
-                        .foregroundStyle(Palette.paper)
-                        .contentTransition(.numericText(value: data.actual ?? 0))
-                    Text("°C").font(Typeface.number(16)).foregroundStyle(Palette.faint)
-                    Spacer()
-                    if let target = data.target, target > 0 {
-                        Text("to \(Int(target))°").font(Typeface.number(17)).foregroundStyle(Palette.dust)
-                    } else {
-                        Text("off").font(Typeface.text(13, .medium)).foregroundStyle(Palette.faint)
-                    }
-                }
-                HeatBar(actual: data.actual, target: data.target, tint: kind.color)
+            Group {
+                if compact { compactBody } else { fullBody }
             }
-            .padding(16)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            .machined(radius: 14, fill: hovering ? Palette.extrusionHi : Palette.extrusion)
+            .frame(maxWidth: .infinity, maxHeight: compact ? nil : .infinity, alignment: .topLeading)
+            .machined(radius: compact ? 12 : 14, fill: hovering ? Palette.extrusionHi : Palette.extrusion)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)

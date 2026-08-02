@@ -38,9 +38,22 @@ struct OverviewPage: View {
                 HStack(alignment: .top, spacing: 20) {
                     VStack(spacing: 14) {
                         PresetPanel(session: session)
-                        ForEach(sortedHeaterKeys, id: \.self) { key in
-                            HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData())
-                                .frame(maxHeight: .infinity)
+                        if sortedHeaterKeys.count > 2 {
+                            // Several heaters (tool-changers, chambers): compact rows that scroll if they don't fit.
+                            ScrollView {
+                                VStack(spacing: 8) {
+                                    ForEach(sortedHeaterKeys, id: \.self) { key in
+                                        HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData(), compact: true)
+                                    }
+                                }
+                            }
+                            .scrollIndicators(.automatic)
+                            .frame(maxHeight: .infinity, alignment: .top)
+                        } else {
+                            ForEach(sortedHeaterKeys, id: \.self) { key in
+                                HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData())
+                                    .frame(maxHeight: .infinity)
+                            }
                         }
                         if sortedHeaterKeys.isEmpty {
                             Text("Temperatures appear once the printer is connected.")
@@ -752,10 +765,14 @@ struct ChartTooltip: View {
 /// Chart series colour per heater name, shared by the chart and its header readings.
 func seriesColor(_ name: String) -> Color {
     switch name {
-    case "Bed": Palette.cold
-    case "Chamber": Palette.ready
-    case "Hotend": Palette.hot
-    default: name.hasPrefix("Hotend") ? Palette.warm : Palette.dust
+    case "Bed": return Palette.cold
+    case "Chamber": return Palette.ready
+    case "Hotend": return Palette.hot
+    default:
+        // "Hotend 2", "Hotend 3", ...: each gets its own colour.
+        guard name.hasPrefix("Hotend "), let number = Int(name.dropFirst(7)) else { return Palette.dust }
+        let extra = [Palette.warm, Color(hex: 0xE86A92), Color(hex: 0x8F7CFF), Color(hex: 0xF29E4C), Color(hex: 0x4FD1C5)]
+        return extra[(number - 2) % extra.count]
     }
 }
 
