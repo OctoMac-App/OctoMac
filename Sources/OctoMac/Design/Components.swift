@@ -62,8 +62,8 @@ struct HeatTile: View {
         Button { editing = true } label: {
             VStack(alignment: .leading, spacing: 10) {
                 HStack {
-                    Image(systemName: kind == .bed ? "square.3.layers.3d.bottom.filled" : kind == .chamber ? "cube.transparent" : "flame.fill")
-                        .foregroundStyle(Palette.heat(data.actual))
+                    Image(systemName: kind.symbol)
+                        .foregroundStyle(kind.color)
                     Text(kind.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
                     Spacer()
                     // Always visible so the tile reads as clickable.
@@ -87,7 +87,7 @@ struct HeatTile: View {
                         Text("off").font(Typeface.text(13, .medium)).foregroundStyle(Palette.faint)
                     }
                 }
-                HeatBar(actual: data.actual, target: data.target)
+                HeatBar(actual: data.actual, target: data.target, tint: kind.color)
             }
             .padding(16)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -104,10 +104,11 @@ struct HeatTile: View {
     }
 }
 
-/// Track from 0–300°C with the actual temperature as a heat-coloured fill and the target as a notch.
+/// Track from 0–300°C with the actual temperature as a fill in the heater's chart colour and the target as a notch.
 struct HeatBar: View {
     var actual: Double?
     var target: Double?
+    var tint: Color = Palette.hot
     var scale: Double = 300
 
     var body: some View {
@@ -116,7 +117,7 @@ struct HeatBar: View {
             ZStack(alignment: .leading) {
                 Capsule().fill(Palette.graphite)
                 Capsule()
-                    .fill(LinearGradient(colors: [Palette.cold, Palette.heat(actual)], startPoint: .leading, endPoint: .trailing))
+                    .fill(LinearGradient(colors: [tint.opacity(0.55), tint], startPoint: .leading, endPoint: .trailing))
                     .frame(width: max(6, width * min(1, (actual ?? 0) / scale)))
                 if let target, target > 0 {
                     Rectangle()
@@ -150,11 +151,11 @@ struct HeatEditor: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("\(kind.displayName) target").font(Typeface.subhead).foregroundStyle(Palette.paper)
             HStack(alignment: .firstTextBaseline) {
-                Text("\(Int(value))").font(Typeface.number(40)).foregroundStyle(Palette.heat(value))
+                Text("\(Int(value))").font(Typeface.number(40)).foregroundStyle(kind.color)
                 Text("°C").font(Typeface.number(16)).foregroundStyle(Palette.faint)
             }
             Slider(value: $value, in: 0...(kind == .bed ? 120 : kind == .chamber ? 80 : 300), step: 5)
-                .tint(Palette.heat(value))
+                .tint(kind.color)
             HStack(spacing: 6) {
                 ForEach(presets, id: \.self) { preset in
                     Chip(title: "\(Int(preset))°", selected: value == preset) { value = preset }
@@ -165,7 +166,7 @@ struct HeatEditor: View {
                     .buttonStyle(.plateQuiet)
                 Spacer()
                 Button("Heat to \(Int(value))°") { session.setTarget(value, heater: key); done() }
-                    .buttonStyle(.plate(Palette.heat(value)))
+                    .buttonStyle(.plate(kind.color))
                     .keyboardShortcut(.defaultAction)
             }
         }
@@ -173,6 +174,19 @@ struct HeatEditor: View {
         .frame(width: 320)
         .background(Palette.extrusion)
         .onAppear { value = current > 0 ? current : (presets.first ?? 0) }
+    }
+}
+
+extension HeaterKind {
+    /// Each heater's colour, shared by the chart, the temperature tiles, the sidebar and the menu bar.
+    var color: Color { seriesColor(displayName) }
+
+    var symbol: String {
+        switch self {
+        case .bed: "square.3.layers.3d.bottom.filled"
+        case .chamber: "cube.transparent"
+        default: "flame.fill"
+        }
     }
 }
 

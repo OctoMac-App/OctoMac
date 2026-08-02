@@ -188,8 +188,8 @@ struct PrinterTile: View {
                     }
                 } else if let tool = session.heaters["tool0"]?.actual, mood != .offline, mood != .locked {
                     HStack(spacing: 10) {
-                        temp("flame.fill", tool)
-                        if let bed = session.heaters["bed"]?.actual { temp("square.3.layers.3d.bottom.filled", bed) }
+                        temp(.tool(0), tool)
+                        if let bed = session.heaters["bed"]?.actual { temp(.bed, bed) }
                     }
                 }
             }
@@ -216,9 +216,9 @@ struct PrinterTile: View {
         }
     }
 
-    private func temp(_ symbol: String, _ value: Double) -> some View {
+    private func temp(_ kind: HeaterKind, _ value: Double) -> some View {
         HStack(spacing: 3) {
-            Image(systemName: symbol).font(.system(size: 9)).foregroundStyle(Palette.heat(value))
+            Image(systemName: kind.symbol).font(.system(size: 9)).foregroundStyle(kind.color)
             Text("\(Int(value))°").font(Typeface.number(12)).foregroundStyle(Palette.dust)
         }
     }

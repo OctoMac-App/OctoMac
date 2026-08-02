@@ -148,8 +148,8 @@ struct MenuPrinterCard: View {
                         ForEach(session.heaters.filter { HeaterKind(key: $0.key).isHeater && $0.value.actual != nil }.keys.sorted(), id: \.self) { key in
                             let value = session.heaters[key]?.actual
                             HStack(spacing: 3) {
-                                Image(systemName: HeaterKind(key: key) == .bed ? "square.3.layers.3d.bottom.filled" : "flame.fill")
-                                    .font(.system(size: 9)).foregroundStyle(Palette.heat(value))
+                                Image(systemName: HeaterKind(key: key).symbol)
+                                    .font(.system(size: 9)).foregroundStyle(HeaterKind(key: key).color)
                                 Text(value.map { "\(Int($0))°" } ?? "–").font(Typeface.number(12)).foregroundStyle(Palette.dust)
                             }
                         }

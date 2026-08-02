@@ -755,7 +755,7 @@ func seriesColor(_ name: String) -> Color {
     case "Bed": Palette.cold
     case "Chamber": Palette.ready
     case "Hotend": Palette.hot
-    default: Palette.warm
+    default: name.hasPrefix("Hotend") ? Palette.warm : Palette.dust
     }
 }
 
