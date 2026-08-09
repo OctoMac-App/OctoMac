@@ -9,8 +9,9 @@ final class InstanceStore {
     private(set) var instances: [Instance] = []
     private(set) var sessions: [UUID: PrinterSession] = [:]
 
-    /// `--demo` on the command line shows canned printers and never touches the network, stored keys or saved settings.
-    let isDemo = CommandLine.arguments.contains("--demo")
+    /// Demo mode shows canned printers and never touches the network, stored keys or saved settings.
+    /// Start in it with `--demo`, or switch at any time from the Help menu.
+    private(set) var isDemo = CommandLine.arguments.contains("--demo")
 
     private let defaults = UserDefaults.standard
     private let storageKey = "instances.v1"
@@ -23,6 +24,29 @@ final class InstanceStore {
         load()
         CredentialStore.migrateFromKeychain(ids: instances.map(\.id))
         for instance in instances { startSession(for: instance) }
+    }
+
+    /// Disconnects from your printers (they stay saved) and shows the demo printers instead.
+    func enterDemo() {
+        guard !isDemo else { return }
+        stopAll()
+        isDemo = true
+        loadDemo()
+    }
+
+    /// Leaves demo mode and reconnects to your saved printers.
+    func exitDemo() {
+        guard isDemo else { return }
+        stopAll()
+        isDemo = false
+        load()
+        for instance in instances { startSession(for: instance) }
+    }
+
+    private func stopAll() {
+        for session in sessions.values { session.stop() }
+        sessions = [:]
+        instances = []
     }
 
     func session(for id: UUID?) -> PrinterSession? {

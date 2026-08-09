@@ -56,7 +56,7 @@ Your API keys are stored encrypted on your Mac, in your own user folder.
 
 ### Just looking?
 
-Try OctoMac without a printer:
+Try OctoMac without a printer: choose **Help → Try Demo Mode**. Your own printers stay saved, and **Exit demo** brings them back. You can also start straight into demo mode:
 
 ```sh
 open build/OctoMac.app --args --demo

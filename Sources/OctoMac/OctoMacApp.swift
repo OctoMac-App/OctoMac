@@ -18,6 +18,12 @@ struct OctoMacApp: App {
         .windowBackgroundDragBehavior(.enabled)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(before: .help) {
+                Button(store.isDemo ? "Exit Demo Mode" : "Try Demo Mode") {
+                    if store.isDemo { store.exitDemo() } else { store.enterDemo() }
+                }
+                Divider()
+            }
         }
 
         // G-code previews open in their own windows, so they can sit beside the printer view.

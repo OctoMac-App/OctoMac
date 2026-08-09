@@ -73,10 +73,17 @@ struct RootView: View {
                 selection = store.instances[index - 1].id
             }
         }
-        .onChange(of: selection) { _, new in selectionStorage = new?.uuidString ?? "" }
+        // Demo printers aren't remembered as the selection, so leaving demo mode returns to your own printer.
+        .onChange(of: selection) { _, new in if !store.isDemo { selectionStorage = new?.uuidString ?? "" } }
         // The menu bar panel selects a printer by writing the stored selection.
         .onChange(of: selectionStorage) { _, new in
             if let id = UUID(uuidString: new), id != selection { selection = id }
+        }
+        .onChange(of: store.isDemo) { _, demo in
+            selection = demo
+                ? store.instances.first?.id
+                : UUID(uuidString: selectionStorage).flatMap { id in store.instances.contains { $0.id == id } ? id : nil }
+                    ?? store.instances.first?.id
         }
     }
 }
@@ -132,9 +139,20 @@ struct PrinterRail: View {
             .padding(.horizontal, 16)
 
             HStack(spacing: 8) {
-                BrandLockup(markSize: 40)
+                BrandLockup(markSize: store.isDemo ? 32 : 40)
                 if store.isDemo {
-                    Text("demo").font(Typeface.caption).foregroundStyle(Palette.accent)
+                    Button { store.exitDemo() } label: {
+                        Text("Exit demo")
+                            .font(Typeface.text(11, .demibold))
+                            .lineLimit(1)
+                            .fixedSize()
+                            .foregroundStyle(Palette.graphite)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Capsule().fill(Palette.accent))
+                    }
+                    .buttonStyle(.plain)
+                    .help("Leave demo mode and reconnect to your printers")
                 }
                 Spacer()
             }
