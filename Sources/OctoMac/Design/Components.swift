@@ -290,7 +290,17 @@ struct CameraStage: View {
 
     var body: some View {
         ZStack {
-            if session.webcamStreamURL != nil {
+            if session.webcamStreamURL != nil, PictureInPicture.shared.sessionID == session.instance.id {
+                // The video is in the floating window; don't show (or decode) it twice.
+                Rectangle().fill(Palette.rail)
+                VStack(spacing: 10) {
+                    Image(systemName: "pip").font(.system(size: 30, weight: .light)).foregroundStyle(Palette.accent)
+                    Text("Playing in picture in picture").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Button("Bring the camera back") { PictureInPicture.shared.close() }
+                        .buttonStyle(.plateQuiet)
+                        .controlSize(.small)
+                }
+            } else if session.webcamStreamURL != nil {
                 WebcamView(streamer: session.camera, transform: session.webcamTransform)
             } else {
                 BuildPlateTexture()

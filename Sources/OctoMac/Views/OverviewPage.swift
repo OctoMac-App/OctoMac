@@ -175,7 +175,24 @@ struct CinemaCamera: View {
                 if cinema { CinemaHUD(session: session, filament: filament) }
             }
             .overlay(alignment: .bottomTrailing) {
-                // Always in the hierarchy so the keyboard shortcut works; only visible on hover or in cinema.
+                // Always in the hierarchy so the keyboard shortcuts work; only visible on hover or in cinema.
+                HStack(spacing: 8) {
+                if session.webcamStreamURL != nil && PictureInPicture.shared.sessionID != session.instance.id {
+                    Button {
+                        cinema = false
+                        PictureInPicture.shared.show(session, filament: filament)
+                    } label: {
+                        Image(systemName: "pip.enter")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 38, height: 38)
+                            .background(Circle().fill(.black.opacity(0.55)))
+                            .overlay(Circle().strokeBorder(.white.opacity(0.15), lineWidth: 1))
+                    }
+                    .buttonStyle(.plain)
+                    .keyboardShortcut("p", modifiers: [])
+                    .help("Picture in picture (P): a small camera window that stays on top")
+                }
                 Button {
                     withAnimation(.smooth(duration: 0.35)) { cinema.toggle() }
                 } label: {
@@ -189,6 +206,7 @@ struct CinemaCamera: View {
                 .buttonStyle(.plain)
                 .keyboardShortcut(cinema ? KeyboardShortcut(.escape, modifiers: []) : KeyboardShortcut("f", modifiers: []))
                 .help(cinema ? "Exit cinema mode (Esc)" : "Cinema mode (F)")
+                }
                 .padding(cinema ? 20 : 14)
                 .opacity(hovering || cinema ? 1 : 0)
             }

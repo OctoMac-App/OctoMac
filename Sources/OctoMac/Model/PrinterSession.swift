@@ -242,6 +242,8 @@ final class PrinterSession {
     }
 
     func stop() {
+        // A popped-out camera for a printer that's going away (removed, or demo mode switched) closes too.
+        if PictureInPicture.shared.sessionID == instance.id { PictureInPicture.shared.close() }
         camera.stop()
         pushTask?.cancel()
         pushTask = nil

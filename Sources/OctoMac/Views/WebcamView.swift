@@ -40,8 +40,8 @@ struct WebcamView: View {
                 ProgressView()
             }
         }
-        .onAppear { streamer.isVisible = true }
-        .onDisappear { streamer.isVisible = false }
+        .onAppear { streamer.addViewer() }
+        .onDisappear { streamer.removeViewer() }
     }
 }
 
@@ -54,12 +54,17 @@ final class MJPEGStreamer {
     private(set) var frame: NSImage?
     private(set) var failure: String?
 
-    /// Set by the view showing this stream.
-    var isVisible = false {
-        didSet {
-            if isVisible, !oldValue, let latest { frame = NSImage(data: latest) }
-        }
+    /// How many views are showing this stream (the main window and/or picture in picture). Frames are only decoded
+    /// while at least one is.
+    @ObservationIgnored private var viewers = 0
+    var isVisible: Bool { viewers > 0 }
+
+    func addViewer() {
+        viewers += 1
+        if viewers == 1, let latest { frame = NSImage(data: latest) }
     }
+
+    func removeViewer() { viewers = max(0, viewers - 1) }
 
     @ObservationIgnored private var latest: Data?
     @ObservationIgnored private var session: URLSession?
