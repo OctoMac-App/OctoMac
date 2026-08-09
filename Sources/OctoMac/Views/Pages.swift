@@ -47,77 +47,94 @@ struct MovePage: View {
     private let steps: [Double] = [0.1, 1, 10, 50, 100]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            if !session.canControl {
-                StageNotice(text: session.flags.isJobActive
-                    ? "Moving the print head is locked while a print is running. Fan and speed still work."
-                    : "Connect the printer to move it.")
+        GeometryReader { geo in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    if !session.canControl {
+                        StageNotice(text: session.flags.isJobActive
+                            ? "Moving the print head is locked while a print is running. Fan and speed still work."
+                            : "Connect the printer to move it.")
+                    }
+                    // Side by side when there's room; stacked on smaller windows.
+                    if geo.size.width >= 940 {
+                        HStack(alignment: .top, spacing: 20) {
+                            printHead.frame(minHeight: max(560, geo.size.height - 80))
+                            controls.frame(width: 420)
+                        }
+                    } else {
+                        printHead.frame(height: 540)
+                        controls
+                    }
+                }
+                .padding(.bottom, 8)
             }
+            .scrollIndicators(.automatic)
+        }
+    }
 
-            HStack(alignment: .top, spacing: 20) {
-                StagePanel(title: "Print head", detail: "Step \(Fmt.number(step)) mm", fills: true) {
-                    VStack(spacing: 28) {
-                        HStack(alignment: .center, spacing: 48) {
-                            xyDial
-                            zColumn
-                        }
-                        .frame(maxWidth: .infinity)
+    private var printHead: some View {
+StagePanel(title: "Print head", detail: "Step \(Fmt.number(step)) mm", fills: true) {
+    VStack(spacing: 28) {
+        HStack(alignment: .center, spacing: 48) {
+            xyDial
+            zColumn
+        }
+        .frame(maxWidth: .infinity)
 
-                        HStack(spacing: 8) {
-                            ForEach(steps, id: \.self) { value in
-                                Chip(title: "\(Fmt.number(value)) mm", selected: step == value) { step = value }
-                            }
-                        }
-                        Button { session.home(Axis.allCases) } label: { Label("Home all axes", systemImage: "house.fill") }
-                            .buttonStyle(.plateQuiet)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-                .frame(maxHeight: .infinity)
-                .disabled(!session.canControl)
-
-                VStack(spacing: 20) {
-                    StagePanel(title: "Filament") {
-                        HStack(spacing: 10) {
-                            TextField("mm", value: $extrudeAmount, format: .number)
-                                .plateField()
-                                .frame(width: 80)
-                            Text("mm").font(Typeface.body).foregroundStyle(Palette.dust)
-                            Spacer()
-                            Button { session.extrude(-extrudeAmount) } label: { Label("Retract", systemImage: "arrow.up") }
-                                .buttonStyle(.plateQuiet)
-                            Button { session.extrude(extrudeAmount) } label: { Label("Extrude", systemImage: "arrow.down") }
-                                .buttonStyle(.plate)
-                        }
-                        Text("The hotend has to be hot before the printer will push filament.")
-                            .font(Typeface.caption).foregroundStyle(Palette.faint)
-                    }
-                    .disabled(!session.canControl)
-
-                    StagePanel(title: "Fan and speed") {
-                        VStack(spacing: 18) {
-                            dialRow("Part fan", value: $fan, range: 0...100, step: 5, unit: "%") { session.setFan(percent: fan) }
-                            dialRow("Print speed", value: $feed, range: 50...200, step: 5, unit: "%") { session.setFeedRate(Int(feed)) }
-                            dialRow("Flow", value: $flow, range: 75...125, step: 1, unit: "%") { session.setFlowRate(Int(flow)) }
-                        }
-                    }
-                    .disabled(!session.flags.operational)
-
-                    StagePanel(title: "Quick commands") {
-                        LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-                            quick("Motors off", "M18", "power")
-                            quick("Fan off", "M107", "fan.slash")
-                            quick("Report position", "M114", "location")
-                            quick("Firmware info", "M115", "info.circle")
-                            quick("Bed mesh", "M420 V", "square.grid.3x3")
-                            quick("Save to EEPROM", "M500", "square.and.arrow.down")
-                        }
-                    }
-                    .disabled(!session.flags.operational)
-                }
-                .frame(width: 440)
+        HStack(spacing: 8) {
+            ForEach(steps, id: \.self) { value in
+                Chip(title: "\(Fmt.number(value)) mm", selected: step == value) { step = value }
             }
         }
+        Button { session.home(Axis.allCases) } label: { Label("Home all axes", systemImage: "house.fill") }
+            .buttonStyle(.plateQuiet)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+}
+.frame(maxHeight: .infinity)
+.disabled(!session.canControl)
+    }
+
+    private var controls: some View {
+VStack(spacing: 20) {
+    StagePanel(title: "Filament") {
+        HStack(spacing: 10) {
+            TextField("mm", value: $extrudeAmount, format: .number)
+                .plateField()
+                .frame(width: 80)
+            Text("mm").font(Typeface.body).foregroundStyle(Palette.dust)
+            Spacer()
+            Button { session.extrude(-extrudeAmount) } label: { Label("Retract", systemImage: "arrow.up") }
+                .buttonStyle(.plateQuiet)
+            Button { session.extrude(extrudeAmount) } label: { Label("Extrude", systemImage: "arrow.down") }
+                .buttonStyle(.plate)
+        }
+        Text("The hotend has to be hot before the printer will push filament.")
+            .font(Typeface.caption).foregroundStyle(Palette.faint)
+    }
+    .disabled(!session.canControl)
+
+    StagePanel(title: "Fan and speed") {
+        VStack(spacing: 18) {
+            dialRow("Part fan", value: $fan, range: 0...100, step: 5, unit: "%") { session.setFan(percent: fan) }
+            dialRow("Print speed", value: $feed, range: 50...200, step: 5, unit: "%") { session.setFeedRate(Int(feed)) }
+            dialRow("Flow", value: $flow, range: 75...125, step: 1, unit: "%") { session.setFlowRate(Int(flow)) }
+        }
+    }
+    .disabled(!session.flags.operational)
+
+    StagePanel(title: "Quick commands") {
+        LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
+            quick("Motors off", "M18", "power")
+            quick("Fan off", "M107", "fan.slash")
+            quick("Report position", "M114", "location")
+            quick("Firmware info", "M115", "info.circle")
+            quick("Bed mesh", "M420 V", "square.grid.3x3")
+            quick("Save to EEPROM", "M500", "square.and.arrow.down")
+        }
+    }
+    .disabled(!session.flags.operational)
+}
     }
 
     private var xyDial: some View {
@@ -206,6 +223,7 @@ struct FilesPage: View {
     @State private var creatingFolder = false
     @State private var pendingDelete: FileEntry?
     @State private var selectedFile: FileEntry.ID?
+    @State private var compactList = false
 
     private var folderPath: String? { folder.isEmpty ? nil : folder.joined(separator: "/") }
 
@@ -232,7 +250,7 @@ struct FilesPage: View {
                 }
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
-                .frame(width: 260)
+                .frame(minWidth: 140, idealWidth: 260, maxWidth: 260)
                 .background(Capsule().fill(Palette.extrusion))
                 .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
 
@@ -307,6 +325,8 @@ struct FilesPage: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
             }
+            .onGeometryChange(for: Bool.self) { $0.size.width < 820 } action: { compactList = $0 }
+            .environment(\.filesCompact, compactList)
             .machined(radius: 20)
             .overlay {
                 if dropTargeted {
@@ -406,11 +426,22 @@ struct FilesPage: View {
     static let uploadTypes: [UTType] = ["gcode", "gco", "g", "bgcode", "stl", "3mf"].compactMap { UTType(filenameExtension: $0) } + [.data]
 }
 
+private struct FilesCompactKey: EnvironmentKey { static let defaultValue = false }
+
+extension EnvironmentValues {
+    /// Narrow file list: fewer columns.
+    var filesCompact: Bool {
+        get { self[FilesCompactKey.self] }
+        set { self[FilesCompactKey.self] = newValue }
+    }
+}
+
 private enum FileColumns {
     static let time: CGFloat = 100
     static let filament: CGFloat = 90
     static let size: CGFloat = 90
     static let actions: CGFloat = 230
+    static let compactActions: CGFloat = 170
 }
 
 /// Folders first, then files, each in Finder-style alphabetical order ("part 2" before "part 10").
@@ -422,14 +453,19 @@ func alphabetical(_ entries: [FileEntry]) -> [FileEntry] {
 }
 
 struct FileHeaderRow: View {
+    @Environment(\.filesCompact) private var compact
+
     var body: some View {
         HStack(spacing: 16) {
             Text("Name").frame(maxWidth: .infinity, alignment: .leading).padding(.leading, 60)
             Text("Print time").frame(width: FileColumns.time, alignment: .trailing)
-            Text("Filament").frame(width: FileColumns.filament, alignment: .trailing)
-            Text("Size").frame(width: FileColumns.size, alignment: .trailing)
-            Color.clear.frame(width: FileColumns.actions, height: 1)
+            if !compact {
+                Text("Filament").frame(width: FileColumns.filament, alignment: .trailing)
+                Text("Size").frame(width: FileColumns.size, alignment: .trailing)
+            }
+            Color.clear.frame(width: compact ? FileColumns.compactActions : FileColumns.actions, height: 1)
         }
+        .lineLimit(1)
         .font(Typeface.caption)
         .foregroundStyle(Palette.faint)
         .padding(.horizontal, 20)
@@ -438,6 +474,7 @@ struct FileHeaderRow: View {
 }
 
 struct FileRow: View {
+    @Environment(\.filesCompact) private var compact
     let file: FileEntry
     let client: OctoPrintClient
     let filament: Color
@@ -463,10 +500,12 @@ struct FileRow: View {
                             .font(Typeface.text(14, .demibold))
                             .foregroundStyle(Palette.paper)
                             .lineLimit(1)
-                        if !file.isFolder, let date = file.date {
+                        if !file.isFolder, let date = file.date, !compact {
                             Text("added \(date.formatted(.relative(presentation: .named)))")
                                 .font(Typeface.caption)
                                 .foregroundStyle(Palette.faint)
+                                .lineLimit(1)
+                                .fixedSize()
                                 .help(date.formatted(date: .complete, time: .shortened))
                         }
                     }
@@ -487,8 +526,10 @@ struct FileRow: View {
             .frame(maxWidth: .infinity, alignment: .leading)
 
             number(file.isFolder ? "" : Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime), width: FileColumns.time)
-            number(file.isFolder ? "" : Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), width: FileColumns.filament)
-            number(file.isFolder ? "\(file.children?.count ?? 0) items" : file.size.map(Fmt.bytes) ?? "", width: FileColumns.size)
+            if !compact {
+                number(file.isFolder ? "" : Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), width: FileColumns.filament)
+                number(file.isFolder ? "\(file.children?.count ?? 0) items" : file.size.map(Fmt.bytes) ?? "", width: FileColumns.size)
+            }
 
             HStack(spacing: 8) {
                 if hovering || selected {
@@ -505,7 +546,7 @@ struct FileRow: View {
                         .help("Delete")
                 }
             }
-            .frame(width: FileColumns.actions, alignment: .trailing)
+            .frame(width: compact ? FileColumns.compactActions : FileColumns.actions, alignment: .trailing)
             .controlSize(.small)
         }
         .padding(.horizontal, 12)
@@ -686,15 +727,26 @@ struct MachinePage: View {
     @State private var pendingCommand: SystemCommand?
 
     var body: some View {
-        ScrollView {
-            HStack(alignment: .top, spacing: 20) {
-                VStack(spacing: 20) {
-                    printerPanel
-                    connectionPanel
-                }
-                VStack(spacing: 20) {
-                    serverPanel
-                    powerPanel
+        GeometryReader { geo in
+            ScrollView {
+                if geo.size.width >= 940 {
+                    HStack(alignment: .top, spacing: 20) {
+                        VStack(spacing: 20) {
+                            printerPanel
+                            connectionPanel
+                        }
+                        VStack(spacing: 20) {
+                            serverPanel
+                            powerPanel
+                        }
+                    }
+                } else {
+                    VStack(spacing: 20) {
+                        printerPanel
+                        serverPanel
+                        connectionPanel
+                        powerPanel
+                    }
                 }
             }
         }
@@ -712,7 +764,7 @@ struct MachinePage: View {
             if let profile = session.currentProfile {
                 VStack(alignment: .leading, spacing: 18) {
                     Text(profile.name).font(Typeface.title).foregroundStyle(Palette.paper)
-                    HStack(alignment: .top, spacing: 36) {
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), alignment: .topLeading)], alignment: .leading, spacing: 16) {
                         if let volume = profile.volume {
                             fact("Build volume", [volume.width, volume.depth, volume.height].map { Fmt.number($0) }.joined(separator: " × "), unit: "mm")
                         }
@@ -779,7 +831,7 @@ struct MachinePage: View {
     private var serverPanel: some View {
         StagePanel(title: "OctoPrint server") {
             VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .top, spacing: 36) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 110), alignment: .topLeading)], alignment: .leading, spacing: 16) {
                     fact("Version", session.version?.server ?? "–", unit: nil)
                     fact("API", session.version?.api ?? "–", unit: nil)
                     fact("Signed in as", session.user ?? "–", unit: nil)
@@ -819,12 +871,14 @@ struct MachinePage: View {
 
     private func fact(_ title: String, _ value: String, unit: String?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
+            Text(title).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
                 Text(value).font(Typeface.number(24)).foregroundStyle(Palette.paper)
-                if let unit { Text(unit).font(Typeface.number(13)).foregroundStyle(Palette.faint) }
+                    .lineLimit(1).minimumScaleFactor(0.6)
+                if let unit { Text(unit).font(Typeface.number(13)).foregroundStyle(Palette.faint).fixedSize() }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func pickerRow<P: View>(_ title: String, @ViewBuilder picker: () -> P) -> some View {

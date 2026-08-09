@@ -21,9 +21,9 @@ struct PrinterStage: View {
         VStack(alignment: .leading, spacing: 0) {
             StageHeader(session: session, filament: filament, tab: $tab, editor: $editor,
                         confirmingStop: $confirmingStop, confirmingEmergency: $confirmingEmergency)
-                .padding(.horizontal, 32)
-                .padding(.top, 26)
-                .padding(.bottom, 20)
+                .padding(.horizontal, 28)
+                .padding(.top, 24)
+                .padding(.bottom, 18)
 
             Group {
                 if session.link == .needsAPIKey {
@@ -38,8 +38,8 @@ struct PrinterStage: View {
                     }
                 }
             }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 28)
+            .padding(.horizontal, 28)
+            .padding(.bottom, 24)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .overlay(alignment: .bottomTrailing) {
@@ -87,45 +87,68 @@ struct StageHeader: View {
     @Binding var confirmingEmergency: Bool
 
     var body: some View {
-        let mood = PrinterMood(session)
-        HStack(alignment: .center, spacing: 24) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack(spacing: 12) {
-                    Text(session.instance.name)
-                        .font(Typeface.display)
-                        .foregroundStyle(Palette.paper)
-                    HStack(spacing: 2) {
-                        HeaderIconButton(symbol: "slider.horizontal.3", help: "Edit this printer") {
-                            editor = .edit(session.instance)
-                        }
-                        OpenInBrowserButton(url: session.instance.baseURL)
-                    }
-                }
-                HStack(spacing: 8) {
-                    StatusLamp(color: mood.color(filament: filament), lit: mood != .offline)
-                    Text(session.stateText).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
-                    if let profile = session.currentProfile?.name, session.link == .online {
-                        Text(profile).font(Typeface.body).foregroundStyle(Palette.faint)
-                    }
-                    if let mmu = session.mmu, let tool = session.mmuTool,
-                       let filament = mmu.filaments.first(where: { $0.index == tool }) {
-                        HStack(spacing: 5) {
-                            Circle().fill(filament.color.flatMap(Color.init(hexString:)) ?? Palette.dust).frame(width: 9, height: 9)
-                            Text(mmu.label(for: filament)).font(Typeface.body).foregroundStyle(Palette.dust)
-                        }
-                        .help("Loaded in the MMU: slot \(mmu.number(for: filament))")
-                    }
+        // Everything on one line when it fits; otherwise the tabs drop to a row of their own.
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: 20) {
+                title
+                Spacer(minLength: 12)
+                if session.link != .needsAPIKey {
+                    TabTrack(selection: $tab).fixedSize()
+                    Spacer(minLength: 12)
+                    actions
                 }
             }
-
-            Spacer()
-
-            if session.link != .needsAPIKey {
-                TabTrack(selection: $tab)
-                Spacer()
-                JobActions(session: session, confirmingStop: $confirmingStop, confirmingEmergency: $confirmingEmergency)
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .center, spacing: 16) {
+                    title
+                    Spacer(minLength: 12)
+                    if session.link != .needsAPIKey { actions }
+                }
+                if session.link != .needsAPIKey {
+                    TabTrack(selection: $tab).fixedSize()
+                }
             }
         }
+    }
+
+    private var actions: some View {
+        JobActions(session: session, confirmingStop: $confirmingStop, confirmingEmergency: $confirmingEmergency)
+            .fixedSize()
+    }
+
+    private var title: some View {
+        let mood = PrinterMood(session)
+        return VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 12) {
+                Text(session.instance.name)
+                    .font(Typeface.display)
+                    .foregroundStyle(Palette.paper)
+                    .lineLimit(1)
+                HStack(spacing: 2) {
+                    HeaderIconButton(symbol: "slider.horizontal.3", help: "Edit this printer") {
+                        editor = .edit(session.instance)
+                    }
+                    OpenInBrowserButton(url: session.instance.baseURL)
+                }
+                .fixedSize()
+            }
+            HStack(spacing: 8) {
+                StatusLamp(color: mood.color(filament: filament), lit: mood != .offline)
+                Text(session.stateText).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).lineLimit(1)
+                if let profile = session.currentProfile?.name, session.link == .online {
+                    Text(profile).font(Typeface.body).foregroundStyle(Palette.faint).lineLimit(1)
+                }
+                if let mmu = session.mmu, let tool = session.mmuTool,
+                   let filament = mmu.filaments.first(where: { $0.index == tool }) {
+                    HStack(spacing: 5) {
+                        Circle().fill(filament.color.flatMap(Color.init(hexString:)) ?? Palette.dust).frame(width: 9, height: 9)
+                        Text(mmu.label(for: filament)).font(Typeface.body).foregroundStyle(Palette.dust).lineLimit(1)
+                    }
+                    .help("Loaded in the MMU: slot \(mmu.number(for: filament))")
+                }
+            }
+        }
+        .fixedSize()
     }
 }
 
@@ -189,6 +212,8 @@ struct TabTrack: View {
                 } label: {
                     Text(tab.title)
                         .font(Typeface.text(13, .demibold))
+                        .lineLimit(1)
+                        .fixedSize()
                         .foregroundStyle(selection == tab ? Palette.graphite : Palette.dust)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 7)

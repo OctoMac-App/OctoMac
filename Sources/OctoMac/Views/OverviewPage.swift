@@ -10,73 +10,134 @@ struct OverviewPage: View {
 
     var body: some View {
         GeometryReader { geo in
-            let topHeight = geo.size.height * 0.5
-            // Camera keeps a 16:9 frame and gives the rest of the row to the job / files panel.
-            let cameraWidth = min(topHeight * 16 / 9, geo.size.width * 0.6)
-
-            VStack(spacing: 20) {
-                if session.link == .online && !session.isPrinterConnected {
-                    PrinterOfflineBanner(session: session, tab: $tab)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-                HStack(spacing: 20) {
-                    Color.clear
-                        .frame(width: cameraWidth)
-                        .anchorPreference(key: CameraSlotKey.self, value: .bounds) { $0 }
-                    Group {
-                        if session.flags.isJobActive {
-                            JobPanel(session: session, filament: filament, tab: $tab)
-                        } else {
-                            ReadyPanel(session: session, filament: filament, tab: $tab)
+            // Laptops and small windows: a stacked layout that scrolls, instead of squeezing everything in.
+            if geo.size.width < 860 || geo.size.height < 600 {
+                stacked(width: geo.size.width)
+                    .overlay {
+                        if cinema {
+                            CinemaCamera(session: session, filament: filament, cinema: $cinema)
+                                .transition(.opacity)
                         }
                     }
-                    // Never let the panel's content widen the row past the window.
-                    .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
-                }
-                .frame(height: topHeight)
-
-                HStack(alignment: .top, spacing: 20) {
-                    VStack(spacing: 14) {
-                        PresetPanel(session: session)
-                        if sortedHeaterKeys.count > 2 {
-                            // Several heaters (tool-changers, chambers): compact rows that scroll if they don't fit.
-                            ScrollView {
-                                VStack(spacing: 8) {
-                                    ForEach(sortedHeaterKeys, id: \.self) { key in
-                                        HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData(), compact: true)
-                                    }
-                                }
-                            }
-                            .scrollIndicators(.automatic)
-                            .frame(maxHeight: .infinity, alignment: .top)
-                        } else {
-                            ForEach(sortedHeaterKeys, id: \.self) { key in
-                                HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData())
-                                    .frame(maxHeight: .infinity)
-                            }
-                        }
-                        if sortedHeaterKeys.isEmpty {
-                            Text("Temperatures appear once the printer is connected.")
-                                .font(Typeface.body).foregroundStyle(Palette.dust)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .machined()
-                        }
-                    }
-                    .frame(width: 300)
-
-                    TemperaturePanel(session: session)
-                }
-                .frame(maxHeight: .infinity)
+            } else {
+                spread(size: geo.size)
             }
-            .opacity(cinema ? 0 : 1)
-            // One camera view moves between its slot and the whole stage, so the stream never restarts.
-            .overlayPreferenceValue(CameraSlotKey.self) { anchor in
-                GeometryReader { proxy in
-                    let rect = cinema || anchor == nil ? CGRect(origin: .zero, size: proxy.size) : proxy[anchor!]
+        }
+    }
+
+    /// Everything on one screen: camera and job side by side, temperatures below.
+    private func spread(size: CGSize) -> some View {
+        let topHeight = size.height * 0.5
+        // Camera keeps a 16:9 frame and gives the rest of the row to the job / files panel.
+        let cameraWidth = min(topHeight * 16 / 9, size.width * 0.58)
+        return VStack(spacing: 20) {
+            banner
+            HStack(spacing: 20) {
+                Color.clear
+                    .frame(width: cameraWidth)
+                    .anchorPreference(key: CameraSlotKey.self, value: .bounds) { $0 }
+                jobOrFiles
+            }
+            .frame(height: topHeight)
+
+            HStack(alignment: .top, spacing: 20) {
+                heaterColumn(fill: true).frame(width: 300)
+                TemperaturePanel(session: session)
+            }
+            .frame(maxHeight: .infinity)
+        }
+        .opacity(cinema ? 0 : 1)
+        // One camera view moves between its slot and the whole stage.
+        .overlayPreferenceValue(CameraSlotKey.self) { anchor in
+            GeometryReader { proxy in
+                let rect = cinema || anchor == nil ? CGRect(origin: .zero, size: proxy.size) : proxy[anchor!]
+                CinemaCamera(session: session, filament: filament, cinema: $cinema)
+                    .frame(width: rect.width, height: rect.height)
+                    .offset(x: rect.minX, y: rect.minY)
+            }
+        }
+    }
+
+    /// Small windows: sections stack and the page scrolls.
+    private func stacked(width: CGFloat) -> some View {
+        let narrow = width < 860
+        return ScrollView {
+            VStack(spacing: 16) {
+                banner
+                if narrow {
                     CinemaCamera(session: session, filament: filament, cinema: $cinema)
-                        .frame(width: rect.width, height: rect.height)
-                        .offset(x: rect.minX, y: rect.minY)
+                        .aspectRatio(16 / 9, contentMode: .fit)
+                    jobOrFiles.frame(height: 380)
+                } else {
+                    HStack(spacing: 16) {
+                        CinemaCamera(session: session, filament: filament, cinema: $cinema)
+                            .aspectRatio(16 / 9, contentMode: .fit)
+                        jobOrFiles
+                    }
+                    .frame(height: 340)
                 }
+                if narrow {
+                    heaterColumn(fill: false)
+                    TemperaturePanel(session: session).frame(height: 300)
+                } else {
+                    HStack(alignment: .top, spacing: 16) {
+                        heaterColumn(fill: false).frame(width: 280)
+                        TemperaturePanel(session: session).frame(height: 340)
+                    }
+                }
+            }
+            .padding(.bottom, 8)
+        }
+        .scrollIndicators(.automatic)
+        .opacity(cinema ? 0 : 1)
+    }
+
+    @ViewBuilder private var banner: some View {
+        if session.link == .online && !session.isPrinterConnected {
+            PrinterOfflineBanner(session: session, tab: $tab)
+                .transition(.move(edge: .top).combined(with: .opacity))
+        }
+    }
+
+    private var jobOrFiles: some View {
+        Group {
+            if session.flags.isJobActive {
+                JobPanel(session: session, filament: filament, tab: $tab)
+            } else {
+                ReadyPanel(session: session, filament: filament, tab: $tab)
+            }
+        }
+        // Never let the panel's content widen the row past the window.
+        .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    /// Presets and heaters. `fill` stretches big tiles to the available height (the one-screen layout).
+    private func heaterColumn(fill: Bool) -> some View {
+        VStack(spacing: 14) {
+            PresetPanel(session: session)
+            if sortedHeaterKeys.count > 2 || !fill {
+                // Compact rows; in the one-screen layout they scroll if they don't fit.
+                let rows = VStack(spacing: 8) {
+                    ForEach(sortedHeaterKeys, id: \.self) { key in
+                        HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData(), compact: true)
+                    }
+                }
+                if fill {
+                    ScrollView { rows }.frame(maxHeight: .infinity, alignment: .top)
+                } else {
+                    rows
+                }
+            } else {
+                ForEach(sortedHeaterKeys, id: \.self) { key in
+                    HeatTile(session: session, key: key, data: session.heaters[key] ?? TemperatureData())
+                        .frame(maxHeight: .infinity)
+                }
+            }
+            if sortedHeaterKeys.isEmpty {
+                Text("Temperatures appear once the printer is connected.")
+                    .font(Typeface.body).foregroundStyle(Palette.dust)
+                    .frame(maxWidth: .infinity, minHeight: 80, maxHeight: fill ? .infinity : nil)
+                    .machined()
             }
         }
     }
@@ -505,9 +566,9 @@ struct FileBrowserPanel: View {
                         .foregroundStyle(Palette.dust)
                         .help("Back to the open file")
                 }
-                Text("Choose a file").font(Typeface.subhead).foregroundStyle(Palette.paper)
+                Text("Choose a file").font(Typeface.subhead).foregroundStyle(Palette.paper).lineLimit(1).fixedSize()
                 if !session.canControl {
-                    Text(session.isPrinterConnecting ? "Connecting to the printer…" : session.isPrinterConnected ? "Printer busy" : "Connect the printer to open a file")
+                    Text(session.isPrinterConnecting ? "Connecting…" : session.isPrinterConnected ? "Printer busy" : "Printer not connected")
                         .font(Typeface.caption).foregroundStyle(Palette.warm)
                 }
                 Spacer()
@@ -523,13 +584,14 @@ struct FileBrowserPanel: View {
                 }
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
-                .frame(width: 220)
+                .frame(minWidth: 100, idealWidth: 220, maxWidth: 220)
                 .background(Capsule().fill(Palette.graphite))
                 .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
                 Button("All files") { tab = .files }
                     .buttonStyle(.plain)
                     .font(Typeface.bodyStrong)
                     .foregroundStyle(Palette.accent)
+                    .fixedSize()
             }
             .padding(.horizontal, 22)
             .padding(.top, 18)

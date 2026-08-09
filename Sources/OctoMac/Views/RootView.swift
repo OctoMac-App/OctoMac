@@ -36,9 +36,10 @@ struct RootView: View {
     @State private var editor: EditorTarget?
 
     var body: some View {
+        GeometryReader { geo in
         HStack(spacing: 0) {
             PrinterRail(selection: $selection, editor: $editor)
-                .frame(width: 260)
+                .frame(width: geo.size.width < 1200 ? 216 : 260)
 
             ZStack {
                 LayerLineBackground()
@@ -49,6 +50,7 @@ struct RootView: View {
                     EmptyStage(firstRun: store.instances.isEmpty) { editor = .new }
                 }
             }
+        }
         }
         .ignoresSafeArea()
         // The Prusa MMU plugin is waiting for a filament choice on some printer: ask, whichever printer is on screen.

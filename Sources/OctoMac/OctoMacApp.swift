@@ -10,7 +10,7 @@ struct OctoMacApp: App {
         WindowGroup("OctoMac", id: "main") {
             RootView()
                 .environment(store)
-                .frame(minWidth: 1100, minHeight: 720)
+                .frame(minWidth: 960, minHeight: 620)
                 .background(WindowFiller())
                 .preferredColorScheme(.dark)
         }
