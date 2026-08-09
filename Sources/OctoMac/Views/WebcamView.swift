@@ -76,6 +76,13 @@ final class MJPEGStreamer {
     /// The most recent frame exactly as the camera sent it (JPEG), for saving snapshots.
     var latestFrameData: Data? { latest }
 
+    /// Shows a fixed picture instead of a stream (demo mode).
+    func showStill(_ jpeg: Data) {
+        latest = jpeg
+        failure = nil
+        frame = NSImage(data: jpeg)
+    }
+
     /// Starts streaming `url`, or does nothing if that stream is already running.
     func start(url: URL, apiKey: String?) {
         guard url != self.url || session == nil else { return }

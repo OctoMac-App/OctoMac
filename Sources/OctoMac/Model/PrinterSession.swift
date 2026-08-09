@@ -1,3 +1,5 @@
+import AppKit
+import SwiftUI
 import Foundation
 import Observation
 import OctoPrintKit
@@ -489,7 +491,7 @@ final class PrinterSession {
     func interruptHeating() { sendGcode("M108") }
     func setTarget(_ value: Double, heater: String) { perform { [client] in try await client.setTarget(value, forHeater: heater) } }
     func jog(x: Double? = nil, y: Double? = nil, z: Double? = nil) { perform { [client] in try await client.jog(x: x, y: y, z: z) } }
-    func home(_ axes: [Axis]) { perform { [client] in try await client.home(axes) } }
+    func home(_ axes: [OctoPrintKit.Axis]) { perform { [client] in try await client.home(axes) } }
     func extrude(_ amount: Double) { perform { [client] in try await client.extrude(amount) } }
     func setFeedRate(_ percent: Int) { perform { [client] in try await client.setFeedRate(percent) } }
     func setFlowRate(_ percent: Int) { perform { [client] in try await client.setFlowRate(percent) } }
@@ -727,7 +729,9 @@ extension PrinterSession {
             mmuPrusaVersion = "MK3"
             if CommandLine.arguments.contains("--demo-mmu") { mmuPromptSince = .now }
         }
+        camera.showStill(Self.demoCameraFrame(title: instance.name))
         settings = [
+            "webcam": ["streamUrl": "/webcam/?action=stream"],
             "plugins": printing ? ["prusammu": [
                 "filament": [
                     ["color": "#808080", "enabled": true, "id": 1, "name": "Urban Grey PETG"],
@@ -759,6 +763,43 @@ extension PrinterSession {
                 self.progress = progress
             }
         }
+    }
+
+    /// A stand-in camera picture for demo mode: a print bed with a grid.
+    private static func demoCameraFrame(title: String) -> Data {
+        let view = ZStack {
+            LinearGradient(colors: [Color(hex: 0x2A2F37), Color(hex: 0x15181C)], startPoint: .top, endPoint: .bottom)
+            Canvas { context, size in
+                // A bed in perspective.
+                var bed = Path()
+                bed.move(to: CGPoint(x: size.width * 0.18, y: size.height * 0.92))
+                bed.addLine(to: CGPoint(x: size.width * 0.82, y: size.height * 0.92))
+                bed.addLine(to: CGPoint(x: size.width * 0.66, y: size.height * 0.42))
+                bed.addLine(to: CGPoint(x: size.width * 0.34, y: size.height * 0.42))
+                bed.closeSubpath()
+                context.fill(bed, with: .color(Color(hex: 0x3A3F47)))
+                for i in 1..<8 {
+                    let t = CGFloat(i) / 8
+                    let bottomX = size.width * (0.18 + 0.64 * t), topX = size.width * (0.34 + 0.32 * t)
+                    let line = Path { p in p.move(to: CGPoint(x: bottomX, y: size.height * 0.92)); p.addLine(to: CGPoint(x: topX, y: size.height * 0.42)) }
+                    context.stroke(line, with: .color(.white.opacity(0.08)), lineWidth: 1)
+                }
+                // A part on the bed.
+                let part = CGRect(x: size.width * 0.42, y: size.height * 0.56, width: size.width * 0.16, height: size.height * 0.18)
+                context.fill(Path(roundedRect: part, cornerRadius: 4), with: .color(Color(hex: 0xF29E4C)))
+            }
+            VStack {
+                Spacer()
+                Text("Demo camera").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white.opacity(0.5))
+                    .padding(.bottom, 10)
+            }
+        }
+        .frame(width: 640, height: 360)
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 2
+        guard let image = renderer.cgImage,
+              let data = NSBitmapImageRep(cgImage: image).representation(using: .jpeg, properties: [.compressionFactor: 0.85]) else { return Data() }
+        return data
     }
 
     private static func demoFile(_ name: String, folder: String?, time: Double?, length: Double?, size: Int, daysAgo: Double, success: Bool?, model: Bool = false) -> JSONValue {
