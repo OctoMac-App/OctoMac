@@ -453,86 +453,95 @@ struct OpenedFilePanel: View {
 
     var body: some View {
         let name = SlicedName(file.displayName)
-        VStack(alignment: .leading, spacing: 18) {
-            // Thumbnail with one column of the key facts beside it.
-            HStack(alignment: .top, spacing: 20) {
-                FileThumbnail(file: file, client: session.client, tint: filament, radius: 16)
-                    .frame(width: 200, height: 200)
+        VStack(alignment: .leading, spacing: 14) {
+            // What it is, and what you can do with it, always in view.
+            HStack(alignment: .top, spacing: 16) {
+                FileThumbnail(file: file, client: session.client, tint: filament, radius: 14)
+                    .frame(width: 104, height: 104)
                     .contentShape(Rectangle())
                     .onTapGesture { previewing = true }
                     .popover(isPresented: $previewing) {
                         FilePreview(file: file, client: session.client, filament: filament, canOpen: false,
                                     preview: { previewing = false; openPreview() }, open: {})
                     }
-
-                VStack(alignment: .leading, spacing: 12) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Ready to print").font(Typeface.caption).foregroundStyle(Palette.faint)
-                        Text(name.title)
-                            .font(Typeface.text(22, .demibold))
-                            .foregroundStyle(Palette.paper)
-                            .lineLimit(2)
-                            .minimumScaleFactor(0.8)
-                        if !name.tags.isEmpty { TagRow(tags: name.tags) }
-                    }
-                    stat("Print time", Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime), big: true)
-                    stat("Filament", Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), big: true)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Ready to print").font(Typeface.caption).foregroundStyle(Palette.faint)
+                    Text(name.title)
+                        .font(Typeface.text(20, .demibold))
+                        .foregroundStyle(Palette.paper)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                    if !name.tags.isEmpty { TagRow(tags: name.tags) }
                 }
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
             }
 
-            // Secondary details across the full width underneath.
-            Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 10) {
-                GridRow {
-                    stat("Model size", modelSize)
-                    stat("Added", file.date?.formatted(.relative(presentation: .named)) ?? "–")
-                }
-                if let prints = file.prints, (prints.success ?? 0) + (prints.failure ?? 0) > 0 {
+            if !session.canControl, let blocker = session.controlBlocker {
+                Text(blocker).font(Typeface.caption).foregroundStyle(Palette.warm).lineLimit(2)
+            }
+            // Full labels when they fit; shorter ones in tight spaces (never wrapped).
+            ViewThatFits(in: .horizontal) {
+                actions(print: "Print", preview: "Preview", another: "Choose another file")
+                actions(print: "Print", preview: "Preview", another: "Other file")
+                actions(print: "Print", preview: nil, another: nil)
+            }
+
+            Divider().overlay(Palette.edge.opacity(0.6))
+
+            // The details scroll when the panel is short.
+            ScrollView {
+                Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 12) {
                     GridRow {
-                        stat("Printed before", "\(prints.success ?? 0) ok, \(prints.failure ?? 0) failed")
-                        stat("Last time", prints.last?.success.map { $0 ? "Finished" : "Failed or stopped" } ?? "–")
+                        stat("Print time", Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime), big: true)
+                        stat("Filament", Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), big: true)
+                    }
+                    GridRow {
+                        stat("Model size", modelSize)
+                        stat("Added", file.date?.formatted(.relative(presentation: .named)) ?? "–")
+                    }
+                    if let prints = file.prints, (prints.success ?? 0) + (prints.failure ?? 0) > 0 {
+                        GridRow {
+                            stat("Printed before", "\(prints.success ?? 0) ok, \(prints.failure ?? 0) failed")
+                            stat("Last time", prints.last?.success.map { $0 ? "Finished" : "Failed or stopped" } ?? "–")
+                        }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(.top, 14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .overlay(alignment: .top) { Rectangle().fill(Palette.edge.opacity(0.6)).frame(height: 1) }
-
-            Spacer(minLength: 0)
-
-            if !session.canControl, let blocker = session.controlBlocker {
-                Text(blocker).font(Typeface.caption).foregroundStyle(Palette.warm)
-            }
-            HStack(spacing: 10) {
-                Button { session.jobCommand(.start) } label: {
-                    Label("Print", systemImage: "play.fill")
-                        .font(Typeface.text(15, .demibold))
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 2)
-                }
-                .buttonStyle(.plate(filament))
-                .disabled(!session.canControl)
-                Button(action: openPreview) {
-                    Label("Preview", systemImage: "square.stack.3d.up")
-                        .font(Typeface.text(15, .demibold))
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 2)
-                }
-                .buttonStyle(.plateQuiet)
-                Button(action: chooseAnother) {
-                    Label("Choose another file", systemImage: "square.grid.2x2")
-                        .font(Typeface.text(15, .demibold))
-                        .lineLimit(1)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 2)
-                }
-                .buttonStyle(.plateQuiet)
-            }
+            .scrollIndicators(.automatic)
         }
-        .padding(24)
+        .padding(20)
         .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .clipped()
+    }
+
+    private func actions(print: String, preview: String?, another: String?) -> some View {
+        HStack(spacing: 8) {
+            Button { session.jobCommand(.start) } label: {
+                Label(print, systemImage: "play.fill").font(Typeface.text(14, .demibold)).lineLimit(1)
+            }
+            .buttonStyle(.plate(filament))
+            .disabled(!session.canControl)
+            Button(action: openPreview) {
+                if let preview {
+                    Label(preview, systemImage: "square.stack.3d.up").font(Typeface.text(14, .demibold)).lineLimit(1)
+                } else {
+                    Image(systemName: "square.stack.3d.up")
+                }
+            }
+            .buttonStyle(.plateQuiet)
+            .help("Preview the G-code")
+            Button(action: chooseAnother) {
+                if let another {
+                    Label(another, systemImage: "square.grid.2x2").font(Typeface.text(14, .demibold)).lineLimit(1)
+                } else {
+                    Image(systemName: "square.grid.2x2")
+                }
+            }
+            .buttonStyle(.plateQuiet)
+            .help("Choose another file")
+        }
+        .fixedSize()
     }
 
     private func openPreview() {
