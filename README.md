@@ -80,6 +80,21 @@ Don't have a plugin installed? No problem. OctoMac simply skips that feature. Fo
 
 Want OctoMac to support a plugin you use? Open an issue and tell us about it.
 
+### Prusa MMU: choosing a filament
+
+If your printer has a Prusa Multi Material Unit and the [Prusa MMU](https://plugins.octoprint.org/plugins/prusammu/) plugin is installed, OctoMac asks which filament to use when a single-colour print starts.
+
+![OctoMac asking which filament to use](docs/screenshots/mmu-filament.png)
+
+- **It pops up wherever you are.** The question appears over the window whichever printer or tab you're looking at, and names the printer and file that are waiting.
+- **Your filaments, as you set them up.** Each slot shows the name and colour you entered in the plugin's settings, and the filament that's loaded right now is marked.
+- **Click or type.** Click a filament, or press its slot number on the keyboard.
+- **A countdown keeps you in the loop.** You see how long is left before the plugin's timeout, and what happens if you don't choose: either the printer asks on its own screen, or the print uses the filament it was sliced with, depending on how the plugin is set up.
+- **Rather use the printer?** Press **Choose on the printer** (or Escape) to close the question and pick on the printer itself. If the plugin allows it, you'll see **Use sliced filament** instead, which starts the print with the filament chosen in your slicer.
+- **See what's loaded.** While printing, the loaded filament's name and colour appear next to the printer's name.
+
+To set it up, install the Prusa MMU plugin from OctoPrint's Plugin Manager and add your filament names and colours in its settings. OctoMac picks them up automatically.
+
 ## Good to know
 
 - **Your data stays with you.** OctoMac only talks to the OctoPrint servers you add. There are no accounts, no tracking and no cloud service.
