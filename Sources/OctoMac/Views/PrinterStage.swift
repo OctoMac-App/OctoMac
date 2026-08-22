@@ -87,8 +87,8 @@ struct StageHeader: View {
     @Binding var confirmingEmergency: Bool
 
     var body: some View {
-        // Everything on one line when it fits; then the tabs and buttons share a second line;
-        // on the narrowest windows the tabs get a row of their own and the status line shortens.
+        // Everything on one line when it fits. Narrower, the header uses two rows and then three,
+        // so the buttons move out of the way instead of squashing the printer's name.
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .center, spacing: 20) {
                 title.fixedSize()
@@ -97,6 +97,16 @@ struct StageHeader: View {
                     TabTrack(selection: $tab).fixedSize()
                     Spacer(minLength: 12)
                     actions
+                }
+            }
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .center, spacing: 16) {
+                    title.fixedSize()
+                    Spacer(minLength: 12)
+                    if session.link != .needsAPIKey { actions }
+                }
+                if session.link != .needsAPIKey {
+                    TabTrack(selection: $tab).fixedSize()
                 }
             }
             VStack(alignment: .leading, spacing: 14) {
@@ -109,13 +119,10 @@ struct StageHeader: View {
                     }
                 }
             }
-            VStack(alignment: .leading, spacing: 14) {
-                HStack(alignment: .center, spacing: 16) {
-                    title.fixedSize(horizontal: false, vertical: true)
-                    Spacer(minLength: 12)
-                    if session.link != .needsAPIKey { actions }
-                }
+            VStack(alignment: .leading, spacing: 12) {
+                title.fixedSize(horizontal: false, vertical: true)
                 if session.link != .needsAPIKey {
+                    actions.frame(maxWidth: .infinity, alignment: .trailing)
                     TabTrack(selection: $tab).fixedSize()
                 }
             }
