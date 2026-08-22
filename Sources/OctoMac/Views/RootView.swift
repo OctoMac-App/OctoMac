@@ -140,28 +140,39 @@ struct PrinterRail: View {
             .buttonStyle(.plateQuiet)
             .padding(.horizontal, 16)
 
-            HStack(spacing: 8) {
-                BrandLockup(markSize: store.isDemo ? 32 : 40)
-                if store.isDemo {
-                    Button { store.exitDemo() } label: {
-                        Text("Exit demo")
-                            .font(Typeface.text(11, .demibold))
-                            .lineLimit(1)
-                            .fixedSize()
-                            .foregroundStyle(Palette.graphite)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Capsule().fill(Palette.accent))
-                    }
-                    .buttonStyle(.plain)
-                    .help("Leave demo mode and reconnect to your printers")
+            // Centred under the Add a printer button. In demo mode the Exit demo badge sits beside
+            // the logo when there's room, or underneath it in the narrow sidebar.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 8) {
+                    BrandLockup(markSize: store.isDemo ? 32 : 40)
+                    if store.isDemo { exitDemo }
                 }
-                Spacer()
+                VStack(spacing: 8) {
+                    BrandLockup(markSize: 32)
+                    if store.isDemo { exitDemo }
+                }
             }
-            .padding(20)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 20)
         }
         .background(Palette.rail)
         .overlay(alignment: .trailing) { Rectangle().fill(Color.black.opacity(0.35)).frame(width: 1) }
+    }
+
+    private var exitDemo: some View {
+        Button { store.exitDemo() } label: {
+            Text("Exit demo")
+                .font(Typeface.text(11, .demibold))
+                .lineLimit(1)
+                .fixedSize()
+                .foregroundStyle(Palette.graphite)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Capsule().fill(Palette.accent))
+        }
+        .buttonStyle(.plain)
+        .help("Leave demo mode and reconnect to your printers")
     }
 }
 
