@@ -697,7 +697,7 @@ extension PrinterSession {
             "current": ["state": printing ? "Printing" : "Operational", "port": "/dev/ttyACM0", "baudrate": 115200, "printerProfile": "_default"],
             "options": [
                 "ports": ["/dev/ttyACM0", "/dev/ttyUSB0"], "baudrates": [250000, 230400, 115200, 57600],
-                "printerProfiles": [["id": "_default", "name": printing ? "Prusa MK4" : "Ender 3 V3"]],
+                "printerProfiles": [["id": "_default", "name": printing ? "Prusa MK3S+ (MMU3)" : "Ender 3 V3"]],
                 "portPreference": "/dev/ttyACM0", "baudratePreference": 115200, "printerProfilePreference": "_default", "autoconnect": true,
             ],
         ]
@@ -705,8 +705,8 @@ extension PrinterSession {
 
         let profileJSON: JSONValue = [
             "id": "_default",
-            "name": .string(toolCount > 1 ? "Prusa XL 4-tool" : printing ? "Prusa MK4" : "Ender 3 V3"),
-            "model": .string(toolCount > 1 ? "Original Prusa XL" : printing ? "Original Prusa MK4" : "Creality Ender 3 V3"),
+            "name": .string(toolCount > 1 ? "Prusa XL 4-tool" : printing ? "Prusa MK3S+ (MMU3)" : "Ender 3 V3"),
+            "model": .string(toolCount > 1 ? "Original Prusa XL" : printing ? "Original Prusa MK3S+" : "Creality Ender 3 V3"),
             "heatedBed": true, "heatedChamber": .bool(toolCount > 1),
             "volume": ["width": printing ? 250 : 220, "depth": 210, "height": printing ? 220 : 250, "formFactor": "rectangular", "origin": "lowerleft"],
             "extruder": ["count": JSONValue(toolCount), "nozzleDiameter": 0.4, "sharedNozzle": false],

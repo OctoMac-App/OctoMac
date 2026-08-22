@@ -739,6 +739,7 @@ func prettyName(_ name: String?) -> String? {
 struct PresetPanel: View {
     let session: PrinterSession
     @AppStorage private var chosen: String
+    @State private var choosing = false
 
     init(session: PrinterSession) {
         self.session = session
@@ -758,11 +759,7 @@ struct PresetPanel: View {
             if presets.isEmpty {
                 Text("No temperature presets saved in OctoPrint.").font(Typeface.caption).foregroundStyle(Palette.faint)
             } else {
-                Menu {
-                    ForEach(presets, id: \.name) { preset in
-                        Button("\(preset.name)  (\(Int(preset.extruder))° / \(Int(preset.bed))°)") { chosen = preset.name }
-                    }
-                } label: {
+                Button { choosing.toggle() } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 1) {
                             Text(selected?.name ?? "Choose a preset").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
@@ -777,12 +774,16 @@ struct PresetPanel: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Palette.graphite))
-                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Palette.edge, lineWidth: 1))
+                    .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(choosing ? Palette.accent : Palette.edge, lineWidth: 1))
                     .contentShape(Rectangle())
                 }
-                .menuStyle(.button)
                 .buttonStyle(.plain)
-                .menuIndicator(.hidden)
+                .popover(isPresented: $choosing, arrowEdge: .bottom) {
+                    PresetList(presets: presets, chosen: selected?.name) { name in
+                        chosen = name
+                        choosing = false
+                    }
+                }
             }
 
             HStack(spacing: 8) {
@@ -799,6 +800,51 @@ struct PresetPanel: View {
         .padding(14)
         .machined(radius: 14)
         .disabled(!session.isPrinterConnected)
+    }
+}
+
+/// The preset choices, drawn in the app's own style rather than as a system menu.
+struct PresetList: View {
+    let presets: [(name: String, extruder: Double, bed: Double)]
+    let chosen: String?
+    let pick: (String) -> Void
+    @State private var hovered: String?
+
+    var body: some View {
+        ScrollView {
+            VStack(spacing: 2) {
+                ForEach(presets, id: \.name) { preset in
+                    Button { pick(preset.name) } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(Palette.accent)
+                                .opacity(preset.name == chosen ? 1 : 0)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(preset.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                                Text("Hotend \(Int(preset.extruder))°, bed \(Int(preset.bed))°")
+                                    .font(Typeface.number(12)).foregroundStyle(Palette.faint)
+                            }
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(hovered == preset.name ? Palette.extrusionHi : .clear))
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .onHover { hovered = $0 ? preset.name : (hovered == preset.name ? nil : hovered) }
+                }
+            }
+            .padding(6)
+        }
+        .scrollBounceBehavior(.basedOnSize)
+        .frame(width: 260)
+        .frame(maxHeight: 360)
+        .fixedSize(horizontal: false, vertical: true)
+        .background(Palette.extrusion)
+        .presentationBackground(Palette.extrusion)
     }
 }
 

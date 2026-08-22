@@ -124,7 +124,7 @@ final class InstanceStore {
 
     private func loadDemo() {
         let scenarios: [(String, String, PrinterSession.DemoScenario)] = [
-            ("Workshop MK4", "http://octopi-workshop.local/", .printing),
+            ("Workshop MK3S", "http://octopi-workshop.local/", .printing),
             ("Studio Ender", "http://octopi-studio.local/", .ready),
             ("Lab XL", "http://octopi-lab.local/", .toolchanger),
             ("Garage Voron", "http://voron.local/", .locked),

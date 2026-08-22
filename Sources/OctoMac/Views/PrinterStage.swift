@@ -87,10 +87,11 @@ struct StageHeader: View {
     @Binding var confirmingEmergency: Bool
 
     var body: some View {
-        // Everything on one line when it fits; otherwise the tabs drop to a row of their own.
+        // Everything on one line when it fits; then the tabs and buttons share a second line;
+        // on the narrowest windows the tabs get a row of their own and the status line shortens.
         ViewThatFits(in: .horizontal) {
             HStack(alignment: .center, spacing: 20) {
-                title
+                title.fixedSize()
                 Spacer(minLength: 12)
                 if session.link != .needsAPIKey {
                     TabTrack(selection: $tab).fixedSize()
@@ -99,8 +100,18 @@ struct StageHeader: View {
                 }
             }
             VStack(alignment: .leading, spacing: 14) {
+                title.fixedSize()
+                if session.link != .needsAPIKey {
+                    HStack(alignment: .center, spacing: 16) {
+                        TabTrack(selection: $tab).fixedSize()
+                        Spacer(minLength: 12)
+                        actions
+                    }
+                }
+            }
+            VStack(alignment: .leading, spacing: 14) {
                 HStack(alignment: .center, spacing: 16) {
-                    title
+                    title.fixedSize(horizontal: false, vertical: true)
                     Spacer(minLength: 12)
                     if session.link != .needsAPIKey { actions }
                 }
@@ -124,6 +135,7 @@ struct StageHeader: View {
                     .font(Typeface.display)
                     .foregroundStyle(Palette.paper)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 HStack(spacing: 2) {
                     HeaderIconButton(symbol: "slider.horizontal.3", help: "Edit this printer") {
                         editor = .edit(session.instance)
@@ -136,7 +148,9 @@ struct StageHeader: View {
                 StatusLamp(color: mood.color(filament: filament), lit: mood != .offline)
                 Text(session.stateText).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).lineLimit(1)
                 if let profile = session.currentProfile?.name, session.link == .online {
+                    // The first thing to give way when the window is narrow.
                     Text(profile).font(Typeface.body).foregroundStyle(Palette.faint).lineLimit(1)
+                        .layoutPriority(-1)
                 }
                 if let mmu = session.mmu, let tool = session.mmuTool,
                    let filament = mmu.filaments.first(where: { $0.index == tool }) {
@@ -148,7 +162,6 @@ struct StageHeader: View {
                 }
             }
         }
-        .fixedSize()
     }
 }
 
