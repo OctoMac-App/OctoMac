@@ -60,6 +60,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Needed when launched as a bare executable via `swift run` rather than from the .app bundle.
         NSApp.setActivationPolicy(.regular)
         NSApp.activate()
+        Notifier.shared.start()
     }
 }
 

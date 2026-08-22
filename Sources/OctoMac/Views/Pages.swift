@@ -41,8 +41,6 @@ struct MovePage: View {
     @AppStorage("jogStep") private var step = 10.0
     @AppStorage("extrudeAmount") private var extrudeAmount = 5.0
     @State private var fan = 100.0
-    @State private var feed = 100.0
-    @State private var flow = 100.0
 
     private let steps: [Double] = [0.1, 1, 10, 50, 100]
 
@@ -117,8 +115,8 @@ VStack(spacing: 20) {
     StagePanel(title: "Fan and speed") {
         VStack(spacing: 18) {
             dialRow("Part fan", value: $fan, range: 0...100, step: 5, unit: "%") { session.setFan(percent: fan) }
-            dialRow("Print speed", value: $feed, range: 50...200, step: 5, unit: "%") { session.setFeedRate(Int(feed)) }
-            dialRow("Flow", value: $flow, range: 75...125, step: 1, unit: "%") { session.setFlowRate(Int(flow)) }
+            dialRow("Print speed", value: rate(\.feedRate), range: 50...200, step: 5, unit: "%") { session.setFeedRate(Int(session.feedRate)) }
+            dialRow("Flow", value: rate(\.flowRate), range: 75...125, step: 1, unit: "%") { session.setFlowRate(Int(session.flowRate)) }
         }
     }
     .disabled(!session.flags.operational)
@@ -176,6 +174,11 @@ VStack(spacing: 20) {
 
     private func axisLabel(_ text: String, x: CGFloat, y: CGFloat) -> some View {
         Text(text).font(Typeface.number(11)).foregroundStyle(Palette.faint).offset(x: x + (x > 0 ? 8 : 0), y: y - (y < 0 ? 8 : 0))
+    }
+
+    /// Speed and flow live on the session, so the Overview's controls and these sliders agree.
+    private func rate(_ keyPath: ReferenceWritableKeyPath<PrinterSession, Double>) -> Binding<Double> {
+        Binding(get: { session[keyPath: keyPath] }, set: { session[keyPath: keyPath] = $0 })
     }
 
     private func dialRow(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double, unit: String, apply: @escaping () -> Void) -> some View {
@@ -729,26 +732,40 @@ struct MachinePage: View {
     var body: some View {
         GeometryReader { geo in
             ScrollView {
-                if geo.size.width >= 940 {
-                    HStack(alignment: .top, spacing: 20) {
-                        VStack(spacing: 20) {
-                            printerPanel
-                            connectionPanel
+                VStack(spacing: 20) {
+                    if geo.size.width >= 940 {
+                        HStack(alignment: .top, spacing: 20) {
+                            VStack(spacing: 20) {
+                                printerPanel
+                                if let bed = session.bedLevel { BedMeshPanel(session: session, settings: bed) }
+                                connectionPanel
+                                LogsPanel(session: session)
+                            }
+                            VStack(spacing: 20) {
+                                serverPanel
+                                if let pi = session.pi { PiHealthPanel(session: session, pi: pi) }
+                                if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
+                                powerPanel
+                            }
                         }
-                        VStack(spacing: 20) {
-                            serverPanel
-                            powerPanel
-                        }
-                    }
-                } else {
-                    VStack(spacing: 20) {
+                    } else {
                         printerPanel
+                        if let bed = session.bedLevel { BedMeshPanel(session: session, settings: bed) }
                         serverPanel
+                        if let pi = session.pi { PiHealthPanel(session: session, pi: pi) }
                         connectionPanel
                         powerPanel
+                        if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
+                        LogsPanel(session: session)
                     }
                 }
             }
+        }
+        .task {
+            async let updates: Void = session.refreshUpdates()
+            async let logs: Void = session.refreshLogs()
+            async let health: Void = session.refreshHealth()
+            _ = await (updates, logs, health)
         }
         .onAppear(perform: syncConnection)
         .onChange(of: session.connection) { syncConnection() }
@@ -771,6 +788,15 @@ struct MachinePage: View {
                         fact("Nozzle", Fmt.number(profile.extruder?.nozzleDiameter ?? 0.4), unit: "mm")
                         fact("Extruders", "\(profile.extruder?.count ?? 1)", unit: nil)
                         fact("Heated bed", profile.heatedBed == true ? "Yes" : "No", unit: nil)
+                    }
+                    if let firmware = session.firmware {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Firmware").font(Typeface.caption).foregroundStyle(Palette.faint)
+                            Text(Self.shortFirmware(firmware))
+                                .font(Typeface.number(18)).foregroundStyle(Palette.paper)
+                                .textSelection(.enabled)
+                                .help(firmware)
+                        }
                     }
                 }
             } else {
@@ -879,6 +905,14 @@ struct MachinePage: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// "Prusa-Firmware 3.14.1+8237_74a577bc0 based on Marlin" reads better as "Prusa-Firmware 3.14.1".
+    static func shortFirmware(_ firmware: String) -> String {
+        var text = firmware
+        if let range = text.range(of: " based on ") { text = String(text[..<range.lowerBound]) }
+        if let plus = text.firstIndex(of: "+") { text = String(text[..<plus]) }
+        return text
     }
 
     private func pickerRow<P: View>(_ title: String, @ViewBuilder picker: () -> P) -> some View {

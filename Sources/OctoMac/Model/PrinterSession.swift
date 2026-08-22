@@ -121,6 +121,26 @@ final class PrinterSession {
     /// Uploads in progress (and briefly after they finish), shown in the upload panel.
     private(set) var uploads: [UploadItem] = []
 
+    // Plugins and health
+    /// Real layer numbers from the DisplayLayerProgress plugin.
+    private(set) var layerProgress: LayerProgress?
+    /// Set while Bed Level Visualizer is measuring the bed.
+    private(set) var bedMeasuringSince: Date?
+    /// A mesh measured while the app has been running (newer than the one stored in the plugin's settings).
+    private(set) var measuredMesh: BedLevelVisualizer.Mesh?
+    private(set) var systemInfo: [String: JSONValue] = [:]
+    private(set) var pi: PiSupportInfo?
+    private(set) var throttle: ThrottleState?
+    private(set) var printerError: PrinterErrorInfo?
+    private(set) var updates: [SoftwareComponent]?
+    private(set) var logs: [LogFile] = []
+    /// Print speed and flow, as last set here or reported by the printer (M220 / M221).
+    var feedRate = 100.0
+    var flowRate = 100.0
+    /// For notifications: a pause asked for from this app needs no banner, and a disconnect only matters mid-print.
+    private var pausedHere = false
+    private var wasPrinting = false
+
     /// The printer's camera stream. Owned here (not by a view) so it stays connected while other printers are shown.
     let camera = MJPEGStreamer()
 
@@ -225,6 +245,21 @@ final class PrinterSession {
     /// The MK3 family can't skip the prompt (the printer then asks on its own screen); later models can.
     var mmuCanSkip: Bool { mmuPrusaVersion.map { $0 != "MK3" } ?? false }
 
+    var bedLevel: BedLevelVisualizer.Settings? { BedLevelVisualizer.Settings(settings: settings) }
+    var bedMesh: BedLevelVisualizer.Mesh? { measuredMesh ?? bedLevel?.stored }
+    var hasLayerPlugin: Bool { settings?.value(at: "plugins", LayerProgress.pluginID) != nil }
+
+    /// The printer's firmware, as it introduced itself (M115).
+    var firmware: String? {
+        systemInfo["printer.firmware"]?.stringValue.flatMap { $0.isEmpty ? nil : $0 }
+    }
+
+    /// The reason the printer last stopped with an error, while it's still in that state.
+    var faultDetail: String? {
+        guard !isPrinterConnected, let printerError, !printerError.isEmpty else { return nil }
+        return printerError.error
+    }
+
     var currentProfile: PrinterProfile? {
         profiles.first { $0.id == connection?.current.printerProfile } ?? profiles.first { $0.current == true } ?? profiles.first
     }
@@ -261,7 +296,34 @@ final class PrinterSession {
         async let system: Void = refreshSystemCommands()
         async let profiles: Void = refreshProfiles()
         async let temps: Void = loadTemperatureHistory()
-        _ = await (version, connection, files, settings, system, profiles, temps)
+        async let health: Void = refreshHealth()
+        _ = await (version, connection, files, settings, system, profiles, temps, health)
+        if hasLayerPlugin { layerProgress = try? await client.layerProgress() }
+    }
+
+    /// Firmware, Raspberry Pi health and the last printer error. Quietly skipped where unsupported.
+    func refreshHealth() async {
+        guard !isDemoSession else { return }
+        if let info = try? await client.systemInfo() { systemInfo = info }
+        if let info = try? await client.piSupport() {
+            pi = info
+            throttle = info.throttle
+        }
+        printerError = try? await client.lastPrinterError()
+    }
+
+    func refreshUpdates(force: Bool = false) async {
+        guard !isDemoSession else { return }
+        if force {
+            updates = await attempt { [client] in try await client.softwareUpdates(force: true) } ?? updates
+        } else if let list = try? await client.softwareUpdates() {
+            updates = list
+        }
+    }
+
+    func refreshLogs() async {
+        guard !isDemoSession else { return }
+        if let list = try? await client.logFiles() { logs = list.files.sorted { ($0.date ?? 0) > ($1.date ?? 0) } }
     }
 
     func refreshVersion() async { version = await attempt { try await client.version() } ?? version }
@@ -354,6 +416,19 @@ final class PrinterSession {
             handle(event)
         case .plugin(let id, let data) where id == PrusaMMU.pluginID:
             handleMMU(data)
+        case .plugin(let id, let data) where id == LayerProgress.pushID:
+            layerProgress = LayerProgress(push: data)
+        case .plugin(let id, let data) where id == PiSupportInfo.pluginID:
+            if let update = PiSupportInfo.throttleUpdate(data) {
+                if update.currentIssue, throttle?.currentIssue != true {
+                    notify(.piWarning, "Raspberry Pi warning",
+                           update.currentUndervoltage ? "The Pi isn't getting enough power. Prints may stutter; try a better power supply."
+                                                      : "The Pi is too hot and is slowing down. Prints may stutter.")
+                }
+                throttle = update
+            }
+        case .plugin(let id, let data) where id == BedLevelVisualizer.pluginID:
+            handleBedLevel(data)
         default:
             break
         }
@@ -362,6 +437,7 @@ final class PrinterSession {
     private func apply(_ payload: CurrentPayload) {
         if let state = payload.state {
             self.state = state
+            if state.flags.isJobActive { wasPrinting = true } else if state.flags.operational { wasPrinting = false }
             // Readings from before a disconnect are stale; don't keep showing them as current.
             if state.flags.closedOrError {
                 heaters = [:]
@@ -376,6 +452,7 @@ final class PrinterSession {
         }
         appendTemperatures(payload.temps)
         if !payload.logs.isEmpty {
+            readRates(from: payload.logs)
             terminal.append(contentsOf: payload.logs)
             if terminal.count > Self.terminalLimit { terminal.removeFirst(terminal.count - Self.terminalLimit) }
         }
@@ -385,6 +462,7 @@ final class PrinterSession {
         switch PrusaMMU.Message(data) {
         case .showPrompt:
             mmuPromptSince = .now
+            notify(.needsAttention, "Choose a filament", "The print is waiting for you to pick an MMU filament.")
         case .closePrompt:
             mmuPromptSince = nil
         case .state(let tool, let version):
@@ -403,17 +481,88 @@ final class PrinterSession {
         perform { [client] in try await client.selectMMUFilament(index) }
     }
 
+    private func handleBedLevel(_ data: JSONValue) {
+        switch BedLevelVisualizer.Message(data) {
+        case .processing:
+            if bedMeasuringSince == nil { bedMeasuringSince = .now }
+        case .mesh(var mesh):
+            bedMeasuringSince = nil
+            let measured = Date.now.formatted(date: .abbreviated, time: .shortened)
+            mesh.measured = measured
+            measuredMesh = mesh
+            // Like the plugin's own page: keep the latest mesh in its settings, so it's there next time.
+            if bedLevel?.saveMesh ?? true {
+                perform { [client] in try await client.storeBedMesh(mesh, measured: measured) }
+            }
+        case .error(let message):
+            bedMeasuringSince = nil
+            error = ErrorBanner(message: "Bed Visualizer couldn't read the bed: \(message)")
+        case nil:
+            break
+        }
+    }
+
+    /// Picks up the speed and flow factors from the printer's replies to M220 / M221
+    /// (for example "FR:110%" and "E0 Flow: 95%").
+    private func readRates(from lines: [String]) {
+        for line in lines where line.hasPrefix("Recv:") {
+            if let match = line.firstMatch(of: /FR:\s*(\d+)%/), let value = Double(match.1) { feedRate = value }
+            if let match = line.firstMatch(of: /(?:Flow|extrude multiply):\s*(\d+)%/), let value = Double(match.1) { flowRate = value }
+        }
+    }
+
+    private func notify(_ kind: NotificationKind, _ title: String, _ body: String) {
+        guard !isDemoSession else { return }
+        Notifier.shared.post(kind, printer: instance, title: title, body: body)
+    }
+
+    private func notifyAbout(_ event: ServerEvent) {
+        let file = event.payload["name"]?.stringValue.map { SlicedName($0).title }
+        switch event.type {
+        case "PrintDone":
+            let time = event.payload["time"]?.doubleValue.map { " after \(Fmt.duration($0))" } ?? ""
+            notify(.printDone, "Print finished", "\(file ?? "The print") finished\(time).")
+        case "PrintFailed":
+            // A cancel from OctoMac or OctoPrint arrives as PrintCancelled; this is the printer or an error.
+            let reason = event.payload["reason"]?.stringValue == "cancelled" ? "was stopped" : "failed"
+            notify(.printFailed, "Print \(reason == "failed" ? "failed" : "stopped")", "\(file ?? "The print") \(reason).")
+        case "FilamentChange":
+            notify(.needsAttention, "Filament change", "The printer is asking for a filament change.")
+        case "PrintPaused":
+            if !pausedHere { notify(.needsAttention, "Print paused", "\(file ?? "The print") is paused and waiting for you.") }
+            pausedHere = false
+        case "Error":
+            let message = event.payload["error"]?.stringValue ?? "The printer reported an error."
+            notify(.printerProblem, "Printer error", message)
+        case "Disconnected":
+            if wasPrinting { notify(.printerProblem, "Printer disconnected", "The printer stopped answering in the middle of a print.") }
+            wasPrinting = false
+        default:
+            break
+        }
+    }
+
     private func handle(_ event: ServerEvent) {
+        notifyAbout(event)
         if let kind = ChartEvent.Kind(eventType: event.type) {
             chartEvents.append(ChartEvent(time: .now, kind: kind))
             let cutoff = Date.now.addingTimeInterval(-Self.temperatureWindow)
             chartEvents.removeAll { $0.time < cutoff }
         }
         switch event.type {
+        case "PrintStarted":
+            layerProgress = nil
         case "UpdatedFiles", "FileAdded", "FileRemoved", "FolderAdded", "FolderRemoved", "MetadataAnalysisFinished", "PrintDone":
             Task { await refreshFiles() }
-        case "Connected", "Disconnected", "Connecting", "PrinterProfileModified":
-            Task { await refreshConnection() }
+        case "Connected", "Disconnected", "Connecting", "PrinterProfileModified", "Error":
+            Task {
+                await refreshConnection()
+                await refreshHealth()
+            }
+            if event.type == "Connected" {
+                feedRate = 100
+                flowRate = 100
+            }
         case "SettingsUpdated":
             Task { await refreshSettings() }
         default:
@@ -470,7 +619,13 @@ final class PrinterSession {
         Task { await attempt(operation) }
     }
 
-    func jobCommand(_ command: JobCommand) { perform { [client] in try await client.job(command) } }
+    func jobCommand(_ command: JobCommand) {
+        switch command {
+        case .pause, .togglePause: pausedHere = true
+        default: break
+        }
+        perform { [client] in try await client.job(command) }
+    }
 
     /// True while a heater is still climbing towards its target (e.g. the M109/M190 wait at the start of a print).
     var isWaitingForHeaters: Bool {
@@ -493,8 +648,48 @@ final class PrinterSession {
     func jog(x: Double? = nil, y: Double? = nil, z: Double? = nil) { perform { [client] in try await client.jog(x: x, y: y, z: z) } }
     func home(_ axes: [OctoPrintKit.Axis]) { perform { [client] in try await client.home(axes) } }
     func extrude(_ amount: Double) { perform { [client] in try await client.extrude(amount) } }
-    func setFeedRate(_ percent: Int) { perform { [client] in try await client.setFeedRate(percent) } }
-    func setFlowRate(_ percent: Int) { perform { [client] in try await client.setFlowRate(percent) } }
+    func setFeedRate(_ percent: Int) {
+        feedRate = Double(percent)
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.setFeedRate(percent) }
+    }
+
+    func setFlowRate(_ percent: Int) {
+        flowRate = Double(percent)
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.setFlowRate(percent) }
+    }
+
+    /// Measures the bed with Bed Level Visualizer's G-code.
+    func measureBed() {
+        guard let commands = bedLevel?.commandLines, !commands.isEmpty else { return }
+        if let blocker = controlBlocker {
+            error = ErrorBanner(message: blocker)
+            return
+        }
+        bedMeasuringSince = .now
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.measureBed(commands: commands) }
+    }
+
+    func cancelBedMeasurement() {
+        bedMeasuringSince = nil
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.cancelBedMeasurement() }
+    }
+
+    func setBedMeasureCommand(_ command: String) {
+        guard !isDemoSession else { return }
+        perform { [client, weak self] in
+            try await client.setBedMeasureCommand(command)
+            await self?.refreshSettings()
+        }
+    }
+
+    func logContents(_ file: LogFile) async -> Data? {
+        if isDemoSession { return Data(Self.demoLog.utf8) }
+        return await attempt { [client] in try await client.logContents(file) }
+    }
     func sendGcode(_ command: String) { perform { [client] in try await client.sendGcode(command) } }
 
     func setFan(percent: Double) {
@@ -730,9 +925,10 @@ extension PrinterSession {
             if CommandLine.arguments.contains("--demo-mmu") { mmuPromptSince = .now }
         }
         camera.showStill(Self.demoCameraFrame(title: instance.name))
+        loadDemoHealth(printing: printing, toolchanger: toolCount > 1)
         settings = [
             "webcam": ["streamUrl": "/webcam/?action=stream"],
-            "plugins": printing ? ["prusammu": [
+            "plugins": .object((printing ? ["prusammu": [
                 "filament": [
                     ["color": "#808080", "enabled": true, "id": 1, "name": "Urban Grey PETG"],
                     ["color": "#FFD60A", "enabled": true, "id": 2, "name": "Mango Yellow PETG"],
@@ -741,7 +937,10 @@ extension PrinterSession {
                     ["color": "#008080", "enabled": true, "id": 5, "name": "Ocean Blue PETG"],
                 ],
                 "filamentCount": 5, "timeout": 30, "indexAtZero": false, "enablePrompt": true,
-            ]] : [:],
+            ]] : [:]).merging([
+                "DisplayLayerProgress": ["showOnState": true],
+                "bedlevelvisualizer": Self.demoBedLevel(rows: printing ? 7 : 5, tilt: printing ? 0.06 : 0.14),
+            ]) { a, _ in a }),
             "temperature": ["profiles": [
             ["name": "PLA", "extruder": 215, "bed": 60],
             ["name": "PETG", "extruder": 240, "bed": 85],
@@ -749,6 +948,56 @@ extension PrinterSession {
         ]],
         ]
     }
+
+    private func loadDemoHealth(printing: Bool, toolchanger: Bool) {
+        if printing { layerProgress = LayerProgress(currentLayer: 92, totalLayers: 146, averageLayerDuration: 58, lastLayerDuration: 61) }
+        systemInfo = ["printer.firmware": .string(toolchanger ? "Prusa-Firmware-Buddy 6.1.3" : printing ? "Prusa-Firmware 3.14.1+8237 based on Marlin" : "Marlin 2.1.2.4")]
+        pi = PiSupportInfo([
+            "model": .string(printing ? "Raspberry Pi 4 Model B Rev 1.2" : "Raspberry Pi 3 Model B Plus Rev 1.3"),
+            "octopi_version": "1.0.0",
+            "throttle_state": ["current_issue": false, "past_issue": .bool(!printing), "past_undervoltage": .bool(!printing),
+                               "current_undervoltage": false, "current_overheat": false, "past_overheat": false],
+        ])
+        throttle = pi?.throttle
+        updates = [
+            SoftwareComponent(id: "octoprint", name: "OctoPrint", installed: "1.10.3", available: printing ? "1.10.3" : "1.11.0",
+                              updateAvailable: !printing, updatePossible: true),
+            SoftwareComponent(id: "bedlevelvisualizer", name: "Bed Visualizer", installed: "1.1.2", available: "1.1.2", updateAvailable: false, updatePossible: true),
+            SoftwareComponent(id: "DisplayLayerProgress", name: "DisplayLayerProgress Plugin", installed: "1.28.0", available: "1.28.0", updateAvailable: false, updatePossible: true),
+            SoftwareComponent(id: "prusaslicerthumbnails", name: "Slicer Thumbnails", installed: "1.2.4", available: "1.2.4", updateAvailable: false, updatePossible: true),
+        ]
+        let now = Date.now.timeIntervalSince1970
+        logs = [("octoprint.log", 1_204_331, 60.0), ("serial.log", 0, 3600), ("plugin_pi_support.log", 4_210, 7200), ("auth.log", 584, 86400)].map {
+            try? (["name": .string($0.0), "size": JSONValue($0.1), "date": .number(now - $0.2)] as JSONValue).decode(LogFile.self)
+        }
+        .compactMap { $0 }
+    }
+
+    /// A gently tilted, slightly dished bed, as Bed Level Visualizer would store it.
+    private static func demoBedLevel(rows: Int, tilt: Double) -> JSONValue {
+        let mesh: [JSONValue] = (0..<rows).map { row in
+            .array((0..<rows).map { column in
+                let x = Double(column) / Double(rows - 1) - 0.5, y = Double(row) / Double(rows - 1) - 0.5
+                let z = tilt * x - 0.05 * y + 0.16 * (x * x + y * y) - 0.04 + 0.012 * sin(Double(row * 7 + column * 3))
+                return .number((z * 1000).rounded() / 1000)
+            })
+        }
+        let axis: (Double) -> JSONValue = { size in .array((0..<rows).map { .number((Double($0) / Double(rows - 1) * size).rounded()) }) }
+        return [
+            "command": "G28 W\nG80\nG81", "save_mesh": true, "timeout": 1800,
+            "stored_mesh": .array(mesh), "stored_mesh_x": axis(250), "stored_mesh_y": axis(210),
+            "mesh_timestamp": .string(Date.now.addingTimeInterval(-2 * 86400).formatted(date: .abbreviated, time: .shortened)),
+        ]
+    }
+
+    private static let demoLog = """
+    2026-06-28 14:02:11,402 - octoprint.server - INFO - Starting OctoPrint 1.10.3
+    2026-06-28 14:02:14,118 - octoprint.plugins.pi_support - INFO - Detected Raspberry Pi 4 Model B Rev 1.2
+    2026-06-28 14:02:19,551 - octoprint.util.comm - INFO - Changing monitoring state from "Offline" to "Opening serial connection"
+    2026-06-28 14:02:21,004 - octoprint.util.comm - INFO - Changing monitoring state from "Connecting" to "Operational"
+    2026-06-28 14:03:40,773 - octoprint.printer.standard.job - INFO - Print job started: gridfinity_bins_3x2_PLA.gcode
+    2026-06-28 14:03:40,790 - octoprint.plugins.DisplayLayerProgress - INFO - Layer expressions found, 146 layers
+    """
 
     /// Demo mode: nudge the print forward every half second, like OctoPrint's pushes, so live views have motion.
     private func startDemoProgress() {

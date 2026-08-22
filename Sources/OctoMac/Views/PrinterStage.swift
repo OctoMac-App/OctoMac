@@ -167,6 +167,11 @@ struct StageHeader: View {
                     }
                     .help("Loaded in the MMU: slot \(mmu.number(for: filament))")
                 }
+                if session.throttle?.currentIssue == true {
+                    Label("Pi warning", systemImage: "exclamationmark.triangle.fill")
+                        .font(Typeface.bodyStrong).foregroundStyle(Palette.warm).lineLimit(1)
+                        .help("The Raspberry Pi is short of power or too hot. See the Machine tab.")
+                }
             }
         }
     }

@@ -18,6 +18,9 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Easy uploads and tidy folders.** Drag G-code onto the Files tab to upload it, and drag files onto folders to organise them.
 - **G-code preview.** See exactly what will be printed, layer by layer or as a 3D model you can spin around.
 - **Watch prints live.** While printing, the 3D preview follows along, with a little animated nozzle laying down the current layer.
+- **Tweak a print as it runs.** Nudge the print speed and flow right from the Overview while you watch.
+- **Notifications.** Get a Mac notification when a print finishes or fails, when the printer needs you (a filament change, a paused print, an MMU filament choice), if it stops answering, or if the Raspberry Pi is short of power. Choose which ones you want in Settings.
+- **Know your machine.** The Machine tab shows the printer's firmware, the Raspberry Pi's power and temperature health, available OctoPrint and plugin updates, and OctoPrint's logs, which you can read or save. If the printer won't connect, OctoMac tells you why in plain words.
 - **Full control.** Heat up with your saved presets, move the print head, extrude filament, adjust fan and speed, send G-code from the console, and manage the connection and the Raspberry Pi.
 - **Safe by design.** Stopping a print asks you to confirm and shows what you'd lose, and there's a separate emergency stop for when something goes wrong.
 - **A menu bar helper.** Check on every printer from the menu bar without opening the main window.
@@ -73,12 +76,26 @@ OctoMac works with a standard OctoPrint install, and it gets better with a few p
 | [Slicer Thumbnails](https://plugins.octoprint.org/plugins/prusaslicerthumbnails/) | Shows the picture your slicer embeds in each G-code file, in the file list, the file browser, the file info panel and while printing. Works with PrusaSlicer, SuperSlicer, OrcaSlicer, Cura and others. | Supported |
 | Application Keys (built in) | Lets you connect a printer by approving OctoMac in your browser, with no copying and pasting of API keys. | Supported |
 | Classic Webcam (built in) | Shows your camera stream, including your flip and rotate settings. | Supported |
-| Logging (built in) | Used for log file access. | Supported |
+| Logging (built in) | Lists OctoPrint's log files on the Machine tab, so you can read the latest lines or save a whole log. | Supported |
+| Pi Support (built in) | Shows the Raspberry Pi model and warns when it's short of power or too hot. | Supported |
+| Software Update (built in) | Shows whether OctoPrint and your plugins are up to date. | Supported |
+| [Bed Level Visualizer](https://plugins.octoprint.org/plugins/bedlevelvisualizer/) | Shows your bed mesh on the Machine tab as a colour map with every probe point's height, or as a 3D surface you can turn. Measure the bed again with one click, and pick the measuring G-code from ready-made starting points. | Supported |
+| [DisplayLayerProgress](https://plugins.octoprint.org/plugins/DisplayLayerProgress/) | Shows the real layer number while printing (for example "Layer 92 of 146, about 58s each"). | Supported |
 | [Prusa MMU](https://plugins.octoprint.org/plugins/prusammu/) | When a print starts on a printer with a Prusa Multi Material Unit, asks which filament to use, showing your filament names and colours and a countdown. You can answer from any screen, or press the slot's number. The loaded filament also shows next to the printer's name. | Supported |
 
 Don't have a plugin installed? No problem. OctoMac simply skips that feature. For example, without Slicer Thumbnails your files show a tidy icon instead of a picture.
 
 Want OctoMac to support a plugin you use? Open an issue and tell us about it.
+
+### Bed Level Visualizer: measuring the bed
+
+Bed Level Visualizer needs to know which G-code makes your printer probe the bed and report the result. In OctoMac, open the **Machine** tab and choose **G-code…** in the Bed level panel. Pick a starting point, then save:
+
+- **Prusa MK3S and MK2.5S:** `G28 W`, `G80`, `G81`
+- **Marlin with a probe:** `G28`, `G29 T`
+- **Marlin with a saved mesh:** `M420 V`
+
+The commands are saved in OctoPrint, so the plugin's own page uses them too. Then press **Measure bed**. Measuring works while the printer is idle; the bed is most accurate when it's already at printing temperature.
 
 ### Prusa MMU: choosing a filament
 

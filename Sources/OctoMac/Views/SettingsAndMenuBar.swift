@@ -1,5 +1,6 @@
 import OctoPrintKit
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     @Environment(InstanceStore.self) private var store
@@ -39,8 +40,12 @@ struct SettingsView: View {
             }
             .padding()
             .tabItem { Label("Printers", systemImage: "printer") }
+
+            NotificationSettings()
+                .padding()
+                .tabItem { Label("Notifications", systemImage: "bell.badge") }
         }
-        .frame(width: 520, height: 360)
+        .frame(width: 520, height: 440)
         .sheet(item: $editor) { InstanceEditor(target: $0) }
     }
 }
@@ -176,6 +181,57 @@ struct MenuBarLabel: View {
             if let soonest, let fraction = soonest.progress?.fraction {
                 Text("\(Int(fraction * 100))%").monospacedDigit()
             }
+        }
+    }
+}
+
+struct NotificationSettings: View {
+    @State private var status: UNAuthorizationStatus = .notDetermined
+
+    var body: some View {
+        Form {
+            Section {
+                ForEach(NotificationKind.allCases) { kind in
+                    NotificationToggle(kind: kind)
+                }
+            } footer: {
+                VStack(alignment: .leading, spacing: 8) {
+                    switch status {
+                    case .denied:
+                        Text("Notifications are turned off for OctoMac in System Settings.")
+                        Button("Open Notification Settings") {
+                            NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!)
+                        }
+                    case .notDetermined:
+                        Button("Allow Notifications") { Task { _ = await Notifier.shared.requestPermission(); await refresh() } }
+                    default:
+                        Text("Banners for the printer on screen are skipped while OctoMac is in front.")
+                    }
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+        }
+        .formStyle(.grouped)
+        .task { await refresh() }
+    }
+
+    private func refresh() async { status = await Notifier.shared.permissionStatus() }
+}
+
+private struct NotificationToggle: View {
+    let kind: NotificationKind
+    @AppStorage private var enabled: Bool
+
+    init(kind: NotificationKind) {
+        self.kind = kind
+        _enabled = AppStorage(wrappedValue: true, kind.defaultsKey)
+    }
+
+    var body: some View {
+        Toggle(isOn: $enabled) {
+            Text(kind.title)
+            Text(kind.detail)
         }
     }
 }

@@ -320,6 +320,14 @@ struct JobPanel: View {
                         }
                         .padding(.top, 4)
 
+                        if let layers = layerLine {
+                            Text(layers)
+                                .font(Typeface.number(15))
+                                .foregroundStyle(Palette.dust)
+                                .lineLimit(1)
+                                .contentTransition(.numericText())
+                        }
+
                         if flags.cancelling {
                             VStack(alignment: .leading, spacing: 8) {
                                 Label(session.isWaitingForHeaters
@@ -353,6 +361,15 @@ struct JobPanel: View {
 
                 Spacer(minLength: 0)
 
+                if !flags.cancelling {
+                    HStack(spacing: 10) {
+                        RateStepper(title: "Speed", value: session.feedRate, step: 5, range: 50...200,
+                                    help: "Print speed (M220). Changes take effect straight away.") { session.setFeedRate($0) }
+                        RateStepper(title: "Flow", value: session.flowRate, step: 1, range: 75...125,
+                                    help: "Extrusion flow (M221). Small changes help with over or under extrusion.") { session.setFlowRate($0) }
+                    }
+                }
+
                 HStack(alignment: .bottom) {
                     Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 14) {
                         GridRow {
@@ -384,6 +401,17 @@ struct JobPanel: View {
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .machined(radius: 20)
+    }
+
+    /// "Layer 71 of 120, about 1 min each", from the DisplayLayerProgress plugin.
+    private var layerLine: String? {
+        guard let progress = session.layerProgress, progress.hasLayers,
+              let current = progress.currentLayer, let total = progress.totalLayers else { return nil }
+        var line = "Layer \(current) of \(total)"
+        if let average = progress.averageLayerDuration, average > 0 {
+            line += ", about \(Fmt.duration(average)) each"
+        }
+        return line
     }
 
     /// While the print is waiting for heaters (start of a job), say so; "0%" alone looks stuck.
@@ -958,8 +986,31 @@ struct PrinterOfflineBanner: View {
 
     private var afterError: Bool { session.printerFault || reportedError != nil }
 
+    private func plainReason(_ reason: String?) -> String? {
+        switch reason {
+        case "autodetect": "OctoPrint couldn't find the printer on any USB port. Check the printer is switched on and its USB cable is plugged in, then connect."
+        case "timeout": "The printer stopped replying to OctoPrint. Check it's still switched on, then connect again."
+        default: nil
+        }
+    }
+
+    /// What OctoPrint recorded the last time the connection failed, when the main text doesn't already say it.
+    private var lastError: String? {
+        guard let info = session.printerError, !info.isEmpty, info.error != reportedError else { return nil }
+        switch info.reason {
+        case "autodetect": return "Last attempt: OctoPrint couldn't find the printer on any USB port."
+        case "timeout": return "Last attempt: the printer stopped replying to OctoPrint."
+        case "firmware": return "The printer's firmware reported: \(info.error)"
+        default: return "OctoPrint reported: \(info.error)"
+        }
+    }
+
     private var explanation: String {
-        if let reportedError { return reportedError }
+        if let reportedError {
+            // OctoPrint's wording for the common cases is technical; say it plainly instead.
+            if session.printerError?.error == reportedError, let plain = plainReason(session.printerError?.reason) { return plain }
+            return reportedError
+        }
         let port = session.connection?.current.port ?? session.connection?.options.portPreference
         if session.isPrinterConnecting {
             return "OctoPrint is opening the serial port and waiting for the printer to reply. This usually takes a few seconds."
@@ -983,6 +1034,13 @@ struct PrinterOfflineBanner: View {
                 Text(explanation)
                     .font(Typeface.body).foregroundStyle(Palette.dust)
                     .fixedSize(horizontal: false, vertical: true)
+                if let lastError, !session.isPrinterConnecting {
+                    Label(lastError, systemImage: "info.circle")
+                        .font(Typeface.caption).foregroundStyle(Palette.faint)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
+                        .padding(.top, 3)
+                }
             }
             Spacer()
             Button("Show console") { tab = .console }.buttonStyle(.plateQuiet)
@@ -995,5 +1053,54 @@ struct PrinterOfflineBanner: View {
         }
         .padding(18)
         .machined(radius: 16)
+    }
+}
+
+/// A compact "− Speed 100% +" control for adjusting a running print.
+struct RateStepper: View {
+    let title: String
+    let value: Double
+    let step: Double
+    let range: ClosedRange<Double>
+    let help: String
+    let apply: (Int) -> Void
+
+    var body: some View {
+        HStack(spacing: 0) {
+            nudge("minus", by: -step)
+            Button { apply(100) } label: {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
+                    Text("\(Int(value))%")
+                        .font(Typeface.number(16))
+                        .foregroundStyle(value == 100 ? Palette.paper : Palette.warm)
+                        .contentTransition(.numericText(value: value))
+                        .frame(minWidth: 42)
+                }
+                .padding(.horizontal, 4)
+                .frame(height: 32)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(value == 100 ? help : "\(help) Click to go back to 100%.")
+            nudge("plus", by: step)
+        }
+        .background(Capsule().fill(Palette.graphite))
+        .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
+        .fixedSize()
+        .animation(.snappy, value: value)
+    }
+
+    private func nudge(_ symbol: String, by amount: Double) -> some View {
+        let next = min(range.upperBound, max(range.lowerBound, value + amount))
+        return Button { apply(Int(next)) } label: {
+            Image(systemName: symbol)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(Palette.dust)
+                .frame(width: 32, height: 32)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(next == value)
     }
 }
