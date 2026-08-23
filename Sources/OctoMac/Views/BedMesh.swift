@@ -262,15 +262,15 @@ struct BedCommandSheet: View {
     @State var command: String
 
     private let suggestions: [(name: String, gcode: String)] = [
-        ("Prusa MK3S, MK2.5S", "G28 W\nG80\nG81"),
-        ("Marlin with a probe", "G28\nG29 T"),
-        ("Marlin, saved mesh", "M420 V"),
+        ("Prusa MK3S, MK2.5S", "@BEDLEVELVISUALIZER\nG28 W\nG80\nG81"),
+        ("Marlin with a probe", "@BEDLEVELVISUALIZER\nG28\nG29 T"),
+        ("Marlin, saved mesh", "@BEDLEVELVISUALIZER\nM420 V"),
     ]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("How to measure the bed").font(Typeface.title).foregroundStyle(Palette.paper)
-            Text("Bed Visualizer sends these commands, one per line, and reads the printer's reply. They're saved in OctoPrint, so its own Bed Visualizer page uses them too.")
+            Text("Bed Visualizer sends these commands, one per line, and reads the printer's reply. Start with @BEDLEVELVISUALIZER, which tells the plugin to listen. They're saved in OctoPrint, so its own Bed Visualizer page uses them too.")
                 .font(Typeface.body).foregroundStyle(Palette.dust)
                 .fixedSize(horizontal: false, vertical: true)
             TextEditor(text: $command)

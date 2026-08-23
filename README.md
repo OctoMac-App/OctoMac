@@ -91,9 +91,11 @@ Want OctoMac to support a plugin you use? Open an issue and tell us about it.
 
 Bed Level Visualizer needs to know which G-code makes your printer probe the bed and report the result. In OctoMac, open the **Machine** tab and choose **G-code…** in the Bed level panel. Pick a starting point, then save:
 
-- **Prusa MK3S and MK2.5S:** `G28 W`, `G80`, `G81`
-- **Marlin with a probe:** `G28`, `G29 T`
-- **Marlin with a saved mesh:** `M420 V`
+- **Prusa MK3S and MK2.5S:** `@BEDLEVELVISUALIZER`, `G28 W`, `G80`, `G81`
+- **Marlin with a probe:** `@BEDLEVELVISUALIZER`, `G28`, `G29 T`
+- **Marlin with a saved mesh:** `@BEDLEVELVISUALIZER`, `M420 V`
+
+The `@BEDLEVELVISUALIZER` line tells the plugin to start listening for the printer's report.
 
 The commands are saved in OctoPrint, so the plugin's own page uses them too. Then press **Measure bed**. Measuring works while the printer is idle; the bed is most accurate when it's already at printing temperature.
 

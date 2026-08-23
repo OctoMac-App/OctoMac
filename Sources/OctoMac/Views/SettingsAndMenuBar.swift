@@ -2,51 +2,129 @@ import OctoPrintKit
 import SwiftUI
 import UserNotifications
 
+/// OctoMac's Settings window, in the same style as the main window.
 struct SettingsView: View {
-    @Environment(InstanceStore.self) private var store
-    @State private var selection: UUID?
-    @State private var editor: EditorTarget?
+    enum Page: String, CaseIterable, Identifiable {
+        case printers = "Printers", notifications = "Notifications"
+        var id: String { rawValue }
+    }
+
+    @State private var page = Page.printers
+    @Namespace private var carriage
 
     var body: some View {
-        TabView {
-            VStack(alignment: .leading) {
-                List(selection: $selection) {
-                    ForEach(store.instances) { instance in
-                        VStack(alignment: .leading) {
-                            Text(instance.name)
-                            Text(instance.baseURL.absoluteString).font(.caption).foregroundStyle(.secondary)
-                        }
-                        .tag(instance.id)
-                    }
-                    .onMove { store.move(fromOffsets: $0, toOffset: $1) }
-                }
-                .contextMenu(forSelectionType: UUID.self) { _ in } primaryAction: { ids in
-                    if let id = ids.first, let instance = store.instances.first(where: { $0.id == id }) { editor = .edit(instance) }
-                }
-                HStack(spacing: 0) {
-                    Button { editor = .new } label: { Image(systemName: "plus").frame(width: 20, height: 16) }
+        VStack(spacing: 20) {
+            HStack(spacing: 2) {
+                ForEach(Page.allCases) { item in
                     Button {
-                        if let selection { store.remove(selection) }
-                        selection = nil
-                    } label: { Image(systemName: "minus").frame(width: 20, height: 16) }
-                        .disabled(selection == nil)
-                    Spacer()
-                    Button("Edit…") {
-                        if let instance = store.instances.first(where: { $0.id == selection }) { editor = .edit(instance) }
+                        withAnimation(.snappy(duration: 0.25)) { page = item }
+                    } label: {
+                        Text(item.rawValue)
+                            .font(Typeface.text(13, .demibold))
+                            .foregroundStyle(page == item ? Palette.graphite : Palette.dust)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 7)
+                            .background {
+                                if page == item { Capsule().fill(Palette.accent).matchedGeometryEffect(id: "carriage", in: carriage) }
+                            }
+                            .contentShape(Capsule())
                     }
-                    .disabled(selection == nil)
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.borderless)
             }
-            .padding()
-            .tabItem { Label("Printers", systemImage: "printer") }
+            .padding(4)
+            .background(Capsule().fill(Palette.extrusion))
+            .overlay(Capsule().strokeBorder(.white.opacity(0.05), lineWidth: 1))
 
-            NotificationSettings()
-                .padding()
-                .tabItem { Label("Notifications", systemImage: "bell.badge") }
+            switch page {
+            case .printers: PrinterSettings()
+            case .notifications: NotificationSettings()
+            }
         }
-        .frame(width: 520, height: 440)
+        .padding(24)
+        .frame(width: 560, height: 520, alignment: .top)
+        .background(Palette.graphite)
+        .containerBackground(Palette.graphite, for: .window)
+        .toolbar(removing: .title)
+        .toolbarBackgroundVisibility(.hidden, for: .windowToolbar)
+    }
+}
+
+private struct PrinterSettings: View {
+    @Environment(InstanceStore.self) private var store
+    @State private var editor: EditorTarget?
+    @State private var removing: Instance?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            if store.isDemo {
+                Text("Demo mode is on. Your own printers come back when you leave it.")
+                    .font(Typeface.caption).foregroundStyle(Palette.warm)
+            }
+            List {
+                ForEach(store.instances) { instance in
+                    PrinterSettingsRow(instance: instance, tint: store.filament(for: instance)) {
+                        editor = .edit(instance)
+                    } remove: {
+                        removing = instance
+                    }
+                    .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                }
+                .onMove { store.move(fromOffsets: $0, toOffset: $1) }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .overlay {
+                if store.instances.isEmpty {
+                    Text("No printers yet.").font(Typeface.body).foregroundStyle(Palette.faint)
+                }
+            }
+
+            HStack {
+                Text("Drag to reorder. Double-click a printer to edit it.")
+                    .font(Typeface.caption).foregroundStyle(Palette.faint)
+                Spacer()
+                Button { editor = .new } label: { Label("Add a printer", systemImage: "plus") }
+                    .buttonStyle(.plate)
+            }
+        }
         .sheet(item: $editor) { InstanceEditor(target: $0) }
+        .sheet(item: $removing) { instance in
+            ConfirmSheet(symbol: "trash", title: "Remove \(instance.name)?",
+                         message: "OctoMac forgets this printer and its API key. Nothing changes on the printer or in OctoPrint.",
+                         confirmTitle: "Remove", onConfirm: { store.remove(instance.id) })
+        }
+    }
+}
+
+private struct PrinterSettingsRow: View {
+    let instance: Instance
+    let tint: Color
+    let edit: () -> Void
+    let remove: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        HStack(spacing: 14) {
+            RoundedRectangle(cornerRadius: 2).fill(tint).frame(width: 4, height: 34)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(instance.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                Text(instance.baseURL.absoluteString).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
+            }
+            Spacer()
+            Button("Edit", action: edit).buttonStyle(.plateQuiet).controlSize(.small)
+            Button(action: remove) { Image(systemName: "trash") }
+                .buttonStyle(.plateQuiet).controlSize(.small)
+                .help("Remove this printer from OctoMac")
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .machined(radius: 12, fill: hovering ? Palette.extrusionHi : Palette.extrusion)
+        .contentShape(Rectangle())
+        .onHover { hovering = $0 }
+        .onTapGesture(count: 2, perform: edit)
     }
 }
 
@@ -189,31 +267,44 @@ struct NotificationSettings: View {
     @State private var status: UNAuthorizationStatus = .notDetermined
 
     var body: some View {
-        Form {
-            Section {
+        VStack(alignment: .leading, spacing: 14) {
+            if status == .denied || status == .notDetermined {
+                HStack(spacing: 12) {
+                    Image(systemName: "bell.slash.fill").foregroundStyle(Palette.warm)
+                    Text(status == .denied ? "Notifications are turned off for OctoMac in System Settings." : "OctoMac hasn't been allowed to send notifications yet.")
+                        .font(Typeface.body).foregroundStyle(Palette.paper)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer()
+                    Button(status == .denied ? "Open System Settings" : "Allow") {
+                        if status == .denied {
+                            NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!)
+                        } else {
+                            Task { _ = await Notifier.shared.requestPermission(); await refresh() }
+                        }
+                    }
+                    .buttonStyle(.plate)
+                    .controlSize(.small)
+                }
+                .padding(14)
+                .machined(radius: 12, fill: Palette.warm.opacity(0.1))
+            }
+
+            VStack(spacing: 0) {
                 ForEach(NotificationKind.allCases) { kind in
                     NotificationToggle(kind: kind)
+                    if kind != NotificationKind.allCases.last { Divider().overlay(Palette.edge) }
                 }
-            } footer: {
-                VStack(alignment: .leading, spacing: 8) {
-                    switch status {
-                    case .denied:
-                        Text("Notifications are turned off for OctoMac in System Settings.")
-                        Button("Open Notification Settings") {
-                            NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!)
-                        }
-                    case .notDetermined:
-                        Button("Allow Notifications") { Task { _ = await Notifier.shared.requestPermission(); await refresh() } }
-                    default:
-                        Text("Banners for the printer on screen are skipped while OctoMac is in front.")
-                    }
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
             }
+            .machined(radius: 14)
+
+            Text("Banners for the printer on screen are skipped while OctoMac is in front.")
+                .font(Typeface.caption).foregroundStyle(Palette.faint)
         }
-        .formStyle(.grouped)
         .task { await refresh() }
+        // Coming back from System Settings.
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            Task { await refresh() }
+        }
     }
 
     private func refresh() async { status = await Notifier.shared.permissionStatus() }
@@ -230,8 +321,16 @@ private struct NotificationToggle: View {
 
     var body: some View {
         Toggle(isOn: $enabled) {
-            Text(kind.title)
-            Text(kind.detail)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(kind.title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                Text(kind.detail).font(Typeface.caption).foregroundStyle(Palette.faint)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .toggleStyle(.switch)
+        .tint(Palette.accent)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
     }
 }

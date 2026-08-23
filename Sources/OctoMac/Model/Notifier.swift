@@ -50,9 +50,16 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     /// Messages already sent recently, so a burst of identical events makes one banner.
     private var recent: [String: Date] = [:]
 
+    /// Sets up delivery and, the first time OctoMac runs, asks for permission so notifications work from the start.
+    /// After that, each kind can be switched off in Settings.
     func start() {
         guard let center else { return }
         center.delegate = self
+        Task {
+            if await center.notificationSettings().authorizationStatus == .notDetermined {
+                _ = await requestPermission()
+            }
+        }
     }
 
     func post(_ kind: NotificationKind, printer: Instance, title: String, body: String) {

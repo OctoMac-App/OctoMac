@@ -984,7 +984,7 @@ extension PrinterSession {
         }
         let axis: (Double) -> JSONValue = { size in .array((0..<rows).map { .number((Double($0) / Double(rows - 1) * size).rounded()) }) }
         return [
-            "command": "G28 W\nG80\nG81", "save_mesh": true, "timeout": 1800,
+            "command": "@BEDLEVELVISUALIZER\nG28 W\nG80\nG81", "save_mesh": true, "timeout": 1800,
             "stored_mesh": .array(mesh), "stored_mesh_x": axis(250), "stored_mesh_y": axis(210),
             "mesh_timestamp": .string(Date.now.addingTimeInterval(-2 * 86400).formatted(date: .abbreviated, time: .shortened)),
         ]
