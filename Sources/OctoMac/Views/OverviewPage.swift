@@ -777,8 +777,9 @@ struct PresetPanel: View {
     }
 
     private var presets: [(name: String, extruder: Double, bed: Double)] { session.temperaturePresets }
+    /// Nothing is chosen until you pick a preset, so the panel never suggests temperatures you didn't ask for.
     private var selected: (name: String, extruder: Double, bed: Double)? {
-        presets.first { $0.name == chosen } ?? presets.first
+        presets.first { $0.name == chosen }
     }
 
     var body: some View {
@@ -791,10 +792,15 @@ struct PresetPanel: View {
                 Button { choosing.toggle() } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(selected?.name ?? "Choose a preset").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                            Text(selected?.name ?? "Choose a preset")
+                                .font(Typeface.bodyStrong)
+                                .foregroundStyle(selected == nil ? Palette.dust : Palette.paper)
                             if let selected {
                                 Text("Hotend \(Int(selected.extruder))°, bed \(Int(selected.bed))°")
                                     .font(Typeface.number(12)).foregroundStyle(Palette.faint)
+                            } else {
+                                Text("\(presets.count) saved in OctoPrint")
+                                    .font(Typeface.caption).foregroundStyle(Palette.faint)
                             }
                         }
                         Spacer()
@@ -821,6 +827,7 @@ struct PresetPanel: View {
                 } label: { Label("Heat", systemImage: "flame.fill").frame(maxWidth: .infinity) }
                     .buttonStyle(.plate(Palette.heat(selected?.extruder)))
                     .disabled(selected == nil)
+                    .help(selected == nil ? "Choose a preset first" : "Heat the hotend and bed to this preset")
                 Button { session.coolDown() } label: { Label("Cool down", systemImage: "snowflake").frame(maxWidth: .infinity) }
                     .buttonStyle(.plateQuiet)
             }
