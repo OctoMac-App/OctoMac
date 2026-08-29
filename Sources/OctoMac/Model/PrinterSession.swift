@@ -662,7 +662,9 @@ final class PrinterSession {
 
     /// Measures the bed with Bed Level Visualizer's G-code.
     func measureBed() {
-        guard let commands = bedLevel?.commandLines, !commands.isEmpty else { return }
+        // Only with the plugin installed and G-code that probes the bed.
+        guard let bedLevel, bedLevel.canMeasure else { return }
+        let commands = bedLevel.commandLines
         if let blocker = controlBlocker {
             error = ErrorBanner(message: blocker)
             return

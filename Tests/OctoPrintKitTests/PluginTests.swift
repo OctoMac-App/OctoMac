@@ -48,6 +48,9 @@ struct BedLevelVisualizerTests {
         ]]]
         let blv = try #require(BedLevelVisualizer.Settings(settings: settings))
         #expect(blv.commandLines == ["G28 W", "G80", "G81"])
+        #expect(blv.canMeasure)
+        #expect(BedLevelVisualizer.Settings(settings: ["plugins": ["bedlevelvisualizer": ["command": ""]]])?.canMeasure == false)
+        #expect(BedLevelVisualizer.Settings(settings: ["plugins": ["bedlevelvisualizer": ["command": "@BEDLEVELVISUALIZER\n"]]])?.canMeasure == false)
         #expect(blv.stored?.z[1][0] == nil)
         #expect(blv.stored?.maximum == 0.3)
         #expect(BedLevelVisualizer.Settings(settings: ["plugins": ["bedlevelvisualizer": ["stored_mesh": []]]])?.stored == nil)

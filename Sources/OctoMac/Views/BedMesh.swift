@@ -66,20 +66,21 @@ struct BedMeshPanel: View {
                 .fixedSize()
             }
             Spacer()
-            if settings.commandLines.isEmpty {
-                Text("Choose the G-code that measures your bed first.")
+            if !settings.canMeasure {
+                Text("Bed Visualizer needs the G-code that measures your bed.")
                     .font(Typeface.caption).foregroundStyle(Palette.warm)
-            }
-            Button("G-code…") { editingCommand = true }
-                .buttonStyle(.plateQuiet)
-                .help("The commands Bed Visualizer sends to measure the bed")
-            if session.bedMeasuringSince != nil {
+                Button { editingCommand = true } label: { Label("Set up measuring", systemImage: "slider.horizontal.3") }
+                    .buttonStyle(.plate)
+            } else if session.bedMeasuringSince != nil {
                 Button { session.cancelBedMeasurement() } label: { Label("Stop measuring", systemImage: "xmark") }
                     .buttonStyle(.plateQuiet)
             } else {
+                Button("G-code…") { editingCommand = true }
+                    .buttonStyle(.plateQuiet)
+                    .help("The commands Bed Visualizer sends to measure the bed")
                 Button { session.measureBed() } label: { Label("Measure bed", systemImage: "square.grid.3x3.middle.filled") }
                     .buttonStyle(.plate)
-                    .disabled(settings.commandLines.isEmpty || !session.canControl)
+                    .disabled(!session.canControl)
                     .help(session.controlBlocker ?? "Homes the printer and probes the bed")
             }
         }
@@ -263,7 +264,7 @@ struct BedCommandSheet: View {
 
     private let suggestions: [(name: String, gcode: String)] = [
         ("Prusa MK3S, MK2.5S", "@BEDLEVELVISUALIZER\nG28 W\nG80\nG81"),
-        ("Marlin with a probe", "@BEDLEVELVISUALIZER\nG28\nG29 T"),
+        ("Marlin, probe", "@BEDLEVELVISUALIZER\nG28\nG29 T"),
         ("Marlin, saved mesh", "@BEDLEVELVISUALIZER\nM420 V"),
     ]
 
@@ -280,12 +281,18 @@ struct BedCommandSheet: View {
                 .frame(height: 130)
                 .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Palette.graphite))
                 .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Palette.edge, lineWidth: 1))
+            Link(destination: BedLevelVisualizer.guideURL) {
+                Label("Bed Visualizer's guide has G-code for other printers", systemImage: "arrow.up.right.square")
+                    .font(Typeface.caption)
+            }
+            .foregroundStyle(Palette.accent)
             HStack(spacing: 8) {
                 Text("Start from:").font(Typeface.caption).foregroundStyle(Palette.faint)
                 ForEach(suggestions, id: \.name) { suggestion in
                     Button(suggestion.name) { command = suggestion.gcode }
                         .buttonStyle(.plateQuiet)
                         .controlSize(.small)
+                        .fixedSize()
                 }
             }
             HStack {
