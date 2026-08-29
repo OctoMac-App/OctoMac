@@ -95,7 +95,7 @@ Bed Level Visualizer needs to know which G-code makes your printer probe the bed
 - **Marlin with a probe:** `@BEDLEVELVISUALIZER`, `G28`, `G29 T`
 - **Marlin with a saved mesh:** `@BEDLEVELVISUALIZER`, `M420 V`
 
-The `@BEDLEVELVISUALIZER` line tells the plugin to start listening for the printer's report.
+The `@BEDLEVELVISUALIZER` line tells the plugin to start listening for the printer's report. For other printers, see the plugin's [G-code examples](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/wiki/gcode-examples.md) and [guide](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/wiki/index.md).
 
 The commands are saved in OctoPrint, so the plugin's own page uses them too. Then press **Measure bed**. Measuring works while the printer is idle; the bed is most accurate when it's already at printing temperature.
 

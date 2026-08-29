@@ -281,10 +281,15 @@ struct BedCommandSheet: View {
                 .frame(height: 130)
                 .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Palette.graphite))
                 .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(Palette.edge, lineWidth: 1))
-            Link(destination: BedLevelVisualizer.guideURL) {
-                Label("Bed Visualizer's guide has G-code for other printers", systemImage: "arrow.up.right.square")
-                    .font(Typeface.caption)
+            HStack(spacing: 18) {
+                Link(destination: BedLevelVisualizer.gcodeExamplesURL) {
+                    Label("G-code examples for other printers", systemImage: "arrow.up.right.square")
+                }
+                Link(destination: BedLevelVisualizer.guideURL) {
+                    Label("Bed Visualizer guide", systemImage: "arrow.up.right.square")
+                }
             }
+            .font(Typeface.caption)
             .foregroundStyle(Palette.accent)
             HStack(spacing: 8) {
                 Text("Start from:").font(Typeface.caption).foregroundStyle(Palette.faint)

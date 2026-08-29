@@ -8,7 +8,8 @@ import Foundation
 /// Like the plugin's own page, clients save the latest mesh back into the plugin's settings when `save_mesh` is on.
 public enum BedLevelVisualizer {
     public static let pluginID = "bedlevelvisualizer"
-    public static let guideURL = URL(string: "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/wiki")!
+    public static let guideURL = URL(string: "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/wiki/index.md")!
+    public static let gcodeExamplesURL = URL(string: "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/wiki/gcode-examples.md")!
 
     /// A measured bed. `z[row][column]`, rows running along Y and columns along X. Missing points are nil.
     public struct Mesh: Sendable, Hashable {

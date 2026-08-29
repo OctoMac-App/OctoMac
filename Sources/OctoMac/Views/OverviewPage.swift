@@ -41,7 +41,8 @@ struct OverviewPage: View {
             .frame(height: topHeight)
 
             HStack(alignment: .top, spacing: 20) {
-                heaterColumn(fill: true).frame(width: 300)
+                // Full-size tiles need about 440 points under the presets; shorter windows get the compact rows.
+                heaterColumn(fill: true, compact: size.height - topHeight - 20 < 440).frame(width: 300)
                 TemperaturePanel(session: session)
             }
             .frame(maxHeight: .infinity)
@@ -112,10 +113,10 @@ struct OverviewPage: View {
     }
 
     /// Presets and heaters. `fill` stretches big tiles to the available height (the one-screen layout).
-    private func heaterColumn(fill: Bool) -> some View {
+    private func heaterColumn(fill: Bool, compact: Bool = false) -> some View {
         VStack(spacing: 14) {
             PresetPanel(session: session)
-            if sortedHeaterKeys.count > 2 || !fill {
+            if sortedHeaterKeys.count > 2 || !fill || compact {
                 // Compact rows; in the one-screen layout they scroll if they don't fit.
                 let rows = VStack(spacing: 8) {
                     ForEach(sortedHeaterKeys, id: \.self) { key in
