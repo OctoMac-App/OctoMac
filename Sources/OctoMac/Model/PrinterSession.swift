@@ -99,6 +99,8 @@ final class PrinterSession {
     /// Print and connection events seen while the app has been running, for the temperature chart.
     private(set) var chartEvents: [ChartEvent] = []
     private(set) var terminal: [String] = []
+    /// Every console line received, including ones since trimmed from `terminal`; counts new lines while the console is paused.
+    private(set) var terminalReceived = 0
     private(set) var connection: ConnectionInfo?
     private(set) var profiles: [PrinterProfile] = []
 
@@ -453,6 +455,7 @@ final class PrinterSession {
         appendTemperatures(payload.temps)
         if !payload.logs.isEmpty {
             readRates(from: payload.logs)
+            terminalReceived += payload.logs.count
             terminal.append(contentsOf: payload.logs)
             if terminal.count > Self.terminalLimit { terminal.removeFirst(terminal.count - Self.terminalLimit) }
         }

@@ -615,35 +615,103 @@ struct FileRow: View {
 
 struct ConsolePage: View {
     let session: PrinterSession
-    @AppStorage("terminal.hideTemperature") private var hideTemperature = true
-    @AppStorage("terminal.hideSD") private var hideSDStatus = true
+    /// Names of the filters that are switched on, one per line. Empty until you change something.
+    @AppStorage("terminal.filters") private var enabledStorage = ""
+    @AppStorage("terminal.hideTemperature") private var legacyHideTemperature = true
+    @AppStorage("terminal.hideSD") private var legacyHideSD = true
     @State private var command = ""
     @State private var history: [String] = []
     @State private var historyIndex: Int?
+    @State private var choosingFilters = false
+    @AppStorage("console.cheatSheet") private var showingCheatSheet = false
+    @FocusState private var commandFocused: Bool
+    /// While you're scrolled up reading, the console holds still: this is what's on screen, and new lines wait.
+    @State private var frozen: [(offset: Int, element: String)]?
+    @State private var frozenAt = 0
+    @State private var atBottom = true
+    @State private var userScrolling = false
 
-    private static let temperaturePattern = /(Send:\s+(N\d+\s+)?M105)|(Recv:\s+(ok\s+)?(B|T\d*):)/
-    private static let sdPattern = /(Send:\s+(N\d+\s+)?M27)|(Recv:\s+(SD printing byte|Not SD printing))/
+    private var filters: [TerminalFilter] {
+        var list = TerminalFilter.fromSettings(session.settings)
+        // An MMU chats with the printer constantly; worth a switch of its own.
+        if session.mmu != nil { list.append(TerminalFilter.mmu) }
+        return list
+    }
 
-    private var lines: [(offset: Int, element: String)] {
-        Array(session.terminal.enumerated()).filter { _, line in
-            !(hideTemperature && line.contains(Self.temperaturePattern)) && !(hideSDStatus && line.contains(Self.sdPattern))
+    private var enabled: Set<String> {
+        if enabledStorage.isEmpty {
+            // Before this setting existed there were two switches; start from those.
+            var names: Set<String> = []
+            if legacyHideTemperature { names.insert("Suppress temperature messages") }
+            if legacyHideSD { names.insert("Suppress SD status messages") }
+            return names
         }
+        return Set(enabledStorage.split(separator: "\n").map(String.init).filter { $0 != "-" })
+    }
+
+    private func setEnabled(_ name: String, _ on: Bool) {
+        var names = enabled
+        if on { names.insert(name) } else { names.remove(name) }
+        // "-" keeps the setting non-empty when everything is switched off.
+        enabledStorage = (["-"] + names.sorted()).joined(separator: "\n")
+    }
+
+    private var visible: (lines: [(offset: Int, element: String)], hidden: Int) {
+        let active = filters.filter { enabled.contains($0.name) }
+        let all = Array(session.terminal.enumerated())
+        guard !active.isEmpty else { return (all, 0) }
+        let shown = all.filter { _, line in !active.contains { $0.matches(line) } }
+        return (shown, all.count - shown.count)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
+        HStack(alignment: .top, spacing: 20) {
+            conversation
+            if showingCheatSheet {
+                GCodeReferencePanel { entry in
+                    command = entry.example
+                    commandFocused = true
+                } close: {
+                    withAnimation(.snappy) { showingCheatSheet = false }
+                }
+                .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+        }
+    }
+
+    private var conversation: some View {
+        let visible = self.visible
+        let activeCount = filters.filter { enabled.contains($0.name) }.count
+        return VStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 12) {
                 Text("Printer conversation").font(Typeface.subhead).foregroundStyle(Palette.paper)
                 Spacer()
-                Chip(title: "Hide temperature polling", selected: hideTemperature) { hideTemperature.toggle() }
-                Chip(title: "Hide SD polling", selected: hideSDStatus) { hideSDStatus.toggle() }
+                if visible.hidden > 0 {
+                    Text("\(visible.hidden) of \(session.terminal.count) lines hidden")
+                        .font(Typeface.caption).foregroundStyle(Palette.faint)
+                }
+                Button { choosingFilters.toggle() } label: {
+                    Label(activeCount == 0 ? "Hide messages" : "Hiding \(activeCount) kind\(activeCount == 1 ? "" : "s")",
+                          systemImage: "line.3.horizontal.decrease")
+                }
+                .buttonStyle(.plateQuiet)
+                .controlSize(.small)
+                .popover(isPresented: $choosingFilters, arrowEdge: .bottom) {
+                    TerminalFilterList(filters: filters, enabled: enabled, toggle: setEnabled)
+                }
+                Button { withAnimation(.snappy) { showingCheatSheet.toggle() } } label: {
+                    Label("Cheat sheet", systemImage: "book.closed")
+                }
+                .buttonStyle(.plateQuiet)
+                .controlSize(.small)
+                .help("A list of common G-code commands and what they do")
             }
             .padding(20)
 
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 3) {
-                        ForEach(lines, id: \.offset) { _, line in
+                        ForEach(frozen ?? visible.lines, id: \.offset) { _, line in
                             ConsoleLine(line: line)
                         }
                         Color.clear.frame(height: 1).id("end")
@@ -652,8 +720,42 @@ struct ConsolePage: View {
                     .textSelection(.enabled)
                 }
                 .background(Palette.graphite)
-                .onChange(of: session.terminal.count) { proxy.scrollTo("end", anchor: .bottom) }
+                .onScrollGeometryChange(for: Bool.self) { geo in
+                    geo.contentOffset.y + geo.containerSize.height >= geo.contentSize.height - 24
+                } action: { _, bottom in
+                    atBottom = bottom
+                    // Only your own scrolling pauses the console, not new lines arriving.
+                    guard userScrolling else { return }
+                    if bottom { frozen = nil } else if frozen == nil { pause(visible.lines) }
+                }
+                .onScrollPhaseChange { _, phase in
+                    userScrolling = phase != .idle && phase != .animating
+                    if phase == .idle, atBottom { frozen = nil }
+                }
+                .onChange(of: session.terminalReceived) { if frozen == nil { proxy.scrollTo("end", anchor: .bottom) } }
                 .onAppear { proxy.scrollTo("end", anchor: .bottom) }
+                .overlay(alignment: .bottom) {
+                    if frozen != nil {
+                        let waiting = session.terminalReceived - frozenAt
+                        Button {
+                            frozen = nil
+                            withAnimation(.snappy) { proxy.scrollTo("end", anchor: .bottom) }
+                        } label: {
+                            Label(waiting > 0 ? "Paused while you read. \(waiting) new line\(waiting == 1 ? "" : "s"). Jump to latest" : "Paused while you read. Jump to latest",
+                                  systemImage: "arrow.down")
+                                .font(Typeface.text(12, .demibold))
+                                .foregroundStyle(Palette.graphite)
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 7)
+                                .background(Capsule().fill(Palette.accent))
+                                .shadow(color: .black.opacity(0.35), radius: 8, y: 3)
+                        }
+                        .buttonStyle(.plain)
+                        .padding(.bottom, 12)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                }
+                .animation(.snappy, value: frozen == nil)
             }
 
             HStack(spacing: 10) {
@@ -662,6 +764,7 @@ struct ConsolePage: View {
                     .textFieldStyle(.plain)
                     .font(.system(size: 14, design: .monospaced))
                     .foregroundStyle(Palette.paper)
+                    .focused($commandFocused)
                     .onSubmit(send)
                     .onKeyPress(.upArrow) { recall(-1) }
                     .onKeyPress(.downArrow) { recall(1) }
@@ -675,13 +778,29 @@ struct ConsolePage: View {
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
+    private func pause(_ lines: [(offset: Int, element: String)]) {
+        frozen = lines
+        frozenAt = session.terminalReceived
+    }
+
     private func send() {
         let trimmed = command.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        session.sendGcode(trimmed.uppercased(with: Locale(identifier: "en_US_POSIX")))
+        // Firmware wants capitals ("m115" becomes "M115"), except in the text of messages and file names.
+        let posix = Locale(identifier: "en_US_POSIX")
+        let parts = trimmed.split(separator: " ", maxSplits: 1)
+        let word = parts.first.map { $0.uppercased(with: posix) } ?? ""
+        let textCommands: Set<String> = ["M117", "M118", "M23", "M28", "M30", "M32"]
+        if parts.count > 1, textCommands.contains(word) {
+            session.sendGcode(word + " " + parts[1])
+        } else {
+            session.sendGcode(trimmed.uppercased(with: posix))
+        }
         if history.last != trimmed { history.append(trimmed) }
         historyIndex = nil
         command = ""
+        // Show the reply.
+        frozen = nil
     }
 
     private func recall(_ delta: Int) -> KeyPress.Result {
@@ -1027,5 +1146,90 @@ struct UpRow: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
+    }
+}
+
+/// One of OctoPrint's console filters ("Suppress temperature messages" and so on), from its settings.
+struct TerminalFilter: Identifiable {
+    let name: String
+    let regex: NSRegularExpression
+    var id: String { name }
+
+    /// "Suppress temperature messages" reads as "Temperature messages" under a "Hide" heading.
+    var label: String {
+        let trimmed = name.hasPrefix("Suppress ") ? String(name.dropFirst("Suppress ".count)) : name
+        return trimmed.prefix(1).uppercased() + trimmed.dropFirst()
+    }
+
+    func matches(_ line: String) -> Bool {
+        regex.firstMatch(in: line, range: NSRange(line.startIndex..., in: line)) != nil
+    }
+
+    init?(name: String, pattern: String) {
+        guard let regex = try? NSRegularExpression(pattern: pattern) else { return nil }
+        self.name = name
+        self.regex = regex
+    }
+
+    /// The filters configured in OctoPrint (`terminalFilters`), or OctoPrint's standard set if none are known yet.
+    static func fromSettings(_ settings: JSONValue?) -> [TerminalFilter] {
+        let configured = (settings?["terminalFilters"]?.arrayValue ?? []).compactMap { entry -> TerminalFilter? in
+            guard let name = entry["name"]?.stringValue, let regex = entry["regex"]?.stringValue else { return nil }
+            return cache(name: name, pattern: regex)
+        }
+        return configured.isEmpty ? standard : configured
+    }
+
+    static let standard: [TerminalFilter] = [
+        ("Suppress temperature messages", #"(Send: (N\d+\s+)?M105)|(Recv:\s+(ok\s+([PBN]\d+\s+)*)?([BCLPR]|T\d*):-?\d+)"#),
+        ("Suppress SD status messages", #"(Send: (N\d+\s+)?M27)|(Recv: SD printing byte)|(Recv: Not SD printing)"#),
+        ("Suppress position messages", #"(Send:\s+(N\d+\s+)?M114)|(Recv:\s+(ok\s+)?X:[+-]?([0-9]*[.])?[0-9]+\s+Y:[+-]?([0-9]*[.])?[0-9]+\s+Z:[+-]?([0-9]*[.])?[0-9]+\s+E\d*:[+-]?([0-9]*[.])?[0-9]+).*"#),
+        ("Suppress wait responses", #"Recv: wait"#),
+        ("Suppress processing responses", #"Recv: (echo:\s*)?busy:\s*processing"#),
+    ].compactMap { TerminalFilter(name: $0.0, pattern: $0.1) }
+
+    /// OctoMac's own extra: the Prusa MMU's constant status chatter.
+    static let mmu = TerminalFilter(name: "Suppress MMU chatter", pattern: #"Recv: echo:MMU2?:"#)!
+
+    @MainActor private static var compiled: [String: TerminalFilter] = [:]
+
+    private static func cache(name: String, pattern: String) -> TerminalFilter? {
+        MainActor.assumeIsolated {
+            let key = name + "\u{0}" + pattern
+            if let hit = compiled[key] { return hit }
+            let filter = TerminalFilter(name: name, pattern: pattern)
+            compiled[key] = filter
+            return filter
+        }
+    }
+}
+
+/// The switches behind the Console's "Hide messages" button.
+struct TerminalFilterList: View {
+    let filters: [TerminalFilter]
+    let enabled: Set<String>
+    let toggle: (String, Bool) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Hide these messages").font(Typeface.caption).foregroundStyle(Palette.faint)
+                .padding(.horizontal, 10)
+                .padding(.bottom, 4)
+            ForEach(filters) { filter in
+                Toggle(isOn: Binding(get: { enabled.contains(filter.name) }, set: { toggle(filter.name, $0) })) {
+                    Text(filter.label).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .toggleStyle(.switch)
+                .controlSize(.small)
+                .tint(Palette.accent)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+            }
+        }
+        .padding(10)
+        .frame(width: 290)
+        .background(Palette.extrusion)
+        .presentationBackground(Palette.extrusion)
     }
 }
