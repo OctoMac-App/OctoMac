@@ -258,6 +258,25 @@ struct Chip: View {
     }
 }
 
+/// A small ⓧ for the end of a text field; shows only when there's something to clear.
+struct ClearFieldButton: View {
+    @Binding var text: String
+    var after: () -> Void = {}
+
+    var body: some View {
+        if !text.isEmpty {
+            Button {
+                text = ""
+                after()
+            } label: {
+                Image(systemName: "xmark.circle.fill").foregroundStyle(Palette.faint)
+            }
+            .buttonStyle(.plain)
+            .help("Clear")
+        }
+    }
+}
+
 /// Dark text field matching the theme.
 struct PlateField: ViewModifier {
     func body(content: Content) -> some View {

@@ -138,6 +138,7 @@ struct GCodeReferencePanel: View {
                     .textFieldStyle(.plain)
                     .font(Typeface.body)
                     .foregroundStyle(Palette.paper)
+                ClearFieldButton(text: $search)
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)

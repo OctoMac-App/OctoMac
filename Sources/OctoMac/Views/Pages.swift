@@ -786,6 +786,7 @@ struct ConsolePage: View {
                     .onSubmit(send)
                     .onKeyPress(.upArrow) { recall(-1) }
                     .onKeyPress(.downArrow) { recall(1) }
+                ClearFieldButton(text: $command) { commandFocused = true }
                 Button("Send", action: send)
                     .buttonStyle(.plate)
                     .disabled(command.trimmingCharacters(in: .whitespaces).isEmpty || !session.flags.operational)
@@ -1333,6 +1334,7 @@ struct ConsoleHighlightEditor: View {
                     .padding(.vertical, 6)
                     .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Palette.graphite))
                     .onSubmit(add)
+                    .overlay(alignment: .trailing) { ClearFieldButton(text: $draft).padding(.trailing, 8) }
                 Button("Add", action: add)
                     .buttonStyle(.plate)
                     .controlSize(.small)
