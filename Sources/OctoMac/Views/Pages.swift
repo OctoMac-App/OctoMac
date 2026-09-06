@@ -623,6 +623,12 @@ struct ConsolePage: View {
     @State private var history: [String] = []
     @State private var historyIndex: Int?
     @State private var choosingFilters = false
+    @State private var choosingHighlights = false
+    /// Words and phrases to highlight, one per line.
+    @AppStorage("terminal.highlights") private var highlightStorage = ""
+    @AppStorage("terminal.highlightReplies") private var highlightReplies = true
+    /// Commands sent from this console, so their replies can be picked out.
+    @State private var sentHere: [String] = []
     @AppStorage("console.cheatSheet") private var showingCheatSheet = false
     @FocusState private var commandFocused: Bool
     /// While you're scrolled up reading, the console holds still: this is what's on screen, and new lines wait.
@@ -699,6 +705,16 @@ struct ConsolePage: View {
                 .popover(isPresented: $choosingFilters, arrowEdge: .bottom) {
                     TerminalFilterList(filters: filters, enabled: enabled, toggle: setEnabled)
                 }
+                Button { choosingHighlights.toggle() } label: {
+                    Label(highlightTerms.isEmpty ? "Highlight" : "Highlighting \(highlightTerms.count)", systemImage: "highlighter")
+                }
+                .buttonStyle(.plateQuiet)
+                .controlSize(.small)
+                .popover(isPresented: $choosingHighlights, arrowEdge: .bottom) {
+                    ConsoleHighlightEditor(terms: highlightTerms, replies: $highlightReplies) { terms in
+                        highlightStorage = terms.joined(separator: "\n")
+                    }
+                }
                 Button { withAnimation(.snappy) { showingCheatSheet.toggle() } } label: {
                     Label("Cheat sheet", systemImage: "book.closed")
                 }
@@ -711,8 +727,10 @@ struct ConsolePage: View {
             ScrollViewReader { proxy in
                 ScrollView {
                     LazyVStack(alignment: .leading, spacing: 3) {
-                        ForEach(frozen ?? visible.lines, id: \.offset) { _, line in
-                            ConsoleLine(line: line)
+                        let shown = frozen ?? visible.lines
+                        let marks = highlights(for: shown)
+                        ForEach(shown, id: \.offset) { offset, line in
+                            ConsoleLine(line: line, highlight: marks[offset])
                         }
                         Color.clear.frame(height: 1).id("end")
                     }
@@ -778,6 +796,42 @@ struct ConsolePage: View {
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
+    private var highlightTerms: [String] {
+        highlightStorage.split(separator: "\n").map(String.init).filter { !$0.isEmpty }
+    }
+
+    /// Which lines to tint: your own commands and the printer's replies to them, and lines with a highlighted word.
+    private func highlights(for lines: [(offset: Int, element: String)]) -> [Int: Color] {
+        var marks: [Int: Color] = [:]
+        let terms = highlightTerms
+        var inReply = false
+        for (offset, line) in lines {
+            if highlightReplies {
+                if line.hasPrefix("Send:") {
+                    inReply = sentHere.contains(Self.normalised(line))
+                    if inReply { marks[offset] = Palette.accent }
+                } else if inReply, line.hasPrefix("Recv:") {
+                    marks[offset] = Palette.accent
+                    // The reply ends at the printer's "ok".
+                    if line.dropFirst(5).trimmingCharacters(in: .whitespaces).hasPrefix("ok") { inReply = false }
+                }
+            }
+            if let index = terms.firstIndex(where: { line.localizedCaseInsensitiveContains($0) }) {
+                marks[offset] = ConsoleHighlightEditor.color(at: index)
+            }
+        }
+        return marks
+    }
+
+    /// "Send: N123 M114*45" and "m114" both become "M114".
+    static func normalised(_ line: String) -> String {
+        var text = line.hasPrefix("Send:") ? String(line.dropFirst(5)) : line
+        text = text.trimmingCharacters(in: .whitespaces)
+        if let match = text.firstMatch(of: /^N\d+\s+/) { text.removeSubrange(match.range) }
+        if let star = text.lastIndex(of: "*") { text = String(text[..<star]) }
+        return text.trimmingCharacters(in: .whitespaces).uppercased()
+    }
+
     private func pause(_ lines: [(offset: Int, element: String)]) {
         frozen = lines
         frozenAt = session.terminalReceived
@@ -797,6 +851,7 @@ struct ConsolePage: View {
             session.sendGcode(trimmed.uppercased(with: posix))
         }
         if history.last != trimmed { history.append(trimmed) }
+        sentHere = Array((sentHere + [Self.normalised(trimmed)]).suffix(50))
         historyIndex = nil
         command = ""
         // Show the reply.
@@ -814,14 +869,23 @@ struct ConsolePage: View {
 
 struct ConsoleLine: View {
     let line: String
+    var highlight: Color?
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
-            Text(direction).foregroundStyle(directionColor).frame(width: 14)
+            Text(direction).foregroundStyle(highlight ?? directionColor).frame(width: 14)
             Text(content).foregroundStyle(contentColor)
         }
         .font(.system(size: 12.5, design: .monospaced))
         .frame(maxWidth: .infinity, alignment: .leading)
+        // The tint spills slightly past the line, so highlighting never changes a line's size.
+        .background {
+            if let highlight {
+                RoundedRectangle(cornerRadius: 4, style: .continuous).fill(highlight.opacity(0.16))
+                    .padding(.horizontal, -6)
+                    .padding(.vertical, -1.5)
+            }
+        }
     }
 
     private var isSend: Bool { line.hasPrefix("Send:") }
@@ -1231,5 +1295,74 @@ struct TerminalFilterList: View {
         .frame(width: 290)
         .background(Palette.extrusion)
         .presentationBackground(Palette.extrusion)
+    }
+}
+
+/// Words and phrases to pick out in the console, each with its own colour.
+struct ConsoleHighlightEditor: View {
+    let terms: [String]
+    @Binding var replies: Bool
+    let save: ([String]) -> Void
+    @State private var draft = ""
+
+    static let colors: [Color] = [Palette.warm, Palette.cold, Color(hex: 0xC792EA), Palette.hot, Color(hex: 0xF29E4C)]
+    static func color(at index: Int) -> Color { colors[index % colors.count] }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Toggle(isOn: $replies) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Replies to my commands").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Text("Tints what you send from here and the printer's answer.").font(Typeface.caption).foregroundStyle(Palette.faint)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .toggleStyle(.switch)
+            .controlSize(.small)
+            .tint(Palette.accent)
+
+            Divider().overlay(Palette.edge)
+
+            Text("Highlight lines containing").font(Typeface.caption).foregroundStyle(Palette.faint)
+            HStack(spacing: 8) {
+                TextField("A word or phrase, e.g. FR:", text: $draft)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 13, design: .monospaced))
+                    .foregroundStyle(Palette.paper)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Palette.graphite))
+                    .onSubmit(add)
+                Button("Add", action: add)
+                    .buttonStyle(.plate)
+                    .controlSize(.small)
+                    .disabled(draft.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+            ForEach(Array(terms.enumerated()), id: \.element) { index, term in
+                HStack(spacing: 8) {
+                    Circle().fill(Self.color(at: index)).frame(width: 9, height: 9)
+                    Text(term).font(.system(size: 13, design: .monospaced)).foregroundStyle(Palette.paper).lineLimit(1)
+                    Spacer()
+                    Button { save(terms.filter { $0 != term }) } label: { Image(systemName: "xmark").font(.system(size: 10, weight: .bold)) }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(Palette.faint)
+                        .help("Stop highlighting \(term)")
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Self.color(at: index).opacity(0.12)))
+            }
+        }
+        .padding(16)
+        .frame(width: 320)
+        .background(Palette.extrusion)
+        .presentationBackground(Palette.extrusion)
+    }
+
+    private func add() {
+        let term = draft.trimmingCharacters(in: .whitespaces)
+        guard !term.isEmpty, !terms.contains(term) else { draft = ""; return }
+        save(terms + [term])
+        draft = ""
     }
 }

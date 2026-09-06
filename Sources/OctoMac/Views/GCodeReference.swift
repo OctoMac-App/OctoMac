@@ -203,9 +203,6 @@ private struct GCodeRow: View {
                 }
                 Text(entry.detail).font(Typeface.caption).foregroundStyle(Palette.dust)
                     .fixedSize(horizontal: false, vertical: true)
-                if hovering {
-                    Text(entry.example).font(.system(size: 11, design: .monospaced)).foregroundStyle(Palette.faint)
-                }
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -216,5 +213,6 @@ private struct GCodeRow: View {
         .buttonStyle(.plain)
         .padding(.horizontal, 6)
         .onHover { hovering = $0 }
+        .help("Put \(entry.example) in the command box")
     }
 }
