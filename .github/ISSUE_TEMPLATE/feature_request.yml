@@ -1,0 +1,19 @@
+name: Feature idea
+description: Suggest something OctoMac could do
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like OctoMac to do?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would it help?
+  - type: input
+    id: plugin
+    attributes:
+      label: Related OctoPrint plugin (if any)
+      placeholder: A link to the plugin's page

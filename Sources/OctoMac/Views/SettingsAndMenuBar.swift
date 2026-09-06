@@ -82,6 +82,8 @@ private struct PrinterSettings: View {
                 }
             }
 
+            KeychainToggle()
+
             HStack {
                 Text("Drag to reorder. Double-click a printer to edit it.")
                     .font(Typeface.caption).foregroundStyle(Palette.faint)
@@ -96,6 +98,40 @@ private struct PrinterSettings: View {
                          message: "OctoMac forgets this printer and its API key. Nothing changes on the printer or in OctoPrint.",
                          confirmTitle: "Remove", onConfirm: { store.remove(instance.id) })
         }
+    }
+}
+
+/// Where API keys are kept: OctoMac's own encrypted file (the default) or the macOS Keychain.
+private struct KeychainToggle: View {
+    @Environment(InstanceStore.self) private var store
+    @State private var on = CredentialStore.usesKeychain
+    @State private var failed = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Toggle(isOn: Binding(get: { on }, set: { newValue in
+                // Your own printers' keys move, even while demo mode is showing pretend ones.
+                if CredentialStore.setUsesKeychain(newValue, ids: store.savedInstanceIDs) {
+                    on = newValue
+                    failed = false
+                } else {
+                    failed = true
+                }
+            })) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Keep API keys in the Keychain").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Text(failed ? "The Keychain didn't accept the keys, so they're still in OctoMac's own file."
+                                : "Off: keys are kept in an encrypted file only your account can read. On: the macOS Keychain looks after them.")
+                        .font(Typeface.caption).foregroundStyle(failed ? Palette.warm : Palette.faint)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .toggleStyle(.switch)
+            .tint(Palette.accent)
+        }
+        .padding(14)
+        .machined(radius: 12)
     }
 }
 

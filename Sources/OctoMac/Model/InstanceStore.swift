@@ -49,6 +49,13 @@ final class InstanceStore {
         instances = []
     }
 
+    /// Your own saved printers' IDs, even while demo mode is showing pretend ones.
+    var savedInstanceIDs: [UUID] {
+        guard let data = defaults.data(forKey: storageKey),
+              let saved = try? JSONDecoder().decode([Instance].self, from: data) else { return [] }
+        return saved.map(\.id)
+    }
+
     func session(for id: UUID?) -> PrinterSession? {
         id.flatMap { sessions[$0] }
     }

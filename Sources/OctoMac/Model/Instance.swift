@@ -25,15 +25,19 @@ struct Instance: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
-/// API keys, stored in `~/Library/Application Support/OctoMac/api-keys.dat`: JSON sealed with AES-GCM under a
-/// key compiled into the app, with owner-only (0600) permissions. This keeps keys out of plain text (backups,
-/// grep, screenshots) but isn't protection against someone who has the app binary, an accepted trade-off for
-/// printer API keys. Deliberately not the Keychain: ad-hoc signed builds trigger a Keychain prompt after every rebuild.
+/// API keys. By default they're stored in `~/Library/Application Support/OctoMac/api-keys.dat`: JSON sealed with
+/// AES-GCM under a key compiled into the app, with owner-only (0600) permissions. This keeps keys out of plain text
+/// (backups, grep, screenshots) but isn't protection against someone who has the app binary, an accepted trade-off
+/// for printer API keys. Settings can switch to the macOS Keychain instead (off by default: builds that aren't
+/// Developer ID signed get a Keychain prompt after every rebuild).
 enum CredentialStore {
     static let fileURL: URL = {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return support.appending(path: "OctoMac/api-keys.dat")
     }()
+
+    static let useKeychainKey = "credentials.useKeychain"
+    static var usesKeychain: Bool { UserDefaults.standard.bool(forKey: useKeychainKey) }
 
     /// Plain-JSON file written by an earlier build; migrated and removed on first load.
     private static let legacyPlainURL = fileURL.deletingLastPathComponent().appending(path: "api-keys.json")
@@ -41,25 +45,54 @@ enum CredentialStore {
     private static let sealingKey = SymmetricKey(data: SHA256.hash(data: Data("uk.co.district5.OctoMac/credentials/v1/7c1e9a4b".utf8)))
 
     static func apiKey(for id: UUID) -> String? {
-        load()[id.uuidString]
+        usesKeychain ? Keychain.apiKey(for: id) : load()[id.uuidString]
     }
 
     static func setAPIKey(_ key: String?, for id: UUID) {
-        var keys = load()
-        keys[id.uuidString] = (key?.isEmpty ?? true) ? nil : key
-        save(keys)
+        let key = (key?.isEmpty ?? true) ? nil : key
+        if usesKeychain {
+            if let key { Keychain.set(key, for: id) } else { Keychain.delete(id) }
+        } else {
+            var keys = load()
+            keys[id.uuidString] = key
+            save(keys)
+        }
     }
 
-    /// One-time move of keys saved by earlier builds from the Keychain into the file.
+    /// Moves every key to the Keychain or back to the file, then switches over. Returns false (and changes nothing)
+    /// if a key couldn't be written.
+    @discardableResult
+    static func setUsesKeychain(_ on: Bool, ids: [UUID]) -> Bool {
+        guard on != usesKeychain else { return true }
+        if on {
+            let keys = load()
+            for id in ids {
+                guard let key = keys[id.uuidString] else { continue }
+                guard Keychain.set(key, for: id) else { return false }
+            }
+            UserDefaults.standard.set(true, forKey: useKeychainKey)
+            save([:])
+            try? FileManager.default.removeItem(at: fileURL)
+        } else {
+            var keys: [String: String] = [:]
+            for id in ids { if let key = Keychain.apiKey(for: id) { keys[id.uuidString] = key } }
+            save(keys)
+            UserDefaults.standard.set(false, forKey: useKeychainKey)
+            ids.forEach(Keychain.delete)
+        }
+        return true
+    }
+
+    /// One-time move of keys saved by early builds from the Keychain into the file.
     static func migrateFromKeychain(ids: [UUID]) {
         let flag = "credentials.migratedFromKeychain"
-        guard !UserDefaults.standard.bool(forKey: flag) else { return }
+        guard !UserDefaults.standard.bool(forKey: flag), !usesKeychain else { return }
         var keys = load()
         for id in ids where keys[id.uuidString] == nil {
-            if let key = LegacyKeychain.apiKey(for: id) { keys[id.uuidString] = key }
+            if let key = Keychain.apiKey(for: id) { keys[id.uuidString] = key }
         }
         save(keys)
-        ids.forEach(LegacyKeychain.delete)
+        ids.forEach(Keychain.delete)
         UserDefaults.standard.set(true, forKey: flag)
     }
 
@@ -96,28 +129,41 @@ enum CredentialStore {
     }
 }
 
-/// Read/delete access to where earlier builds kept keys, used only for migration.
-private enum LegacyKeychain {
+/// API keys in the macOS Keychain, one generic password per printer.
+private enum Keychain {
     private static let service = "uk.co.district5.OctoMac.apikey"
 
-    static func apiKey(for id: UUID) -> String? {
-        let query: [String: Any] = [
+    private static func query(_ id: UUID) -> [String: Any] {
+        [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: id.uuidString,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
         ]
+    }
+
+    static func apiKey(for id: UUID) -> String? {
+        var request = query(id)
+        request[kSecReturnData as String] = true
+        request[kSecMatchLimit as String] = kSecMatchLimitOne
         var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess, let data = result as? Data else { return nil }
+        guard SecItemCopyMatching(request as CFDictionary, &result) == errSecSuccess, let data = result as? Data else { return nil }
         return String(data: data, encoding: .utf8)
     }
 
+    @discardableResult
+    static func set(_ key: String, for id: UUID) -> Bool {
+        let data = Data(key.utf8)
+        let status = SecItemUpdate(query(id) as CFDictionary, [kSecValueData as String: data] as CFDictionary)
+        if status == errSecSuccess { return true }
+        guard status == errSecItemNotFound else { return false }
+        var item = query(id)
+        item[kSecValueData as String] = data
+        item[kSecAttrLabel as String] = "OctoMac API key"
+        item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
+    }
+
     static func delete(_ id: UUID) {
-        SecItemDelete([
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: id.uuidString,
-        ] as CFDictionary)
+        SecItemDelete(query(id) as CFDictionary)
     }
 }

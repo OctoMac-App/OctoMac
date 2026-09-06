@@ -1,0 +1,34 @@
+name: Bug report
+description: Something in OctoMac isn't working as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem! Issues are public, so please don't include API keys, passwords, printer addresses or anything else private.
+        In OctoMac, **Help → Report a Problem…** makes a diagnostics file with the personal details left out. Read it, then attach it below if you're happy to.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: How can we make it happen?
+      placeholder: |
+        1. Open the Files tab
+        2. Drag a file onto a folder
+        3. ...
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Paste or attach the file from Help → Report a Problem… (optional).
+  - type: input
+    id: version
+    attributes:
+      label: OctoMac version
+      description: From OctoMac → About OctoMac.

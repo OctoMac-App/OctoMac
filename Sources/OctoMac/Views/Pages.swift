@@ -754,7 +754,7 @@ struct ConsolePage: View {
                 .onAppear { proxy.scrollTo("end", anchor: .bottom) }
                 .overlay(alignment: .bottom) {
                     if frozen != nil {
-                        let waiting = session.terminalReceived - frozenAt
+                        let waiting = newVisibleLines
                         Button {
                             frozen = nil
                             withAnimation(.snappy) { proxy.scrollTo("end", anchor: .bottom) }
@@ -831,6 +831,14 @@ struct ConsolePage: View {
         if let match = text.firstMatch(of: /^N\d+\s+/) { text.removeSubrange(match.range) }
         if let star = text.lastIndex(of: "*") { text = String(text[..<star]) }
         return text.trimmingCharacters(in: .whitespaces).uppercased()
+    }
+
+    /// Lines that arrived since pausing and would actually be shown (not hidden by a filter).
+    private var newVisibleLines: Int {
+        let arrived = session.terminalReceived - frozenAt
+        guard arrived > 0 else { return 0 }
+        let active = filters.filter { enabled.contains($0.name) }
+        return session.terminal.suffix(arrived).filter { line in !active.contains { $0.matches(line) } }.count
     }
 
     private func pause(_ lines: [(offset: Int, element: String)]) {
