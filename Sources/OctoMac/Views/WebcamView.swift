@@ -245,6 +245,17 @@ struct SnapshotMenu: View {
                     .transition(.opacity)
             }
             Menu {
+                // Printers with more than one camera: pick which one to watch.
+                let cams = session.webcams
+                if cams.count > 1 {
+                    Section("Camera") {
+                        ForEach(cams) { cam in
+                            Toggle(cam.displayName, isOn: Binding(get: { session.webcam?.name == cam.name },
+                                                                  set: { if $0 { session.chooseWebcam(cam) } }))
+                        }
+                    }
+                    Divider()
+                }
                 Button("Save snapshot (JPEG)…") { save(png: false) }
                 Button("Save snapshot (PNG)…") { save(png: true) }
                 Divider()
@@ -253,7 +264,7 @@ struct SnapshotMenu: View {
                 QuietMenuLabel(symbol: "camera", onDark: true)
             }
             .quietMenu()
-            .help("Save or copy the current camera frame")
+            .help(session.webcams.count > 1 ? "Switch camera, or save or copy the current frame" : "Save or copy the current camera frame")
         }
         .animation(.easeOut(duration: 0.2), value: copied)
     }

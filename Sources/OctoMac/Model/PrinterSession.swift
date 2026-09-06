@@ -136,6 +136,8 @@ final class PrinterSession {
     private(set) var printerError: PrinterErrorInfo?
     private(set) var updates: [SoftwareComponent]?
     private(set) var logs: [LogFile] = []
+    private(set) var timelapses: TimelapseList?
+    private(set) var customControls: [CustomControl] = []
     /// Print speed and flow, as last set here or reported by the printer (M220 / M221).
     var feedRate = 100.0
     var flowRate = 100.0
@@ -202,18 +204,34 @@ final class PrinterSession {
         return nil
     }
 
+    /// Every camera OctoPrint knows about (several on OctoPrint 1.9 and later).
+    var webcams: [Webcam] { Webcam.list(from: settings) }
+
+    /// The camera being shown: the one you picked for this printer, or OctoPrint's default.
+    var webcam: Webcam? {
+        let cams = webcams
+        let picked = UserDefaults.standard.string(forKey: "camera.\(instance.id.uuidString)")
+        let preferred = settings?.value(at: "webcam", "defaultWebcam")?.stringValue
+        return cams.first { $0.name == picked } ?? cams.first { $0.name == preferred } ?? cams.first
+    }
+
+    func chooseWebcam(_ cam: Webcam) {
+        UserDefaults.standard.set(cam.name, forKey: "camera.\(instance.id.uuidString)")
+        selectedWebcamName = cam.name
+        if !isDemoSession, let url = webcamStreamURL { camera.start(url: url, apiKey: client.apiKey) }
+    }
+
+    /// Changes when a camera is picked, so views showing the camera update.
+    private(set) var selectedWebcamName: String?
+
     var webcamStreamURL: URL? {
-        let candidates = [
-            settings?.value(at: "plugins", "classicwebcam", "stream"),
-            settings?.value(at: "webcam", "streamUrl"),
-        ]
-        guard let raw = candidates.compactMap({ $0?.stringValue }).first(where: { !$0.isEmpty }) else { return nil }
-        return client.resolve(raw)
+        _ = selectedWebcamName
+        return webcam.flatMap { client.resolve($0.stream) }
     }
 
     var webcamTransform: (flipH: Bool, flipV: Bool, rotate90: Bool) {
-        let source = settings?.value(at: "plugins", "classicwebcam") ?? settings?["webcam"]
-        return (source?["flipH"]?.boolValue ?? false, source?["flipV"]?.boolValue ?? false, source?["rotate90"]?.boolValue ?? false)
+        _ = selectedWebcamName
+        return (webcam?.flipH ?? false, webcam?.flipV ?? false, webcam?.rotate90 ?? false)
     }
 
     /// Temperature presets from OctoPrint's settings (`temperature.profiles`).
@@ -299,7 +317,8 @@ final class PrinterSession {
         async let profiles: Void = refreshProfiles()
         async let temps: Void = loadTemperatureHistory()
         async let health: Void = refreshHealth()
-        _ = await (version, connection, files, settings, system, profiles, temps, health)
+        async let controls: Void = refreshCustomControls()
+        _ = await (version, connection, files, settings, system, profiles, temps, health, controls)
         if hasLayerPlugin { layerProgress = try? await client.layerProgress() }
     }
 
@@ -321,6 +340,53 @@ final class PrinterSession {
         } else if let list = try? await client.softwareUpdates() {
             updates = list
         }
+    }
+
+    func refreshTimelapses() async {
+        guard !isDemoSession else { return }
+        if let list = try? await client.timelapses() { timelapses = list }
+    }
+
+    func refreshCustomControls() async {
+        guard !isDemoSession else { return }
+        if let list = try? await client.customControlList() { customControls = list }
+    }
+
+    func run(_ action: CustomControl.Action, values: [String: String]) {
+        guard !isDemoSession else { return }
+        if let script = action.script {
+            perform { [client] in try await client.runScript(script, parameters: values) }
+        } else {
+            let commands = action.resolvedCommands(values)
+            perform { [client] in try await client.sendGcode(commands) }
+        }
+    }
+
+    func timelapseData(_ file: TimelapseFile) async -> Data? {
+        guard !isDemoSession else { return nil }
+        return await attempt { [client] in try await client.timelapseData(file) }
+    }
+
+    func deleteTimelapse(_ file: TimelapseFile) {
+        perform { [client, weak self] in
+            try await client.deleteTimelapse(file.name)
+            await self?.refreshTimelapses()
+        }
+    }
+
+    func renderTimelapse(_ file: TimelapseFile) {
+        perform { [client, weak self] in
+            try await client.renderTimelapse(file.name)
+            await self?.refreshTimelapses()
+        }
+    }
+
+    /// Every file's most recent print, newest first, from OctoPrint's per-file print history.
+    var recentPrints: [FileEntry] {
+        func walk(_ entries: [FileEntry]) -> [FileEntry] {
+            entries.flatMap { entry in (entry.prints?.last?.date != nil ? [entry] : []) + walk(entry.children ?? []) }
+        }
+        return walk(files).sorted { ($0.prints?.last?.date ?? 0) > ($1.prints?.last?.date ?? 0) }
     }
 
     func refreshLogs() async {
@@ -555,6 +621,8 @@ final class PrinterSession {
         switch event.type {
         case "PrintStarted":
             layerProgress = nil
+        case "MovieDone", "MovieFailed", "MovieRendering":
+            Task { await refreshTimelapses() }
         case "UpdatedFiles", "FileAdded", "FileRemoved", "FolderAdded", "FolderRemoved", "MetadataAnalysisFinished", "PrintDone":
             Task { await refreshFiles() }
         case "Connected", "Disconnected", "Connecting", "PrinterProfileModified", "Error":
@@ -964,6 +1032,27 @@ extension PrinterSession {
                                "current_undervoltage": false, "current_overheat": false, "past_overheat": false],
         ])
         throttle = pi?.throttle
+        timelapses = try? ([
+            "config": ["type": .string(printing ? "zchange" : "off")],
+            "files": printing ? [
+                ["name": "pegboard_hooks_x8_20260625.mp4", "size": "18.2MB", "bytes": 19_084_112, "date": "2026-06-25 16:40"],
+                ["name": "drill_bit_index_20260619.mp4", "size": "41.7MB", "bytes": 43_725_005, "date": "2026-06-19 11:02"],
+            ] : [],
+            "unrendered": printing ? [["name": "first_layer_test", "size": "2.1MB", "bytes": 2_201_331, "date": "2026-06-07 09:15"]] : [],
+        ] as JSONValue).decode(TimelapseList.self)
+        if printing {
+            customControls = CustomControl.parse(["controls": [
+                ["name": "Filament", "children": [
+                    ["name": "Load filament", "command": "M701"],
+                    ["name": "Unload filament", "command": "M702", "confirm": "Is the hotend hot enough to unload?"],
+                ]],
+                ["name": "Maintenance", "children": [
+                    ["name": "Park for nozzle change", "commands": ["G28 X Y", "G1 Z80 F600"]],
+                    ["name": "Set fan speed", "command": "M106 S%(speed)s", "input": [["name": "Speed", "parameter": "speed", "default": 255]]],
+                    ["name": "Wipe nozzle", "script": "wipe_nozzle"],
+                ]],
+            ]])
+        }
         updates = [
             SoftwareComponent(id: "octoprint", name: "OctoPrint", installed: "1.10.3", available: printing ? "1.10.3" : "1.11.0",
                               updateAvailable: !printing, updatePossible: true),
@@ -1067,7 +1156,13 @@ extension PrinterSession {
             if let time, let length {
                 object["gcodeAnalysis"] = ["estimatedPrintTime": JSONValue(time), "filament": ["tool0": ["length": JSONValue(length)]]]
             }
-            if let success { object["prints"] = ["success": 1, "failure": 0, "last": ["success": .bool(success)]] }
+            if let success {
+                object["prints"] = ["success": .number(success ? 3 : 1), "failure": .number(success ? 0 : 1), "last": [
+                    "success": .bool(success),
+                    "date": .number(Date.now.addingTimeInterval(-daysAgo * 86400 - 3600).timeIntervalSince1970),
+                    "printTime": .number((time ?? 3600) * (success ? 1.04 : 0.4)),
+                ]]
+            }
             file = .object(object)
         }
         return file

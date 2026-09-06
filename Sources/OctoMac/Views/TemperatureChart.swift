@@ -209,7 +209,7 @@ struct TemperatureChart: View {
             AxisMarks(position: .leading, values: .automatic(desiredCount: 5)) { value in
                 AxisGridLine().foregroundStyle(Palette.edge.opacity(0.6))
                 AxisValueLabel {
-                    if let celsius = value.as(Double.self) { Text("\(Int(celsius))°").font(Typeface.number(11)).foregroundStyle(Palette.faint) }
+                    if let celsius = value.as(Double.self) { Text(Fmt.deg(celsius)).font(Typeface.number(11)).foregroundStyle(Palette.faint) }
                 }
             }
         }
@@ -397,7 +397,7 @@ enum ChartExport {
         var value = 0.0
         while value <= data.yMax + 0.1 {
             out.append("<line x1=\"\(f(left))\" y1=\"\(f(y(value)))\" x2=\"\(f(width - right))\" y2=\"\(f(y(value)))\" stroke=\"\(hex(Palette.edge))\" stroke-width=\"1\"/>")
-            out.append("<text x=\"\(f(left - 12))\" y=\"\(f(y(value) + 5))\" text-anchor=\"end\" \(numberFont) font-size=\"14\" fill=\"\(hex(Palette.faint))\">\(Int(value))°</text>")
+            out.append("<text x=\"\(f(left - 12))\" y=\"\(f(y(value) + 5))\" text-anchor=\"end\" \(numberFont) font-size=\"14\" fill=\"\(hex(Palette.faint))\">\(Fmt.deg(value))</text>")
             value += step
         }
 

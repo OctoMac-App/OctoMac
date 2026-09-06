@@ -18,12 +18,8 @@ struct OctoMacApp: App {
         .windowBackgroundDragBehavior(.enabled)
         .commands {
             CommandGroup(replacing: .newItem) {}
-            CommandGroup(before: .help) {
-                Button(store.isDemo ? "Exit Demo Mode" : "Try Demo Mode") {
-                    if store.isDemo { store.exitDemo() } else { store.enterDemo() }
-                }
-                Divider()
-            }
+            CommandGroup(replacing: .appInfo) { AboutCommand() }
+            CommandGroup(replacing: .help) { HelpCommands(store: store) }
         }
 
         // G-code previews open in their own windows, so they can sit beside the printer view.
@@ -36,6 +32,19 @@ struct OctoMacApp: App {
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 1280, height: 860)
         // Previews are quick to reopen and may refer to files that have since changed; don't restore them at launch.
+        .restorationBehavior(.disabled)
+
+        Window("About OctoMac", id: "about") {
+            AboutView().preferredColorScheme(.dark)
+        }
+        .windowResizability(.contentSize)
+        .restorationBehavior(.disabled)
+
+        Window("Report a Problem", id: "report") {
+            ReportProblemView()
+                .environment(store)
+                .preferredColorScheme(.dark)
+        }
         .restorationBehavior(.disabled)
 
         Settings {
@@ -61,6 +70,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate()
         Notifier.shared.start()
+    }
+
+    /// G-code opened from Finder or dropped on the Dock icon.
+    func application(_ application: NSApplication, open urls: [URL]) {
+        MainActor.assumeIsolated { FileInbox.shared.receive(urls) }
     }
 }
 
@@ -90,5 +104,25 @@ private struct WindowFiller: NSViewRepresentable {
                 }
             }
         }
+    }
+}
+
+private struct AboutCommand: View {
+    @Environment(\.openWindow) private var openWindow
+    var body: some View { Button("About OctoMac") { openWindow(id: "about") } }
+}
+
+private struct HelpCommands: View {
+    let store: InstanceStore
+    @Environment(\.openWindow) private var openWindow
+
+    var body: some View {
+        Button(store.isDemo ? "Exit Demo Mode" : "Try Demo Mode") {
+            if store.isDemo { store.exitDemo() } else { store.enterDemo() }
+        }
+        Divider()
+        Button("Report a Problem…") { openWindow(id: "report") }
+        Button("OctoMac on GitHub") { NSWorkspace.shared.open(URL(string: "https://github.com/OctoMac-App/OctoMac")!) }
+        Button("Privacy") { NSWorkspace.shared.open(URL(string: "https://github.com/OctoMac-App/OctoMac/blob/master/PRIVACY.md")!) }
     }
 }

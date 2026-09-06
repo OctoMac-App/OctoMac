@@ -5,11 +5,11 @@ import UserNotifications
 /// OctoMac's Settings window, in the same style as the main window.
 struct SettingsView: View {
     enum Page: String, CaseIterable, Identifiable {
-        case printers = "Printers", notifications = "Notifications"
+        case general = "General", printers = "Printers", notifications = "Notifications"
         var id: String { rawValue }
     }
 
-    @State private var page = Page.printers
+    @State private var page = Page.general
     @Namespace private var carriage
 
     var body: some View {
@@ -37,6 +37,7 @@ struct SettingsView: View {
             .overlay(Capsule().strokeBorder(.white.opacity(0.05), lineWidth: 1))
 
             switch page {
+            case .general: GeneralSettings()
             case .printers: PrinterSettings()
             case .notifications: NotificationSettings()
             }
@@ -166,6 +167,7 @@ private struct PrinterSettingsRow: View {
 
 struct MenuBarView: View {
     @Environment(InstanceStore.self) private var store
+    @AppStorage(TemperatureUnit.defaultsKey) private var unit = TemperatureUnit.celsius.rawValue
     @Environment(\.openWindow) private var openWindow
     @AppStorage("selectedInstance") private var selectedInstance = ""
 
@@ -182,6 +184,7 @@ struct MenuBarView: View {
                 if let session = store.sessions[instance.id] {
                     Button { open(instance) } label: {
                         MenuPrinterCard(session: session, filament: store.filament(for: instance))
+                            .id(unit)
                     }
                     .buttonStyle(.plain)
                 }
@@ -269,7 +272,7 @@ struct MenuPrinterCard: View {
                             HStack(spacing: 3) {
                                 Image(systemName: HeaterKind(key: key).symbol)
                                     .font(.system(size: 9)).foregroundStyle(HeaterKind(key: key).color)
-                                Text(value.map { "\(Int($0))°" } ?? "–").font(Typeface.number(12)).foregroundStyle(Palette.dust)
+                                Text(Fmt.deg(value)).font(Typeface.number(12)).foregroundStyle(Palette.dust)
                             }
                         }
                     }

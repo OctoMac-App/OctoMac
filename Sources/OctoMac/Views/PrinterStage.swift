@@ -33,6 +33,7 @@ struct PrinterStage: View {
                     case .overview: OverviewPage(session: session, filament: filament, tab: $tab)
                     case .move: MovePage(session: session)
                     case .files: FilesPage(session: session, filament: filament) { tab = .overview }
+                    case .history: HistoryPage(session: session, filament: filament) { tab = .overview }
                     case .console: ConsolePage(session: session)
                     case .machine: MachinePage(session: session, filament: filament)
                     }

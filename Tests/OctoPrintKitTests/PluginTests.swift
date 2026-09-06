@@ -74,3 +74,38 @@ struct SystemHealthTests {
         #expect(info.reason == "autodetect")
     }
 }
+
+struct CustomControlTests {
+    @Test func parsesGroupsInputsAndScripts() {
+        let json: JSONValue = ["controls": [
+            ["name": "Filament", "children": [
+                ["name": "Load", "commands": ["M701"], "confirm": "Is the hotend hot?"],
+                ["name": "Set fan", "command": "M106 S%(speed)s", "input": [["name": "Speed", "parameter": "speed", "default": 255]]],
+            ]],
+            ["name": "Wipe", "script": "wipe_nozzle"],
+            ["name": "Broken"],
+        ]]
+        let controls = CustomControl.parse(json)
+        #expect(controls.count == 2)
+        guard case .group(let name, let children) = controls[0], case .action(let fan) = children[1] else {
+            Issue.record("expected a group with a fan control"); return
+        }
+        #expect(name == "Filament")
+        #expect(fan.resolvedCommands([:]) == ["M106 S255"])
+        #expect(fan.resolvedCommands(["speed": "128"]) == ["M106 S128"])
+        guard case .action(let wipe) = controls[1] else { Issue.record("expected a script"); return }
+        #expect(wipe.script == "wipe_nozzle")
+    }
+
+    @Test func webcams() {
+        let settings: JSONValue = ["webcam": ["webcams": [
+            ["name": "classic", "displayName": "Classic Webcam", "compat": ["stream": "/webcam/?action=stream"], "flipH": true],
+            ["name": "side", "displayName": "Side", "extras": ["stream": "http://cam2/stream"]],
+            ["name": "nostream", "displayName": "Snapshot only"],
+        ]]]
+        let cams = Webcam.list(from: settings)
+        #expect(cams.map(\.name) == ["classic", "side"])
+        #expect(cams[0].flipH)
+        #expect(Webcam.list(from: ["webcam": ["streamUrl": "/webcam/"]]).first?.stream == "/webcam/")
+    }
+}

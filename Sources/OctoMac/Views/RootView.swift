@@ -14,7 +14,7 @@ enum EditorTarget: Identifiable {
 }
 
 enum StageTab: String, CaseIterable, Identifiable {
-    case overview, move, files, console, machine
+    case overview, move, files, history, console, machine
 
     var id: String { rawValue }
 
@@ -23,6 +23,7 @@ enum StageTab: String, CaseIterable, Identifiable {
         case .overview: "Overview"
         case .move: "Move"
         case .files: "Files"
+        case .history: "History"
         case .console: "Console"
         case .machine: "Machine"
         }
@@ -32,20 +33,25 @@ enum StageTab: String, CaseIterable, Identifiable {
 struct RootView: View {
     @Environment(InstanceStore.self) private var store
     @AppStorage("selectedInstance") private var selectionStorage = ""
+    /// Changing the temperature unit redraws everything that shows a temperature.
+    @AppStorage(TemperatureUnit.defaultsKey) private var unit = TemperatureUnit.celsius.rawValue
     @State private var selection: UUID?
     @State private var editor: EditorTarget?
+    @State private var inbox = FileInbox.shared
+    @State private var choosingPrinter = false
 
     var body: some View {
         GeometryReader { geo in
         HStack(spacing: 0) {
             PrinterRail(selection: $selection, editor: $editor)
                 .frame(width: geo.size.width < 1200 ? 216 : 260)
+                .id(unit)
 
             ZStack {
                 LayerLineBackground()
                 if let session = store.session(for: selection) {
                     PrinterStage(session: session, editor: $editor)
-                        .id(ObjectIdentifier(session))
+                        .id("\(ObjectIdentifier(session).hashValue)-\(unit)")
                 } else {
                     EmptyStage(firstRun: store.instances.isEmpty) { editor = .new }
                 }
@@ -62,6 +68,11 @@ struct RootView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: store.instances.compactMap { store.sessions[$0.id]?.mmuPromptSince })
+        .onChange(of: inbox.pending) { _, files in routeOpenedFiles(files) }
+        .onAppear { routeOpenedFiles(inbox.pending) }
+        .sheet(isPresented: $choosingPrinter, onDismiss: { inbox.pending = [] }) {
+            UploadChooser(files: inbox.pending) { upload(inbox.pending, to: $0) }
+        }
         .sheet(item: $editor) { target in
             InstanceEditor(target: target) { selection = $0 }
         }
@@ -87,6 +98,23 @@ struct RootView: View {
                 : UUID(uuidString: selectionStorage).flatMap { id in store.instances.contains { $0.id == id } ? id : nil }
                     ?? store.instances.first?.id
         }
+    }
+
+    /// Files opened from Finder go straight to the only reachable printer, or you choose.
+    private func routeOpenedFiles(_ files: [URL]) {
+        guard !files.isEmpty, !choosingPrinter else { return }
+        let online = store.instances.filter { store.sessions[$0.id]?.link == .online }
+        if online.count == 1, store.instances.count == 1 {
+            upload(files, to: online[0].id)
+        } else {
+            choosingPrinter = true
+        }
+    }
+
+    private func upload(_ files: [URL], to id: UUID) {
+        selection = id
+        store.sessions[id]?.upload(files)
+        inbox.pending = []
     }
 }
 
@@ -250,7 +278,7 @@ struct PrinterTile: View {
     private func temp(_ kind: HeaterKind, _ value: Double) -> some View {
         HStack(spacing: 3) {
             Image(systemName: kind.symbol).font(.system(size: 9)).foregroundStyle(kind.color)
-            Text("\(Int(value))°").font(Typeface.number(12)).foregroundStyle(Palette.dust)
+            Text(Fmt.deg(value)).font(Typeface.number(12)).foregroundStyle(Palette.dust)
         }
     }
 }

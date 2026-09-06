@@ -132,6 +132,10 @@ VStack(spacing: 20) {
         }
     }
     .disabled(!session.flags.operational)
+
+    if !session.customControls.isEmpty {
+        CustomControlsPanel(session: session)
+    }
 }
     }
 

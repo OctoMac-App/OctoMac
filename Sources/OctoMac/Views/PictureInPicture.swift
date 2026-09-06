@@ -126,7 +126,7 @@ struct PictureInPictureView: View {
                     let kind = HeaterKind(key: key)
                     HStack(spacing: 3) {
                         Image(systemName: kind.symbol).font(.system(size: 9)).foregroundStyle(kind.color)
-                        Text(session.heaters[key]?.actual.map { "\(Int($0))°" } ?? "–")
+                        Text(Fmt.deg(session.heaters[key]?.actual))
                             .font(Typeface.number(13)).foregroundStyle(Palette.paper)
                     }
                     .fixedSize()

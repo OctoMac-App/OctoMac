@@ -6,6 +6,61 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>OctoMac</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>G-code</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>uk.co.district5.octomac.gcode</string>
+				<string>uk.co.district5.octomac.bgcode</string>
+			</array>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>uk.co.district5.octomac.gcode</string>
+			<key>UTTypeDescription</key>
+			<string>G-code</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>gcode</string>
+					<string>gco</string>
+					<string>g</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>uk.co.district5.octomac.bgcode</string>
+			<key>UTTypeDescription</key>
+			<string>Binary G-code</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>bgcode</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>OctoMac</string>
 	<key>CFBundleIconFile</key>

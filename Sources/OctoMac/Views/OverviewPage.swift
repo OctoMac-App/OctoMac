@@ -423,7 +423,7 @@ struct JobPanel: View {
             .sorted { $0.key > $1.key } // "tool0" before "bed"
             .compactMap { key, data -> String? in
                 guard let actual = data.actual, let target = data.target, target > 0, actual < target - 3 else { return nil }
-                return "\(HeaterKind(key: key).displayName.lowercased()) \(Int(actual))° → \(Int(target))°"
+                return "\(HeaterKind(key: key).displayName.lowercased()) \(Fmt.deg(actual)) → \(Fmt.deg(target))"
             }
         return heating.isEmpty ? nil : "Heating up: " + heating.joined(separator: ", ")
     }
@@ -796,7 +796,7 @@ struct PresetPanel: View {
                                 .font(Typeface.bodyStrong)
                                 .foregroundStyle(selected == nil ? Palette.dust : Palette.paper)
                             if let selected {
-                                Text("Hotend \(Int(selected.extruder))°, bed \(Int(selected.bed))°")
+                                Text("Hotend \(Fmt.deg(selected.extruder)), bed \(Fmt.deg(selected.bed))")
                                     .font(Typeface.number(12)).foregroundStyle(Palette.faint)
                             } else {
                                 Text("\(presets.count) saved in OctoPrint")
@@ -858,7 +858,7 @@ struct PresetList: View {
                                 .opacity(preset.name == chosen ? 1 : 0)
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(preset.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
-                                Text("Hotend \(Int(preset.extruder))°, bed \(Int(preset.bed))°")
+                                Text("Hotend \(Fmt.deg(preset.extruder)), bed \(Fmt.deg(preset.bed))")
                                     .font(Typeface.number(12)).foregroundStyle(Palette.faint)
                             }
                             Spacer(minLength: 0)
@@ -914,7 +914,7 @@ struct ChartTooltip: View {
                     Text(name).font(Typeface.caption).foregroundStyle(Palette.dust)
                     Spacer(minLength: 12)
                     Text(Fmt.temp(value.actual)).font(Typeface.number(15)).foregroundStyle(Palette.paper)
-                    Text((value.target ?? 0) > 0 ? "→ \(Int(value.target ?? 0))°" : "off")
+                    Text((value.target ?? 0) > 0 ? "→ \(Fmt.deg(value.target))" : "off")
                         .font(Typeface.number(12)).foregroundStyle(Palette.faint)
                         .frame(minWidth: 40, alignment: .trailing)
                 }
@@ -974,7 +974,7 @@ struct CurrentReadings: View {
                     Text(HeaterKind(key: key).displayName).font(Typeface.caption).foregroundStyle(Palette.faint)
                     Text(Fmt.temp(data?.actual)).font(Typeface.number(17)).foregroundStyle(Palette.paper)
                     if let target = data?.target, target > 0 {
-                        Text("→ \(Int(target))°").font(Typeface.number(13)).foregroundStyle(Palette.dust)
+                        Text("→ \(Fmt.deg(target))").font(Typeface.number(13)).foregroundStyle(Palette.dust)
                     }
                 }
             }

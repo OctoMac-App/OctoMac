@@ -74,7 +74,7 @@ struct HeatTile: View {
     private var targetText: some View {
         Group {
             if let target = data.target, target > 0 {
-                Text("to \(Int(target))°").font(Typeface.number(compact ? 13 : 17)).foregroundStyle(Palette.dust)
+                Text("to \(Fmt.deg(target))").font(Typeface.number(compact ? 13 : 17)).foregroundStyle(Palette.dust)
             } else {
                 Text("off").font(Typeface.text(compact ? 12 : 13, .medium)).foregroundStyle(Palette.faint)
             }
@@ -90,11 +90,11 @@ struct HeatTile: View {
                 setTargetBadge
             }
             HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Text(data.actual.map { String(format: "%.0f", $0) } ?? "–")
+                Text(Fmt.degNumber(data.actual))
                     .font(Typeface.number(44))
                     .foregroundStyle(Palette.paper)
                     .contentTransition(.numericText(value: data.actual ?? 0))
-                Text("°C").font(Typeface.number(16)).foregroundStyle(Palette.faint)
+                Text(TemperatureUnit.current.symbol).font(Typeface.number(16)).foregroundStyle(Palette.faint)
                 Spacer()
                 targetText
             }
@@ -109,7 +109,7 @@ struct HeatTile: View {
                 Image(systemName: kind.symbol).font(.system(size: 11)).foregroundStyle(kind.color)
                 Text(kind.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).lineLimit(1)
                 Spacer(minLength: 4)
-                Text(data.actual.map { String(format: "%.0f°", $0) } ?? "–")
+                Text(Fmt.deg(data.actual))
                     .font(Typeface.number(22))
                     .foregroundStyle(Palette.paper)
                     .contentTransition(.numericText(value: data.actual ?? 0))
@@ -194,21 +194,21 @@ struct HeatEditor: View {
         VStack(alignment: .leading, spacing: 14) {
             Text("\(kind.displayName) target").font(Typeface.subhead).foregroundStyle(Palette.paper)
             HStack(alignment: .firstTextBaseline) {
-                Text("\(Int(value))").font(Typeface.number(40)).foregroundStyle(kind.color)
-                Text("°C").font(Typeface.number(16)).foregroundStyle(Palette.faint)
+                Text(Fmt.degNumber(value)).font(Typeface.number(40)).foregroundStyle(kind.color)
+                Text(TemperatureUnit.current.symbol).font(Typeface.number(16)).foregroundStyle(Palette.faint)
             }
             Slider(value: $value, in: 0...(kind == .bed ? 120 : kind == .chamber ? 80 : 300), step: 5)
                 .tint(kind.color)
             HStack(spacing: 6) {
                 ForEach(presets, id: \.self) { preset in
-                    Chip(title: "\(Int(preset))°", selected: value == preset) { value = preset }
+                    Chip(title: Fmt.deg(preset), selected: value == preset) { value = preset }
                 }
             }
             HStack {
                 Button("Turn off") { session.setTarget(0, heater: key); done() }
                     .buttonStyle(.plateQuiet)
                 Spacer()
-                Button("Heat to \(Int(value))°") { session.setTarget(value, heater: key); done() }
+                Button("Heat to \(Fmt.deg(value))") { session.setTarget(value, heater: key); done() }
                     .buttonStyle(.plate(kind.color))
                     .keyboardShortcut(.defaultAction)
             }

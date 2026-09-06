@@ -4,7 +4,7 @@ Thanks for wanting to help! OctoMac is a small, friendly project, and bug report
 
 ## Reporting a bug
 
-Bug reports live in [GitHub issues](https://github.com/Dad-and-Ben/OctoMac/issues), and only there. Please don't send reports by email or anywhere else.
+Bug reports live in [GitHub issues](https://github.com/OctoMac-App/OctoMac/issues), and only there. Please don't send reports by email or anywhere else.
 
 1. In OctoMac, choose **Help → Report a Problem…**. OctoMac writes a short diagnostics file and opens a new issue for you.
 2. Describe what you did, what you expected, and what happened instead. Screenshots help a lot.
@@ -21,7 +21,7 @@ Open an issue and tell us what you'd like and why. If it's about an OctoPrint pl
 You'll need a Mac running macOS 15 or newer and Xcode 16 or newer.
 
 ```sh
-git clone https://github.com/Dad-and-Ben/OctoMac.git
+git clone https://github.com/OctoMac-App/OctoMac.git
 cd OctoMac
 scripts/build-app.sh debug     # builds build/OctoMac.app
 open build/OctoMac.app

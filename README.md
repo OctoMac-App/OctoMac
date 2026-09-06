@@ -13,9 +13,11 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 - **All your printers, side by side.** Add as many OctoPrint servers as you like. Each one shows its status, temperatures and print progress in the sidebar, and switching between them is instant.
 - **Live updates.** OctoMac listens to OctoPrint's live connection, so temperatures, progress and events appear the moment they happen. No waiting, no refreshing.
-- **A clear overview.** See the webcam (with a cinema mode, one-click snapshots, and a picture in picture window that floats above your other apps), the current print with time left and when it'll finish, and a temperature chart you can hover over and export as PNG or SVG.
+- **A clear overview.** See the webcam (switch between cameras if you have more than one, with a cinema mode, one-click snapshots, and a picture in picture window that floats above your other apps), the current print with time left and when it'll finish, and a temperature chart you can hover over and export as PNG or SVG.
 - **Print in a couple of clicks.** Browse your files as thumbnails, filter by name, open one to check its print time, filament and history, then press Print.
-- **Easy uploads and tidy folders.** Drag G-code onto the Files tab to upload it, and drag files onto folders to organise them.
+- **Easy uploads and tidy folders.** Drag G-code onto the Files tab to upload it, or open a `.gcode` file from Finder (or drop it on OctoMac in the Dock) and pick a printer. Drag files onto folders to organise them.
+- **History and timelapses.** The History tab lists what you've printed lately and whether it finished, and plays, saves or deletes OctoPrint's timelapse videos.
+- **Your own buttons.** Custom controls set up in OctoPrint appear on the Move tab, including ones that ask for a value first.
 - **G-code preview.** See exactly what will be printed, layer by layer or as a 3D model you can spin around.
 - **Watch prints live.** While printing, the 3D preview follows along, with a little animated nozzle laying down the current layer.
 - **Tweak a print as it runs.** Nudge the print speed and flow right from the Overview while you watch.
@@ -25,6 +27,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **A friendlier console.** Hide the chatter you don't need (temperatures, SD status, positions, wait and busy replies, MMU chatter) using OctoPrint's own filters, and highlight the lines you care about, including the printer's replies to your own commands. The console holds still while you scroll up to read, and a G-code cheat sheet slides out beside it with plain explanations of common commands.
 - **Safe by design.** Stopping a print asks you to confirm and shows what you'd lose, and there's a separate emergency stop for when something goes wrong.
 - **A menu bar helper.** Check on every printer from the menu bar without opening the main window.
+- **Celsius or Fahrenheit.** Celsius by default; switch in Settings.
 
 ![The 3D G-code preview following a live print](docs/screenshots/live-preview.png)
 
@@ -34,12 +37,17 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 - A Mac running **macOS 15 Sequoia** or newer
 - One or more printers running **OctoPrint** (for example on an OctoPi Raspberry Pi)
-- **Xcode 16** or newer, to build the app from source
 
-### Build and run
+### Download
+
+Grab the latest **OctoMac.dmg** from the [Releases page](https://github.com/OctoMac-App/OctoMac/releases), open it, and drag OctoMac into your Applications folder. It runs on both Apple silicon and Intel Macs.
+
+### Or build it yourself
+
+You'll need **Xcode 16** or newer.
 
 ```sh
-git clone https://github.com/Dad-and-Ben/OctoMac.git
+git clone https://github.com/OctoMac-App/OctoMac.git
 cd OctoMac
 scripts/build-app.sh
 open build/OctoMac.app
@@ -56,7 +64,7 @@ You can also open `Package.swift` in Xcode and press Run.
 3. Choose **Request access**. Your browser opens OctoPrint, where you approve OctoMac with one click. (Prefer to paste an API key instead? Choose **Paste a key**.)
 4. That's it. Your printer appears in the sidebar.
 
-Your API keys are stored encrypted on your Mac, in your own user folder.
+Your API keys stay on your Mac. By default they're kept in an encrypted file only your account can read; if you'd rather use the macOS Keychain, switch it on in **Settings → Printers**. See [PRIVACY.md](PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.
 
 ### Just looking?
 
@@ -117,7 +125,8 @@ To set it up, install the Prusa MMU plugin from OctoPrint's Plugin Manager and a
 
 ## Good to know
 
-- **Your data stays with you.** OctoMac only talks to the OctoPrint servers you add. There are no accounts, no tracking and no cloud service.
+- **Your data stays with you.** OctoMac only talks to the OctoPrint servers you add. There are no accounts, no tracking and no cloud service. The details are in [PRIVACY.md](PRIVACY.md).
+- **Found a problem?** Choose **Help → Report a Problem…** and open a [GitHub issue](https://github.com/OctoMac-App/OctoMac/issues). That's the only place we take bug reports. [CONTRIBUTING.md](CONTRIBUTING.md) has more on helping out.
 - **Live preview is an estimate.** The animated nozzle follows the part of the file OctoPrint has sent to the printer. Printers keep a few moves in a small buffer, so on short moves the on-screen nozzle can run a fraction of a second ahead of the real one.
 - **G-code preview downloads the file.** To show a preview, OctoMac downloads the G-code from your printer. Files are kept in memory while the app is open, so opening the same preview again is instant.
 

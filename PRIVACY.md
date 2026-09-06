@@ -22,4 +22,4 @@ Notifications are shown by macOS on your Mac only. They aren't sent anywhere els
 
 ## Bug reports
 
-**Help → Report a Problem…** writes a diagnostics file that you can read before sharing. It includes the OctoMac and macOS versions, your Mac's chip, and each printer's OctoPrint version, plugins, firmware and connection state. It leaves out printer names and addresses, API keys, user names and file names. Nothing is sent automatically: you choose whether to attach it to a public [GitHub issue](https://github.com/Dad-and-Ben/OctoMac/issues), which is the only place we take bug reports.
+**Help → Report a Problem…** writes a diagnostics file that you can read before sharing. It includes the OctoMac and macOS versions, your Mac's chip, and each printer's OctoPrint version, plugins, firmware and connection state. It leaves out printer names and addresses, API keys, user names and file names. Nothing is sent automatically: you choose whether to attach it to a public [GitHub issue](https://github.com/OctoMac-App/OctoMac/issues), which is the only place we take bug reports.

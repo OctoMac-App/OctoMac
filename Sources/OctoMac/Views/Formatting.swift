@@ -19,9 +19,22 @@ enum Fmt {
         return String(format: "%.1f%%", value)
     }
 
-    static func temp(_ value: Double?) -> String {
-        guard let value else { return "–" }
-        return String(format: "%.1f°", value)
+    /// A reading to one decimal place, in the chosen unit: "214.7°".
+    static func temp(_ celsius: Double?) -> String {
+        guard let celsius else { return "–" }
+        return String(format: "%.1f°", TemperatureUnit.current.convert(celsius))
+    }
+
+    /// A whole-degree temperature in the chosen unit: "215°".
+    static func deg(_ celsius: Double?) -> String {
+        guard let celsius else { return "–" }
+        return "\(degNumber(celsius))°"
+    }
+
+    /// Just the number, for layouts that show the unit separately.
+    static func degNumber(_ celsius: Double?) -> String {
+        guard let celsius else { return "–" }
+        return String(format: "%.0f", TemperatureUnit.current.convert(celsius))
     }
 
     static func bytes(_ value: Int) -> String {
@@ -38,4 +51,20 @@ enum Fmt {
         guard let value else { return "?" }
         return value.formatted(.number.precision(.fractionLength(0...1)))
     }
+}
+
+/// How temperatures are shown. OctoPrint and printers always work in Celsius; only the display changes.
+enum TemperatureUnit: String, CaseIterable, Identifiable {
+    case celsius, fahrenheit
+
+    static let defaultsKey = "temperature.unit"
+    static var current: TemperatureUnit {
+        UserDefaults.standard.string(forKey: defaultsKey).flatMap(TemperatureUnit.init(rawValue:)) ?? .celsius
+    }
+
+    var id: String { rawValue }
+    var symbol: String { self == .celsius ? "°C" : "°F" }
+    var title: String { self == .celsius ? "Celsius" : "Fahrenheit" }
+
+    func convert(_ celsius: Double) -> Double { self == .celsius ? celsius : celsius * 9 / 5 + 32 }
 }
