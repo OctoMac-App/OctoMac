@@ -19,6 +19,9 @@ struct InstanceEditor: View {
     @State private var status: Status = .idle
     @State private var work: Task<Void, Never>?
     @State private var confirmRemove = false
+    @State private var trustedCertificate: String?
+    /// A certificate the printer presented that macOS doesn't trust, waiting for your decision.
+    @State private var offeredCertificate: PresentedCertificate?
 
     enum Status: Equatable {
         case idle
@@ -175,6 +178,14 @@ struct InstanceEditor: View {
             }
             .controlSize(.small)
             .frame(minHeight: 30)
+
+            if let offeredCertificate {
+                CertificatePrompt(certificate: offeredCertificate) {
+                    trustedCertificate = offeredCertificate.fingerprint
+                    self.offeredCertificate = nil
+                    test()
+                }
+            }
         }
     }
 
@@ -286,6 +297,7 @@ struct InstanceEditor: View {
         apiKey = CredentialStore.apiKey(for: existing.id) ?? ""
         throttle = existing.pushThrottle
         filamentHex = existing.filamentHex
+        trustedCertificate = existing.trustedCertificate
         accessMode = apiKey.isEmpty ? .request : .paste
     }
 
@@ -295,7 +307,7 @@ struct InstanceEditor: View {
         let user = username
         work = Task {
             do {
-                apiKey = try await AppKeysAuthorizer(baseURL: url).requestKey(user: user) { dialog in
+                apiKey = try await AppKeysAuthorizer(baseURL: url, session: trustingSession).requestKey(user: user) { dialog in
                     await MainActor.run { _ = NSWorkspace.shared.open(dialog) }
                 }
                 status = .success("Access granted")
@@ -303,22 +315,37 @@ struct InstanceEditor: View {
             } catch is CancellationError {
                 status = .idle
             } catch {
-                status = .failure(error.localizedDescription)
+                await failed(error, url: url)
             }
+        }
+    }
+
+    /// A session that accepts the certificate you've trusted for this printer, if any.
+    private var trustingSession: URLSession {
+        CertificateTrust.session(pinnedFingerprint: trustedCertificate).0
+    }
+
+    /// If the failure was an untrusted HTTPS certificate, offer to trust it rather than showing a raw error.
+    private func failed(_ error: Error, url: URL) async {
+        if let certificate = await CertificateTrust.untrustedCertificate(at: url), certificate.fingerprint != trustedCertificate {
+            offeredCertificate = certificate
+            status = .failure("This printer's HTTPS certificate isn't trusted yet.")
+        } else {
+            status = .failure(error.localizedDescription)
         }
     }
 
     private func test() {
         guard let url else { return }
         status = .working("Connecting…")
-        let client = OctoPrintClient(baseURL: url, apiKey: apiKey)
+        let client = OctoPrintClient(baseURL: url, apiKey: apiKey, session: trustingSession)
         work = Task {
             do {
                 let version = try await client.version()
                 let user = try? await client.currentUser()
                 status = .success("OctoPrint \(version.server)" + (user?.name.map { ", signed in as \($0)" } ?? ""))
             } catch {
-                status = .failure(error.localizedDescription)
+                await failed(error, url: url)
             }
         }
     }
@@ -332,10 +359,12 @@ struct InstanceEditor: View {
             instance.baseURL = url
             instance.pushThrottle = throttle
             instance.filamentHex = filamentHex
+            instance.trustedCertificate = trustedCertificate
             store.update(instance, apiKey: apiKey)
             onSave(instance.id)
         } else {
-            let instance = Instance(name: trimmedName, baseURL: url, pushThrottle: throttle, filamentHex: filamentHex)
+            let instance = Instance(name: trimmedName, baseURL: url, pushThrottle: throttle, filamentHex: filamentHex,
+                                    trustedCertificate: trustedCertificate)
             store.add(instance, apiKey: apiKey)
             onSave(instance.id)
         }

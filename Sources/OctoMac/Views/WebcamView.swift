@@ -1,3 +1,4 @@
+import OctoPrintKit
 import AppKit
 import Observation
 import SwiftUI
@@ -53,6 +54,8 @@ struct WebcamView: View {
 final class MJPEGStreamer {
     private(set) var frame: NSImage?
     private(set) var failure: String?
+    /// The printer's trusted self-signed certificate, if it has one.
+    @ObservationIgnored var pinnedFingerprint: String?
 
     /// How many views are showing this stream (the main window and/or picture in picture). Frames are only decoded
     /// while at least one is.
@@ -114,6 +117,7 @@ final class MJPEGStreamer {
         guard let url else { return }
 
         let delegate = StreamDelegate(
+            trust: CertificateTrust(pinnedFingerprint: pinnedFingerprint),
             onFrame: { [weak self] data in
                 Task { @MainActor in self?.receive(data, generation: current) }
             },
@@ -153,15 +157,23 @@ final class MJPEGStreamer {
 private final class StreamDelegate: NSObject, URLSessionDataDelegate, @unchecked Sendable {
     // Only touched from the session's serial delegate queue.
     private var buffer = Data()
+    private let trust: CertificateTrust
     private let onFrame: @Sendable (Data) -> Void
     private let onEnd: @Sendable (String?) -> Void
 
     private static let soi = Data([0xFF, 0xD8])
     private static let eoi = Data([0xFF, 0xD9])
 
-    init(onFrame: @escaping @Sendable (Data) -> Void, onEnd: @escaping @Sendable (String?) -> Void) {
+    init(trust: CertificateTrust, onFrame: @escaping @Sendable (Data) -> Void, onEnd: @escaping @Sendable (String?) -> Void) {
+        self.trust = trust
         self.onFrame = onFrame
         self.onEnd = onEnd
+    }
+
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge) async
+        -> (URLSession.AuthChallengeDisposition, URLCredential?)
+    {
+        trust.evaluate(challenge)
     }
 
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {

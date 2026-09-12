@@ -37,6 +37,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 - A Mac running **macOS 15 Sequoia** or newer
 - One or more printers running **OctoPrint** (for example on an OctoPi Raspberry Pi)
+- An **OctoPrint admin account** for OctoMac to use. OctoMac expects full access (settings, system commands, logs and so on) and isn't designed for accounts with limited permissions.
 
 ### Download
 
@@ -60,8 +61,8 @@ You can also open `Package.swift` in Xcode and press Run.
 ### Add your first printer
 
 1. Click **Add your first printer**.
-2. Type the printer's address, such as `octopi.local` or `http://192.168.1.50`.
-3. Choose **Request access**. Your browser opens OctoPrint, where you approve OctoMac with one click. (Prefer to paste an API key instead? Choose **Paste a key**.)
+2. Type the printer's address, such as `octopi.local` or `http://192.168.1.50`. HTTPS works too: if your OctoPrint uses a self-signed certificate, OctoMac shows its fingerprint and asks whether to trust it, then only ever accepts that exact certificate from that printer.
+3. Choose **Request access** and sign in to OctoPrint as an admin. Your browser opens OctoPrint, where you approve OctoMac with one click. (Prefer to paste an API key instead? Choose **Paste a key**.)
 4. That's it. Your printer appears in the sidebar.
 
 Your API keys stay on your Mac. By default they're kept in an encrypted file only your account can read; if you'd rather use the macOS Keychain, switch it on in **Settings → Printers**. See [PRIVACY.md](PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.

@@ -132,3 +132,49 @@ struct NameSheet: View {
         dismiss()
     }
 }
+
+/// Shown when a printer's HTTPS certificate isn't one macOS trusts (usually a self-signed certificate on OctoPi).
+struct CertificatePrompt: View {
+    let certificate: PresentedCertificate
+    var changed = false
+    let trust: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
+                Image(systemName: "lock.trianglebadge.exclamationmark.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Palette.warm)
+                    .frame(width: 38, height: 38)
+                    .background(Circle().fill(Palette.warm.opacity(0.14)))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(changed ? "This printer's certificate has changed" : "Trust this printer's certificate?")
+                        .font(Typeface.subhead).foregroundStyle(Palette.paper)
+                    Text(changed
+                         ? "It no longer matches the one you trusted. That's expected if you've made a new certificate; otherwise, check before trusting it."
+                         : "\(certificate.host) uses an HTTPS certificate macOS doesn't recognise. That's normal for a self-signed certificate on an OctoPi. Only trust it if this is your printer.")
+                        .font(Typeface.caption).foregroundStyle(Palette.dust)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            VStack(alignment: .leading, spacing: 3) {
+                if let subject = certificate.subject {
+                    Text("Issued to \(subject)").font(Typeface.caption).foregroundStyle(Palette.faint)
+                }
+                Text(certificate.formattedFingerprint)
+                    .font(.system(size: 10.5, design: .monospaced))
+                    .foregroundStyle(Palette.dust)
+                    .textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .help("The certificate's SHA-256 fingerprint. OctoMac will only accept this exact certificate from this printer.")
+            }
+            HStack {
+                Spacer()
+                Button { trust() } label: { Label("Trust this certificate", systemImage: "checkmark.shield") }
+                    .buttonStyle(.plate(Palette.warm))
+            }
+        }
+        .padding(14)
+        .machined(radius: 14, fill: Palette.warm.opacity(0.07))
+    }
+}

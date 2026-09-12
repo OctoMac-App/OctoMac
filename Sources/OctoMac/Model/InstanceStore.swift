@@ -82,6 +82,13 @@ final class InstanceStore {
         startSession(for: instance)
     }
 
+    /// Remembers a printer's self-signed certificate and reconnects with it.
+    func trustCertificate(_ fingerprint: String, for id: UUID) {
+        guard var instance = instances.first(where: { $0.id == id }) else { return }
+        instance.trustedCertificate = fingerprint
+        update(instance, apiKey: CredentialStore.apiKey(for: id))
+    }
+
     func remove(_ id: UUID) {
         sessions[id]?.stop()
         sessions[id] = nil

@@ -11,6 +11,8 @@ struct Instance: Codable, Identifiable, Hashable, Sendable {
     var pushThrottle = 1
     /// Identity colour for this printer ("filament colour"), e.g. `#8F7CFF`.
     var filamentHex: String?
+    /// SHA-256 fingerprint of a self-signed HTTPS certificate you chose to trust for this printer.
+    var trustedCertificate: String?
 
     /// Normalises user input like `octoprint1.local` or `https://host/octoprint` into a base URL.
     static func normalisedURL(from input: String) -> URL? {

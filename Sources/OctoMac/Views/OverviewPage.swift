@@ -116,7 +116,9 @@ struct OverviewPage: View {
     private func heaterColumn(fill: Bool, compact: Bool = false) -> some View {
         VStack(spacing: 14) {
             PresetPanel(session: session)
-            if sortedHeaterKeys.count > 2 || !fill || compact {
+            if sortedHeaterKeys.isEmpty {
+                // Nothing to show yet; the note below says why.
+            } else if sortedHeaterKeys.count > 2 || !fill || compact {
                 // Compact rows; in the one-screen layout they scroll if they don't fit.
                 let rows = VStack(spacing: 8) {
                     ForEach(sortedHeaterKeys, id: \.self) { key in

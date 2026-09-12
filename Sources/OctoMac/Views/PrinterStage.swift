@@ -25,6 +25,16 @@ struct PrinterStage: View {
                 .padding(.top, 24)
                 .padding(.bottom, 18)
 
+            // A self-signed HTTPS certificate that hasn't been trusted yet (or has changed since).
+            if let certificate = session.untrustedCertificate, session.link != .online {
+                CertificatePrompt(certificate: certificate, changed: session.instance.trustedCertificate != nil) {
+                    store.trustCertificate(certificate.fingerprint, for: session.instance.id)
+                }
+                .frame(maxWidth: 720)
+                .padding(.horizontal, 28)
+                .padding(.bottom, 18)
+            }
+
             Group {
                 if session.link == .needsAPIKey {
                     LockedStage(session: session, editor: $editor)

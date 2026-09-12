@@ -81,6 +81,9 @@ final class PrinterSession {
 
     let instance: Instance
     let client: OctoPrintClient
+    private let trust: CertificateTrust
+    /// Set when the printer's HTTPS certificate isn't trusted yet, so OctoMac can ask whether to trust it.
+    private(set) var untrustedCertificate: PresentedCertificate?
     private let push: PushClient
     private var pushTask: Task<Void, Never>?
 
@@ -153,7 +156,10 @@ final class PrinterSession {
 
     init(instance: Instance, apiKey: String?) {
         self.instance = instance
-        client = OctoPrintClient(baseURL: instance.baseURL, apiKey: apiKey)
+        let (urlSession, trust) = CertificateTrust.session(pinnedFingerprint: instance.trustedCertificate)
+        self.trust = trust
+        client = OctoPrintClient(baseURL: instance.baseURL, apiKey: apiKey, session: urlSession)
+        camera.pinnedFingerprint = instance.trustedCertificate
         push = PushClient(client: client, throttle: instance.pushThrottle)
         link = (apiKey?.isEmpty ?? true) ? .needsAPIKey : .connecting
     }
@@ -461,6 +467,7 @@ final class PrinterSession {
             if link != .online { link = .connecting }
         case .connected(let user):
             link = .online
+            untrustedCertificate = nil
             self.user = user
             Task {
                 await refreshAll()
@@ -468,6 +475,7 @@ final class PrinterSession {
             }
         case .disconnected(let reason):
             if link != .needsAPIKey { link = .offline(reason) }
+            untrustedCertificate = trust.untrusted
         case .message(let message):
             handle(message)
         }
