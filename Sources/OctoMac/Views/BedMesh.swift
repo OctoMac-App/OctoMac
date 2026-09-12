@@ -192,64 +192,91 @@ struct BedMeshMap: View {
     }
 }
 
-/// The bed as a 3D surface with the heights exaggerated, so bumps and tilt are easy to see. Drag to turn it.
+/// The bed as a 3D surface with the heights exaggerated, so bumps and tilt are easy to see.
+/// Drag sideways to spin it and up or down to tip it, all the way round; the underside is solid so it's clear
+/// when you're looking from below. Double-click to go back to the starting view.
 struct BedMeshSurface: View {
     let mesh: BedLevelVisualizer.Mesh
-    @State private var yaw = -0.6
-    @State private var dragStart: Double?
+    private static let startYaw = -0.6, startPitch = 0.95
+    /// One flat colour for the bottom of the bed, so it never looks like part of the height map.
+    private static let underside = Color(hex: 0x58606C)
+    @State private var yaw = startYaw
+    @State private var pitch = startPitch
+    @State private var dragStart: (yaw: Double, pitch: Double)?
 
     var body: some View {
         let limit = BedMeshColors.limit(for: mesh)
         Canvas { context, size in
             let rows = mesh.z.count, columns = mesh.z.first?.count ?? 0
             guard rows > 1, columns > 1 else { return }
-            // A turned square spans up to √2 of its side, so leave room for that at any angle.
-            let scale = min(size.width / 3, size.height / 2.2)
-            let pitch = 0.95
+            // A turned square spans up to √2 of its side in any direction, so leave room for that.
+            let scale = min(size.width, size.height) / 3.1
             // Heights scaled so the largest bump stands about a fifth of the bed's width.
             let zScale = 0.4 / limit
 
-            func project(_ column: Int, _ row: Int, _ z: Double) -> (CGPoint, Double) {
-                let x = Double(column) / Double(columns - 1) * 2 - 1
-                let y = Double(row) / Double(rows - 1) * 2 - 1
+            /// Bed coordinates (x and y from -1 to 1, front edge at y = -1) to the screen, plus depth (larger is further away).
+            func project(x: Double, y: Double, height: Double) -> (point: CGPoint, depth: Double) {
                 let rx = x * cos(yaw) - y * sin(yaw)
                 let ry = x * sin(yaw) + y * cos(yaw)
-                let depth = ry * cos(pitch) - z * zScale * sin(pitch)
-                let screenY = ry * sin(pitch) + z * zScale * cos(pitch)
-                return (CGPoint(x: size.width / 2 + rx * scale, y: size.height / 2 - screenY * scale * 0.9 + scale * 0.1), depth)
+                let depth = ry * cos(pitch) - height * sin(pitch)
+                let up = ry * sin(pitch) + height * cos(pitch)
+                return (CGPoint(x: size.width / 2 + rx * scale, y: size.height / 2 - up * scale), depth)
+            }
+            func project(_ column: Int, _ row: Int, _ z: Double) -> (point: CGPoint, depth: Double) {
+                project(x: Double(column) / Double(columns - 1) * 2 - 1,
+                        y: Double(row) / Double(rows - 1) * 2 - 1,
+                        height: z * zScale)
             }
 
-            struct Face { var path: Path; var depth: Double; var height: Double }
+            struct Face { var path: Path; var depth: Double; var height: Double; var underside: Bool }
             var faces: [Face] = []
             for row in 0..<(rows - 1) {
                 for column in 0..<(columns - 1) {
                     let corners = [(column, row), (column + 1, row), (column + 1, row + 1), (column, row + 1)]
                     let heights = corners.map { mesh.z[$0.1].indices.contains($0.0) ? mesh.z[$0.1][$0.0] : nil }
                     guard heights.allSatisfy({ $0 != nil }) else { continue }
-                    let points = zip(corners, heights).map { project($0.0, $0.1, $1!) }
+                    let projected = zip(corners, heights).map { project($0.0, $0.1, $1!) }
+                    let points = projected.map(\.point)
                     var path = Path()
-                    path.addLines(points.map(\.0))
+                    path.addLines(points)
                     path.closeSubpath()
-                    let average = heights.compactMap { $0 }.reduce(0, +) / 4
-                    faces.append(Face(path: path, depth: points.map(\.1).reduce(0, +) / 4, height: average))
+                    // Seen from above, the corners run one way round on screen; from below, the other way.
+                    let area = zip(points, points.dropFirst() + [points[0]]).reduce(0.0) { $0 + Double($1.0.x * $1.1.y - $1.1.x * $1.0.y) }
+                    faces.append(Face(path: path, depth: projected.map(\.depth).reduce(0, +) / 4,
+                                      height: heights.compactMap { $0 }.reduce(0, +) / 4, underside: area > 0))
                 }
             }
             // Painter's algorithm: far faces first.
             for face in faces.sorted(by: { $0.depth > $1.depth }) {
-                context.fill(face.path, with: .color(BedMeshColors.color(face.height, limit: limit)))
-                context.stroke(face.path, with: .color(Palette.graphite.opacity(0.55)), lineWidth: 1)
+                context.fill(face.path, with: .color(face.underside ? Self.underside : BedMeshColors.color(face.height, limit: limit)))
+                context.stroke(face.path, with: .color(Palette.graphite.opacity(face.underside ? 0.8 : 0.55)), lineWidth: 1)
+            }
+
+            // Which way round the bed is: labels just beyond the front and back edges, dimmer when on the far side.
+            for (label, y) in [("Front", -1.25), ("Back", 1.25)] {
+                let spot = project(x: 0, y: y, height: 0)
+                let text = Text(label).font(Typeface.text(12, .demibold))
+                    .foregroundStyle(spot.depth > 0 ? Palette.faint : Palette.paper)
+                context.draw(text, at: spot.point)
             }
         }
         .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Palette.graphite))
         .contentShape(Rectangle())
         .gesture(DragGesture(minimumDistance: 1)
             .onChanged { value in
-                if dragStart == nil { dragStart = yaw }
-                yaw = (dragStart ?? yaw) + value.translation.width / 160
+                if dragStart == nil { dragStart = (yaw, pitch) }
+                yaw = (dragStart?.yaw ?? yaw) + value.translation.width / 160
+                pitch = (dragStart?.pitch ?? pitch) + value.translation.height / 160
             }
             .onEnded { _ in dragStart = nil })
+        .onTapGesture(count: 2) {
+            withAnimation(.snappy) {
+                yaw = Self.startYaw
+                pitch = Self.startPitch
+            }
+        }
         .overlay(alignment: .bottomTrailing) {
-            Text("Drag to turn. Heights exaggerated.")
+            Text("Drag to turn any way. Double-click to reset. Heights exaggerated.")
                 .font(Typeface.caption).foregroundStyle(Palette.faint)
                 .padding(10)
         }
