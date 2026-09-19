@@ -132,6 +132,21 @@ struct TemperaturePanel: View {
 
 /// The chart itself. Pass `hoverTime` for the interactive version; leave it nil when rendering for export.
 struct TemperatureChart: View {
+    /// Grid lines at round numbers in the unit being shown (0, 50, 100°C or 50, 100, 150°F…), as Celsius positions.
+    static func temperatureTicks(upTo maxCelsius: Double) -> [Double] {
+        let unit = TemperatureUnit.current
+        let top = unit.convert(maxCelsius), bottom = unit.convert(0)
+        let step: Double = unit == .celsius ? (maxCelsius <= 100 ? 20 : 50) : (top <= 250 ? 50 : 100)
+        var ticks: [Double] = []
+        var value = (bottom / step).rounded(.up) * step
+        if unit == .celsius { value = 0 }
+        while value <= top + 0.1 {
+            ticks.append(unit == .celsius ? value : (value - 32) * 5 / 9)
+            value += step
+        }
+        return ticks
+    }
+
     let data: ChartData
     var hoverTime: Binding<Date?>?
 
@@ -206,7 +221,7 @@ struct TemperatureChart: View {
         .padding(.top, data.events.isEmpty ? 0 : 22) // headroom for event flags above the plot
         .chartLegend(.hidden) // the live readings in the header double as the legend
         .chartYAxis {
-            AxisMarks(position: .leading, values: .automatic(desiredCount: 5)) { value in
+            AxisMarks(position: .leading, values: TemperatureChart.temperatureTicks(upTo: data.yMax)) { value in
                 AxisGridLine().foregroundStyle(Palette.edge.opacity(0.6))
                 AxisValueLabel {
                     if let celsius = value.as(Double.self) { Text(Fmt.deg(celsius)).font(Typeface.number(11)).foregroundStyle(Palette.faint) }
@@ -393,12 +408,9 @@ enum ChartExport {
         }
 
         // Y grid and labels
-        let step = data.yMax <= 100 ? 20.0 : 50.0
-        var value = 0.0
-        while value <= data.yMax + 0.1 {
+        for value in TemperatureChart.temperatureTicks(upTo: data.yMax) {
             out.append("<line x1=\"\(f(left))\" y1=\"\(f(y(value)))\" x2=\"\(f(width - right))\" y2=\"\(f(y(value)))\" stroke=\"\(hex(Palette.edge))\" stroke-width=\"1\"/>")
             out.append("<text x=\"\(f(left - 12))\" y=\"\(f(y(value) + 5))\" text-anchor=\"end\" \(numberFont) font-size=\"14\" fill=\"\(hex(Palette.faint))\">\(Fmt.deg(value))</text>")
-            value += step
         }
 
         // X labels every 5 minutes
