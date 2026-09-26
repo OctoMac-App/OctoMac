@@ -31,6 +31,12 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 ![The 3D G-code preview following a live print](docs/screenshots/live-preview.png)
 
+![The History tab, with recent prints and timelapses](docs/screenshots/history.png)
+
+![The console with the G-code cheat sheet open](docs/screenshots/console.png)
+
+![The Machine tab, with the bed level map and Raspberry Pi health](docs/screenshots/machine.png)
+
 ## Getting started
 
 ### What you need
