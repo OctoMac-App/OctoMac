@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+  <channel>
+    <title>OctoMac</title>
+    <link>https://github.com/OctoMac-App/OctoMac</link>
+    <description>New versions of OctoMac. scripts/release.sh adds each release here.</description>
+    <language>en</language>
+  </channel>
+</rss>

@@ -47,7 +47,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 ### Download
 
-Grab the latest **OctoMac.dmg** from the [Releases page](https://github.com/OctoMac-App/OctoMac/releases), open it, and drag OctoMac into your Applications folder. It runs on both Apple silicon and Intel Macs.
+Grab the latest **OctoMac.dmg** from the [Releases page](https://github.com/OctoMac-App/OctoMac/releases), open it, and drag OctoMac into your Applications folder. It runs on both Apple silicon and Intel Macs. OctoMac checks for new versions once a day and asks before installing one; you can turn that off in **Settings → General**.
 
 ### Or build it yourself
 

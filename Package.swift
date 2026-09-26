@@ -8,6 +8,10 @@ let package = Package(
         .executable(name: "OctoMac", targets: ["OctoMac"]),
         .library(name: "OctoPrintKit", targets: ["OctoPrintKit"]),
     ],
+    dependencies: [
+        // Automatic updates for builds downloaded from GitHub Releases.
+        .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.6.0"),
+    ],
     targets: [
         // Platform-agnostic client for the OctoPrint REST + push (websocket) APIs.
         .target(name: "OctoPrintKit"),
@@ -15,8 +19,10 @@ let package = Package(
         // The SwiftUI Mac app.
         .executableTarget(
             name: "OctoMac",
-            dependencies: ["OctoPrintKit"],
+            dependencies: ["OctoPrintKit", .product(name: "Sparkle", package: "Sparkle")],
             linkerSettings: [
+                // Sparkle.framework is copied into OctoMac.app/Contents/Frameworks by the build scripts.
+                .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"]),
                 // Embed Info.plist so `swift run` gets the same ATS / bundle settings as the packaged .app.
                 .unsafeFlags(["-Xlinker", "-sectcreate", "-Xlinker", "__TEXT", "-Xlinker", "__info_plist", "-Xlinker", "Support/Info.plist"]),
             ]

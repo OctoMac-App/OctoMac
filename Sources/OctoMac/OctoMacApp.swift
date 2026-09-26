@@ -18,7 +18,11 @@ struct OctoMacApp: App {
         .windowBackgroundDragBehavior(.enabled)
         .commands {
             CommandGroup(replacing: .newItem) {}
-            CommandGroup(replacing: .appInfo) { AboutCommand() }
+            CommandGroup(replacing: .appInfo) {
+                AboutCommand()
+                Button("Check for Updates…") { Updates.shared.checkForUpdates() }
+                    .disabled(!Updates.shared.canCheck)
+            }
             CommandGroup(replacing: .help) { HelpCommands(store: store) }
         }
 
@@ -70,6 +74,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.regular)
         NSApp.activate()
         Notifier.shared.start()
+        _ = Updates.shared
     }
 
     /// G-code opened from Finder or dropped on the Dock icon.

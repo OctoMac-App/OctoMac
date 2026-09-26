@@ -105,6 +105,7 @@ struct ReportProblemView: View {
 /// Settings → General.
 struct GeneralSettings: View {
     @AppStorage(TemperatureUnit.defaultsKey) private var unit = TemperatureUnit.celsius.rawValue
+    @State private var checksAutomatically = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -125,6 +126,31 @@ struct GeneralSettings: View {
             }
             .padding(14)
             .machined(radius: 12)
+
+            if Updates.shared.isAvailable {
+                HStack {
+                    Toggle(isOn: Binding(get: { checksAutomatically }, set: {
+                        checksAutomatically = $0
+                        Updates.shared.checksAutomatically = $0
+                    })) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Check for updates automatically").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                            Text("OctoMac looks for a new version once a day and asks before installing it.")
+                                .font(Typeface.caption).foregroundStyle(Palette.faint)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .toggleStyle(.switch)
+                    .tint(Palette.accent)
+                    Button("Check now") { Updates.shared.checkForUpdates() }
+                        .buttonStyle(.plateQuiet)
+                        .controlSize(.small)
+                        .disabled(!Updates.shared.canCheck)
+                }
+                .padding(14)
+                .machined(radius: 12)
+            }
         }
+        .onAppear { checksAutomatically = Updates.shared.checksAutomatically }
     }
 }

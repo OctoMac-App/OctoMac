@@ -5,6 +5,7 @@ OctoMac is built to keep your data on your own Mac and your own network.
 ## What OctoMac talks to
 
 - **Your OctoPrint servers, and nothing else.** OctoMac only connects to the printers you add. There are no accounts, no analytics, no tracking, no adverts and no OctoMac servers.
+- **GitHub, to check for updates**, once a day unless you turn it off in Settings → General. OctoMac fetches the list of versions (`appcast.xml`) and, if you choose to update, downloads the new version from GitHub Releases. Sparkle, the updater, doesn't send any information about you or your Mac.
 - **Links you choose to open**, such as a plugin's guide or GitHub, open in your web browser.
 
 ## What OctoMac stores

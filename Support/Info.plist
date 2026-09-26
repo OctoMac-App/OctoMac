@@ -90,6 +90,12 @@
 	<true/>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>OctoMac connects to OctoPrint servers on your local network.</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://raw.githubusercontent.com/OctoMac-App/OctoMac/master/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>SBwD/S7sMohf7pc4freczjPWeqP/y1Ayhkt6KVXN1Rk=</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>
