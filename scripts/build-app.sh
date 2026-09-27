@@ -20,5 +20,8 @@ cp Support/OctoMark.png Support/DemoCamera.jpg "$APP/Contents/Resources/"
 mkdir -p "$APP/Contents/Frameworks"
 ditto .build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework "$APP/Contents/Frameworks/Sparkle.framework"
 rm -rf "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices" "$APP/Contents/Frameworks/Sparkle.framework/XPCServices"
-codesign --force --deep --sign - "$APP" >/dev/null
+# Sign with your Developer ID when scripts/release.local names one, so macOS keeps treating every local build as
+# the same app (Local Network and notification permissions stick). Otherwise sign ad-hoc.
+[[ -f scripts/release.local ]] && source scripts/release.local
+codesign --force --deep --options runtime --sign "${SIGN_IDENTITY:--}" "$APP" >/dev/null
 echo "Built $APP"

@@ -67,7 +67,7 @@ You can also open `Package.swift` in Xcode and press Run.
 ### Add your first printer
 
 1. Click **Add your first printer**.
-2. Type the printer's address, such as `octopi.local` or `http://192.168.1.50`. HTTPS works too: if your OctoPrint uses a self-signed certificate, OctoMac shows its fingerprint and asks whether to trust it, then only ever accepts that exact certificate from that printer.
+2. Pick your printer from **On your network** (OctoMac finds OctoPrint servers on your local network automatically), or type its address, such as `octopi.local` or `http://192.168.1.50`. HTTPS works too: if your OctoPrint uses a self-signed certificate, OctoMac shows its fingerprint and asks whether to trust it, then only ever accepts that exact certificate from that printer.
 3. Choose **Request access** and sign in to OctoPrint as an admin. Your browser opens OctoPrint, where you approve OctoMac with one click. (Prefer to paste an API key instead? Choose **Paste a key**.)
 4. That's it. Your printer appears in the sidebar.
 

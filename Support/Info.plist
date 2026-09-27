@@ -88,6 +88,10 @@
 	</dict>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_octoprint._tcp</string>
+	</array>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>OctoMac connects to OctoPrint servers on your local network.</string>
 	<key>SUEnableAutomaticChecks</key>

@@ -22,6 +22,8 @@ struct InstanceEditor: View {
     @State private var trustedCertificate: String?
     /// A certificate the printer presented that macOS doesn't trust, waiting for your decision.
     @State private var offeredCertificate: PresentedCertificate?
+    @State private var discovery = PrinterDiscovery()
+    @State private var resolving: String?
 
     enum Status: Equatable {
         case idle
@@ -52,6 +54,7 @@ struct InstanceEditor: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 26) {
+                    if existing == nil { discoverySection }
                     serverSection
                     colourSection
                     accessSection
@@ -66,6 +69,8 @@ struct InstanceEditor: View {
         .frame(width: 560, height: 680)
         .background(Palette.extrusion)
         .onAppear(perform: load)
+        .onAppear { if existing == nil { discovery.start() } }
+        .onDisappear { discovery.stop() }
         .sheet(isPresented: $confirmRemove) {
             ConfirmSheet(symbol: "minus.circle", title: "Remove \(existing?.name ?? "this printer")?",
                          message: "OctoMac forgets this server and its API key. Nothing changes on the printer, and you can add it again later.",
@@ -90,6 +95,60 @@ struct InstanceEditor: View {
                     .font(Typeface.body)
                     .foregroundStyle(Palette.dust)
             }
+        }
+    }
+
+    /// OctoPrint servers announcing themselves on this network, one click to fill in.
+    private var discoverySection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Text("On your network").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                if discovery.searching && discovery.found.isEmpty { ProgressView().controlSize(.mini).tint(Palette.accent) }
+                Spacer()
+            }
+            if discovery.found.isEmpty {
+                Text(discovery.searching ? "Looking for OctoPrint servers…" : "No OctoPrint servers found. Type the address below instead.")
+                    .font(Typeface.caption).foregroundStyle(Palette.faint)
+            }
+            ForEach(discovery.found) { found in
+                Button { pick(found) } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "printer.fill").foregroundStyle(Palette.accent).frame(width: 20)
+                        VStack(alignment: .leading, spacing: 1) {
+                            Text(found.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                            if let version = found.version {
+                                Text("OctoPrint \(version)").font(Typeface.caption).foregroundStyle(Palette.faint)
+                            }
+                        }
+                        Spacer()
+                        if resolving == found.id {
+                            ProgressView().controlSize(.small).tint(Palette.accent)
+                        } else {
+                            Text("Use").font(Typeface.text(12, .demibold)).foregroundStyle(Palette.accent)
+                        }
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 9)
+                    .machined(radius: 10, fill: Palette.graphite)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .disabled(resolving != nil)
+            }
+        }
+    }
+
+    private func pick(_ found: PrinterDiscovery.Found) {
+        resolving = found.id
+        Task {
+            if let url = await PrinterDiscovery.address(of: found) {
+                address = url.absoluteString
+                if name.isEmpty { name = found.displayName }
+                status = .idle
+            } else {
+                status = .failure("Couldn't reach \(found.displayName). Try typing its address instead.")
+            }
+            resolving = nil
         }
     }
 
