@@ -69,7 +69,7 @@ APP="dist/OctoMac.app"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 lipo -create "${BINARIES[@]}" -output "$APP/Contents/MacOS/OctoMac"
 cp Support/Info.plist "$APP/Contents/Info.plist"
-cp Support/AppIcon.icns Support/OctoMark.png "$APP/Contents/Resources/"
+cp Support/AppIcon.icns Support/OctoMark.png Support/DemoCamera.jpg "$APP/Contents/Resources/"
 # Sparkle (automatic updates). OctoMac isn't sandboxed, so Sparkle's XPC services aren't needed.
 mkdir -p "$APP/Contents/Frameworks"
 SPARKLE=".build-arm64/artifacts/sparkle/Sparkle"

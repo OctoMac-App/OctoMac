@@ -15,7 +15,7 @@ cp "$BIN" "$APP/Contents/MacOS/OctoMac"
 cp Support/Info.plist "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(tr -d '[:space:]' < VERSION)" "$APP/Contents/Info.plist"
 cp Support/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
-cp Support/OctoMark.png "$APP/Contents/Resources/OctoMark.png"
+cp Support/OctoMark.png Support/DemoCamera.jpg "$APP/Contents/Resources/"
 # Sparkle (automatic updates). OctoMac isn't sandboxed, so Sparkle's XPC services aren't needed.
 mkdir -p "$APP/Contents/Frameworks"
 ditto .build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework "$APP/Contents/Frameworks/Sparkle.framework"

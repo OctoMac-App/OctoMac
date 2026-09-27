@@ -1116,41 +1116,9 @@ extension PrinterSession {
         }
     }
 
-    /// A stand-in camera picture for demo mode: a print bed with a grid.
+    /// A real camera picture of a printer for demo mode, bundled with the app (Support/DemoCamera.jpg).
     private static func demoCameraFrame(title: String) -> Data {
-        let view = ZStack {
-            LinearGradient(colors: [Color(hex: 0x2A2F37), Color(hex: 0x15181C)], startPoint: .top, endPoint: .bottom)
-            Canvas { context, size in
-                // A bed in perspective.
-                var bed = Path()
-                bed.move(to: CGPoint(x: size.width * 0.18, y: size.height * 0.92))
-                bed.addLine(to: CGPoint(x: size.width * 0.82, y: size.height * 0.92))
-                bed.addLine(to: CGPoint(x: size.width * 0.66, y: size.height * 0.42))
-                bed.addLine(to: CGPoint(x: size.width * 0.34, y: size.height * 0.42))
-                bed.closeSubpath()
-                context.fill(bed, with: .color(Color(hex: 0x3A3F47)))
-                for i in 1..<8 {
-                    let t = CGFloat(i) / 8
-                    let bottomX = size.width * (0.18 + 0.64 * t), topX = size.width * (0.34 + 0.32 * t)
-                    let line = Path { p in p.move(to: CGPoint(x: bottomX, y: size.height * 0.92)); p.addLine(to: CGPoint(x: topX, y: size.height * 0.42)) }
-                    context.stroke(line, with: .color(.white.opacity(0.08)), lineWidth: 1)
-                }
-                // A part on the bed.
-                let part = CGRect(x: size.width * 0.42, y: size.height * 0.56, width: size.width * 0.16, height: size.height * 0.18)
-                context.fill(Path(roundedRect: part, cornerRadius: 4), with: .color(Color(hex: 0xF29E4C)))
-            }
-            VStack {
-                Spacer()
-                Text("Demo camera").font(.system(size: 13, weight: .semibold)).foregroundStyle(.white.opacity(0.5))
-                    .padding(.bottom, 10)
-            }
-        }
-        .frame(width: 640, height: 360)
-        let renderer = ImageRenderer(content: view)
-        renderer.scale = 2
-        guard let image = renderer.cgImage,
-              let data = NSBitmapImageRep(cgImage: image).representation(using: .jpeg, properties: [.compressionFactor: 0.85]) else { return Data() }
-        return data
+        Bundle.main.url(forResource: "DemoCamera", withExtension: "jpg").flatMap { try? Data(contentsOf: $0) } ?? Data()
     }
 
     private static func demoFile(_ name: String, folder: String?, time: Double?, length: Double?, size: Int, daysAgo: Double, success: Bool?, model: Bool = false) -> JSONValue {
