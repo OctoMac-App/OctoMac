@@ -287,6 +287,7 @@ struct JobPanel: View {
     let session: PrinterSession
     let filament: Color
     @Binding var tab: StageTab
+    @State private var showingObjects = false
 
     var body: some View {
         let flags = session.flags
@@ -385,6 +386,17 @@ struct JobPanel: View {
                         }
                     }
                     Spacer(minLength: 12)
+                    VStack(alignment: .trailing, spacing: 8) {
+                    let objects = session.printObjects.filter { !$0.ignored }
+                    if session.hasCancelObject, objects.count > 1 {
+                        Button { showingObjects = true } label: {
+                            Label("\(objects.count) objects", systemImage: "square.on.square.dashed")
+                                .lineLimit(1)
+                        }
+                        .buttonStyle(.plateQuiet)
+                        .fixedSize()
+                        .help("Stop one part if it fails, and let the rest finish")
+                    }
                     if let entry {
                         Button {
                             openWindow(id: "gcode-preview",
@@ -397,6 +409,7 @@ struct JobPanel: View {
                         .fixedSize()
                         .help("Watch the print build up layer by layer in 3D")
                     }
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -404,6 +417,7 @@ struct JobPanel: View {
         .padding(24)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .machined(radius: 20)
+        .sheet(isPresented: $showingObjects) { CancelObjectsSheet(session: session, filament: filament) }
     }
 
     /// "Layer 71 of 120, about 1 min each", from the DisplayLayerProgress plugin.

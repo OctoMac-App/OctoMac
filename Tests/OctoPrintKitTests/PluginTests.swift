@@ -109,3 +109,22 @@ struct CustomControlTests {
         #expect(Webcam.list(from: ["webcam": ["streamUrl": "/webcam/"]]).first?.stream == "/webcam/")
     }
 }
+
+struct CancelObjectTests {
+    @Test func objectsMessage() {
+        let message = CancelObject.message(["objects": [
+            ["object": "bin_3x2.stl_id_0_copy_0", "id": 0, "active": true, "cancelled": false, "ignore": false,
+             "min_x": 40.5, "max_x": 120.0, "min_y": 30.0, "max_y": 90.0],
+            ["object": "purge", "id": 1, "cancelled": false, "ignore": true, "min_x": 10000, "max_x": 0, "min_y": 10000, "max_y": 0],
+            ["object": "Shape-Box", "id": 2, "cancelled": true],
+        ]])
+        guard case .objects(let objects) = message else { Issue.record("expected objects"); return }
+        #expect(objects.count == 3)
+        #expect(objects[0].displayName == "bin 3x2, copy 1")
+        #expect(objects[0].bounds == .init(minX: 40.5, minY: 30, maxX: 120, maxY: 90))
+        #expect(objects[1].ignored && objects[1].bounds == nil)
+        #expect(objects[2].cancelled)
+        #expect(CancelObject.message(["ActiveID": 2]) == .active(2))
+        #expect(CancelObject.message(["navBarActive": "x"]) == nil)
+    }
+}

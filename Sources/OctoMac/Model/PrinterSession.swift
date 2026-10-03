@@ -139,6 +139,9 @@ final class PrinterSession {
     private(set) var printerError: PrinterErrorInfo?
     private(set) var updates: [SoftwareComponent]?
     private(set) var logs: [LogFile] = []
+    /// Objects on the plate, from the Cancel Objects plugin, while a print runs.
+    private(set) var printObjects: [CancelObject.Object] = []
+    private(set) var activeObjectID: Int?
     private(set) var timelapses: TimelapseList?
     private(set) var customControls: [CustomControl] = []
     /// Print speed and flow, as last set here or reported by the printer (M220 / M221).
@@ -273,6 +276,7 @@ final class PrinterSession {
 
     var bedLevel: BedLevelVisualizer.Settings? { BedLevelVisualizer.Settings(settings: settings) }
     var bedMesh: BedLevelVisualizer.Mesh? { measuredMesh ?? bedLevel?.stored }
+    var hasCancelObject: Bool { settings?.value(at: "plugins", CancelObject.pluginID) != nil }
     var hasLayerPlugin: Bool { settings?.value(at: "plugins", LayerProgress.pluginID) != nil }
 
     /// The printer's firmware, as it introduced itself (M115).
@@ -326,6 +330,7 @@ final class PrinterSession {
         async let controls: Void = refreshCustomControls()
         _ = await (version, connection, files, settings, system, profiles, temps, health, controls)
         if hasLayerPlugin { layerProgress = try? await client.layerProgress() }
+        await refreshPrintObjects()
     }
 
     /// Firmware, Raspberry Pi health and the last printer error. Quietly skipped where unsupported.
@@ -345,6 +350,21 @@ final class PrinterSession {
             updates = await attempt { [client] in try await client.softwareUpdates(force: true) } ?? updates
         } else if let list = try? await client.softwareUpdates() {
             updates = list
+        }
+    }
+
+    func refreshPrintObjects() async {
+        guard !isDemoSession, hasCancelObject, flags.isJobActive else { return }
+        if let list = try? await client.cancelObjectList() { printObjects = list }
+    }
+
+    /// Stops printing one object for the rest of the print (Cancel Objects plugin).
+    func cancel(_ object: CancelObject.Object) {
+        if let index = printObjects.firstIndex(where: { $0.id == object.id }) { printObjects[index].cancelled = true }
+        guard !isDemoSession else { return }
+        perform { [client, weak self] in
+            try await client.cancelObject(object.id)
+            await self?.refreshPrintObjects()
         }
     }
 
@@ -503,6 +523,12 @@ final class PrinterSession {
                 }
                 throttle = update
             }
+        case .plugin(let id, let data) where id == CancelObject.pluginID:
+            switch CancelObject.message(data) {
+            case .objects(let list): printObjects = list
+            case .active(let id): activeObjectID = id
+            case nil: break
+            }
         case .plugin(let id, let data) where id == BedLevelVisualizer.pluginID:
             handleBedLevel(data)
         default:
@@ -629,6 +655,13 @@ final class PrinterSession {
         switch event.type {
         case "PrintStarted":
             layerProgress = nil
+            printObjects = []
+            activeObjectID = nil
+            // The plugin reads the file's object labels as the print starts.
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                await refreshPrintObjects()
+            }
         case "MovieDone", "MovieFailed", "MovieRendering":
             Task { await refreshTimelapses() }
         case "UpdatedFiles", "FileAdded", "FileRemoved", "FolderAdded", "FolderRemoved", "MetadataAnalysisFinished", "PrintDone":
@@ -1020,6 +1053,7 @@ extension PrinterSession {
                 "filamentCount": 5, "timeout": 30, "indexAtZero": false, "enablePrompt": true,
             ]] : [:]).merging([
                 "DisplayLayerProgress": ["showOnState": true],
+                "cancelobject": ["shownav": true],
                 "bedlevelvisualizer": Self.demoBedLevel(rows: printing ? 7 : 5, tilt: printing ? 0.06 : 0.14),
             ]) { a, _ in a }),
             "temperature": ["profiles": [
@@ -1031,6 +1065,16 @@ extension PrinterSession {
     }
 
     private func loadDemoHealth(printing: Bool, toolchanger: Bool) {
+        if printing {
+            printObjects = [
+                .init(id: 0, name: "gridfinity_bin_3x2.stl_id_0_copy_0", bounds: .init(minX: 30, minY: 40, maxX: 114, maxY: 82)),
+                .init(id: 1, name: "gridfinity_bin_3x2.stl_id_0_copy_1", bounds: .init(minX: 134, minY: 40, maxX: 218, maxY: 82)),
+                .init(id: 2, name: "gridfinity_bin_3x2.stl_id_0_copy_2", bounds: .init(minX: 30, minY: 110, maxX: 114, maxY: 152)),
+                .init(id: 3, name: "label_holder.stl_id_1_copy_0", bounds: .init(minX: 150, minY: 118, maxX: 202, maxY: 140)),
+                .init(id: 4, name: "purge", ignored: true),
+            ]
+            activeObjectID = 1
+        }
         if printing { layerProgress = LayerProgress(currentLayer: 92, totalLayers: 146, averageLayerDuration: 58, lastLayerDuration: 61) }
         systemInfo = ["printer.firmware": .string(toolchanger ? "Prusa-Firmware-Buddy 6.1.3" : printing ? "Prusa-Firmware 3.14.1+8237 based on Marlin" : "Marlin 2.1.2.4")]
         pi = PiSupportInfo([
