@@ -139,6 +139,7 @@ To set it up, install the Prusa MMU plugin from OctoPrint's Plugin Manager and a
 
 - **Your data stays with you.** OctoMac only talks to the OctoPrint servers you add. There are no accounts, no tracking and no cloud service. The details are in [PRIVACY.md](PRIVACY.md).
 - **Found a problem?** Choose **Help → Report a Problem…** and open a [GitHub issue](https://github.com/OctoMac-App/OctoMac/issues). That's the only place we take bug reports. [CONTRIBUTING.md](CONTRIBUTING.md) has more on helping out.
+- **Can't reach your printers?** macOS asks before an app can use your local network. If OctoMac shows that macOS is blocking it (this can happen after an update), open **System Settings → Privacy & Security → Local Network** and switch OctoMac off and on again.
 - **Live preview is an estimate.** The animated nozzle follows the part of the file OctoPrint has sent to the printer. Printers keep a few moves in a small buffer, so on short moves the on-screen nozzle can run a fraction of a second ahead of the real one.
 - **G-code preview downloads the file.** To show a preview, OctoMac downloads the G-code from your printer. Files are kept in memory while the app is open, so opening the same preview again is instant.
 

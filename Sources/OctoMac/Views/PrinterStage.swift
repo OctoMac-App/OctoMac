@@ -25,6 +25,13 @@ struct PrinterStage: View {
                 .padding(.top, 24)
                 .padding(.bottom, 18)
 
+            if session.localNetworkBlocked {
+                LocalNetworkAdvice()
+                    .frame(maxWidth: 820)
+                    .padding(.horizontal, 28)
+                    .padding(.bottom, 18)
+            }
+
             // A self-signed HTTPS certificate that hasn't been trusted yet (or has changed since).
             if let certificate = session.untrustedCertificate, session.link != .online {
                 CertificatePrompt(certificate: certificate, changed: session.instance.trustedCertificate != nil) {
@@ -665,5 +672,32 @@ struct LockedStage: View {
             }
             requesting = nil
         }
+    }
+}
+
+/// Shown when macOS is stopping OctoMac reaching printers on the local network.
+struct LocalNetworkAdvice: View {
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "network.slash")
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(Palette.warm)
+                .frame(width: 40, height: 40)
+                .background(Circle().fill(Palette.warm.opacity(0.14)))
+            VStack(alignment: .leading, spacing: 3) {
+                Text("macOS is blocking OctoMac from your local network")
+                    .font(Typeface.subhead).foregroundStyle(Palette.paper)
+                Text("Your Mac is online, but macOS isn't letting OctoMac reach your printers. This can happen after an update. In Privacy & Security, open Local Network, then switch OctoMac off and on again.")
+                    .font(Typeface.caption).foregroundStyle(Palette.dust)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 8)
+            Button("Open Local Network settings") {
+                NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_LocalNetwork")!)
+            }
+            .buttonStyle(.plate(Palette.warm))
+        }
+        .padding(16)
+        .machined(radius: 14, fill: Palette.warm.opacity(0.07))
     }
 }

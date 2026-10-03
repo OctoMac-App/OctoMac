@@ -85,7 +85,8 @@ public enum PushMessage: Sendable {
 public enum PushEvent: Sendable {
     case connecting
     case connected(user: String?)
-    case disconnected(String?)
+    /// The reason, and the URL error code when there is one (for example `NSURLErrorNotConnectedToInternet`).
+    case disconnected(String?, code: Int? = nil)
     case message(PushMessage)
 }
 
@@ -144,7 +145,7 @@ public actor PushClient {
                 delay = .seconds(1)
             } catch {
                 if Task.isCancelled { break }
-                continuation.yield(.disconnected(error.localizedDescription))
+                continuation.yield(.disconnected(error.localizedDescription, code: (error as? URLError)?.errorCode))
             }
             if Task.isCancelled { break }
             try? await Task.sleep(for: delay)

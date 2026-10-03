@@ -189,6 +189,15 @@ final class PrinterSession {
         flags.error || state?.text.localizedCaseInsensitiveContains("error") == true
     }
 
+    private var offlineBecauseNoInternet = false
+
+    /// macOS reports "no internet" for this printer even though the Mac is online: almost always the Local Network
+    /// privacy setting blocking OctoMac (which can happen after an update).
+    var localNetworkBlocked: Bool {
+        guard case .offline = link else { return false }
+        return offlineBecauseNoInternet && NetworkMonitor.shared.connected
+    }
+
     /// Ready for manual control or starting a print: connected and not running a job.
     var canControl: Bool { link == .online && isPrinterConnected && !flags.isJobActive }
 
@@ -493,8 +502,9 @@ final class PrinterSession {
                 await refreshAll()
                 if mmu != nil { try? await client.refreshMMUState() }
             }
-        case .disconnected(let reason):
+        case .disconnected(let reason, let code):
             if link != .needsAPIKey { link = .offline(reason) }
+            offlineBecauseNoInternet = code == URLError.notConnectedToInternet.rawValue
             untrustedCertificate = trust.untrusted
         case .message(let message):
             handle(message)
