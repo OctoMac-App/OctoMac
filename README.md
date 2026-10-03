@@ -26,6 +26,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Full control.** Heat up with your saved presets, move the print head, extrude filament, adjust fan and speed, send G-code from the console, and manage the connection and the Raspberry Pi.
 - **A friendlier console.** Hide the chatter you don't need (temperatures, SD status, positions, wait and busy replies, MMU chatter) using OctoPrint's own filters, and highlight the lines you care about, including the printer's replies to your own commands. The console holds still while you scroll up to read, and a G-code cheat sheet slides out beside it with plain explanations of common commands.
 - **Safe by design.** Stopping a print asks you to confirm and shows what you'd lose, and there's a separate emergency stop for when something goes wrong.
+- **Widgets.** Add OctoMac to your desktop or Notification Centre to see each printer's progress, time left and temperatures, with a camera picture in the large size. On macOS 26 there's a Control Centre control too.
 - **A menu bar helper.** Check on every printer from the menu bar without opening the main window.
 - **Celsius or Fahrenheit.** Celsius by default; switch in Settings.
 

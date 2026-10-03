@@ -6,6 +6,7 @@ let package = Package(
     platforms: [.macOS(.v15)],
     products: [
         .executable(name: "OctoMac", targets: ["OctoMac"]),
+        .executable(name: "OctoMacWidgets", targets: ["OctoMacWidgets"]),
         .library(name: "OctoPrintKit", targets: ["OctoPrintKit"]),
     ],
     dependencies: [
@@ -16,10 +17,16 @@ let package = Package(
         // Platform-agnostic client for the OctoPrint REST + push (websocket) APIs.
         .target(name: "OctoPrintKit"),
 
+        // The status file OctoMac shares with its widgets.
+        .target(name: "WidgetData"),
+
+        // Desktop and Control Centre widgets, packaged as OctoMac.app/Contents/PlugIns/OctoMacWidgets.appex.
+        .executableTarget(name: "OctoMacWidgets", dependencies: ["WidgetData"]),
+
         // The SwiftUI Mac app.
         .executableTarget(
             name: "OctoMac",
-            dependencies: ["OctoPrintKit", .product(name: "Sparkle", package: "Sparkle")],
+            dependencies: ["OctoPrintKit", "WidgetData", .product(name: "Sparkle", package: "Sparkle")],
             linkerSettings: [
                 // Sparkle.framework is copied into OctoMac.app/Contents/Frameworks by the build scripts.
                 .unsafeFlags(["-Xlinker", "-rpath", "-Xlinker", "@executable_path/../Frameworks"]),

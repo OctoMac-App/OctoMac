@@ -57,40 +57,21 @@ echo "==> OctoMac $VERSION ($BUILD)"
 echo "==> Running tests"
 swift test >/dev/null
 
-BINARIES=()
 for ARCH in arm64 x86_64; do
   echo "==> Building $ARCH"
   swift build -c release --arch "$ARCH" --scratch-path ".build-$ARCH" >/dev/null 2>&1
-  BINARIES+=("$(swift build -c release --arch "$ARCH" --scratch-path ".build-$ARCH" --show-bin-path)/OctoMac")
 done
+bin() { echo "$(swift build -c release --arch "$1" --scratch-path ".build-$1" --show-bin-path)/$2"; }
 
 rm -rf dist && mkdir -p dist
 APP="dist/OctoMac.app"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-lipo -create "${BINARIES[@]}" -output "$APP/Contents/MacOS/OctoMac"
-cp Support/Info.plist "$APP/Contents/Info.plist"
-cp Support/AppIcon.icns Support/OctoMark.png Support/DemoCamera.jpg "$APP/Contents/Resources/"
-# Sparkle (automatic updates). OctoMac isn't sandboxed, so Sparkle's XPC services aren't needed.
-mkdir -p "$APP/Contents/Frameworks"
-SPARKLE=".build-arm64/artifacts/sparkle/Sparkle"
-ditto "$SPARKLE/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
-rm -rf "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices" "$APP/Contents/Frameworks/Sparkle.framework/XPCServices"
-/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $BUILD" "$APP/Contents/Info.plist"
+lipo -create "$(bin arm64 OctoMac)" "$(bin x86_64 OctoMac)" -output dist/OctoMac.bin
+lipo -create "$(bin arm64 OctoMacWidgets)" "$(bin x86_64 OctoMacWidgets)" -output dist/OctoMacWidgets.bin
+echo "==> Assembling and signing ($([[ "$SIGN_IDENTITY" == "-" ]] && echo ad-hoc || echo Developer ID))"
+SIGN_IDENTITY="$SIGN_IDENTITY" TIMESTAMP=1 scripts/assemble.sh "$APP" dist/OctoMac.bin dist/OctoMacWidgets.bin \
+  .build-arm64/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework "$VERSION" "$BUILD"
+rm dist/OctoMac.bin dist/OctoMacWidgets.bin
 lipo -info "$APP/Contents/MacOS/OctoMac"
-
-FRAMEWORK="$APP/Contents/Frameworks/Sparkle.framework"
-if [[ "$SIGN_IDENTITY" == "-" ]]; then
-  echo "==> Signing ad-hoc (no SIGN_IDENTITY set)"
-  codesign --force --deep --sign - "$APP"
-else
-  echo "==> Signing with the hardened runtime"
-  # Inside out: Sparkle's helpers, then the framework, then the app.
-  for ITEM in "$FRAMEWORK/Versions/B/Autoupdate" "$FRAMEWORK/Versions/B/Updater.app" "$FRAMEWORK"; do
-    codesign --force --timestamp --options runtime --sign "$SIGN_IDENTITY" "$ITEM"
-  done
-  codesign --force --timestamp --options runtime --sign "$SIGN_IDENTITY" "$APP"
-fi
-codesign --verify --strict "$APP"
 
 if [[ "$NOTARIZE" == true ]]; then
   [[ "$SIGN_IDENTITY" != "-" && -n "$NOTARY_PROFILE" ]] || { echo "Notarising needs SIGN_IDENTITY and NOTARY_PROFILE" >&2; exit 1; }

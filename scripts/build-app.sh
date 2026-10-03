@@ -6,22 +6,13 @@ CONFIG="${1:-release}"
 export DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode.app/Contents/Developer}"
 
 swift build -c "$CONFIG"
-BIN="$(swift build -c "$CONFIG" --show-bin-path)/OctoMac"
+BINS="$(swift build -c "$CONFIG" --show-bin-path)"
 
-APP="build/OctoMac.app"
-rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/OctoMac"
-cp Support/Info.plist "$APP/Contents/Info.plist"
-/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $(tr -d '[:space:]' < VERSION)" "$APP/Contents/Info.plist"
-cp Support/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
-cp Support/OctoMark.png Support/DemoCamera.jpg "$APP/Contents/Resources/"
-# Sparkle (automatic updates). OctoMac isn't sandboxed, so Sparkle's XPC services aren't needed.
-mkdir -p "$APP/Contents/Frameworks"
-ditto .build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework "$APP/Contents/Frameworks/Sparkle.framework"
-rm -rf "$APP/Contents/Frameworks/Sparkle.framework/Versions/B/XPCServices" "$APP/Contents/Frameworks/Sparkle.framework/XPCServices"
 # Sign with your Developer ID when scripts/release.local names one, so macOS keeps treating every local build as
 # the same app (Local Network and notification permissions stick). Otherwise sign ad-hoc.
 [[ -f scripts/release.local ]] && source scripts/release.local
-codesign --force --deep --options runtime --sign "${SIGN_IDENTITY:--}" "$APP" >/dev/null
-echo "Built $APP"
+export SIGN_IDENTITY="${SIGN_IDENTITY:--}"
+VERSION="$(tr -d '[:space:]' < VERSION)"
+scripts/assemble.sh build/OctoMac.app "$BINS/OctoMac" "$BINS/OctoMacWidgets" \
+  .build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework "$VERSION" 1
+echo "Built build/OctoMac.app"
