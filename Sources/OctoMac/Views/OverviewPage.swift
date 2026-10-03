@@ -377,7 +377,8 @@ struct JobPanel: View {
                 HStack(alignment: .bottom) {
                     Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 14) {
                         GridRow {
-                            stat("Time left", Fmt.duration(session.progress?.printTimeLeft), big: true)
+                            stat(timeLeftTitle, Fmt.duration(session.progress?.printTimeLeft), big: true)
+                                .help(timeLeftHelp)
                             stat("Done at", Fmt.eta(session.progress?.printTimeLeft), big: true)
                         }
                         GridRow {
@@ -418,6 +419,18 @@ struct JobPanel: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .machined(radius: 20)
         .sheet(isPresented: $showingObjects) { CancelObjectsSheet(session: session, filament: filament) }
+    }
+
+    private var timeLeftTitle: String {
+        if session.progress?.timeLeftFromPrintTimeGenius == true { return "Time left (Genius)" }
+        if session.progress?.timeLeftIsRough == true { return "Time left (rough)" }
+        return "Time left"
+    }
+
+    private var timeLeftHelp: String {
+        if session.progress?.timeLeftFromPrintTimeGenius == true { return "Worked out by the Print Time Genius plugin, which is usually close." }
+        if session.progress?.timeLeftIsRough == true { return "A rough guess from progress so far. It gets better as the print goes on." }
+        return "OctoPrint's estimate. The Print Time Genius plugin gives more accurate times."
     }
 
     /// "Layer 71 of 120, about 1 min each", from the DisplayLayerProgress plugin.
@@ -537,7 +550,8 @@ struct OpenedFilePanel: View {
             ScrollView {
                 Grid(alignment: .leading, horizontalSpacing: 24, verticalSpacing: 12) {
                     GridRow {
-                        stat("Print time", Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime), big: true)
+                        stat(file.expectedPrintTime?.source == .printTimeGenius ? "Print time (Genius)" : "Print time",
+                             Fmt.duration(file.expectedPrintTime?.seconds), big: true)
                         stat("Filament", Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), big: true)
                     }
                     GridRow {
@@ -749,7 +763,7 @@ struct FileCard: View {
                         .lineLimit(1)
                     if !name.tags.isEmpty { TagRow(tags: name.tags) }
                     HStack(spacing: 10) {
-                        Label(Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime), systemImage: "clock")
+                        Label(Fmt.duration(file.expectedPrintTime?.seconds), systemImage: "clock")
                         Label(Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), systemImage: "scribble")
                     }
                     .font(Typeface.caption)

@@ -15,14 +15,18 @@ public struct GcodeAnalysis: Decodable, Sendable, Hashable {
     }
 
     public var estimatedPrintTime: Double?
+    /// Print Time Genius's figure, when that plugin is installed: its own analysis adjusted by how long
+    /// earlier prints really took on this printer.
+    public var compensatedPrintTime: Double?
     public var filament: [String: FilamentUsage]
     public var dimensions: Dimensions?
 
-    enum CodingKeys: String, CodingKey { case estimatedPrintTime, filament, dimensions }
+    enum CodingKeys: String, CodingKey { case estimatedPrintTime, compensatedPrintTime, filament, dimensions }
 
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         estimatedPrintTime = try? c.decodeIfPresent(Double.self, forKey: .estimatedPrintTime)
+        compensatedPrintTime = try? c.decodeIfPresent(Double.self, forKey: .compensatedPrintTime)
         filament = decodeFilament(c, .filament)
         dimensions = try? c.decodeIfPresent(Dimensions.self, forKey: .dimensions)
     }
@@ -128,4 +132,32 @@ public struct UploadResponse: Decodable, Sendable {
     public var done: Bool?
     public var effectiveSelect: Bool?
     public var effectivePrint: Bool?
+}
+
+/// Where a print time comes from, best first.
+public enum PrintTimeSource: Sendable, Hashable {
+    /// The Print Time Genius plugin, which is usually within a few minutes.
+    case printTimeGenius
+    /// OctoPrint's own analysis of the G-code, which is often well off.
+    case octoPrint
+    /// The average of earlier prints of this file.
+    case pastPrints
+}
+
+extension FileEntry {
+    /// The best guess at how long this file takes to print: Print Time Genius when it's installed, otherwise
+    /// OctoPrint's own estimate, otherwise how long it took before.
+    public var expectedPrintTime: (seconds: Double, source: PrintTimeSource)? {
+        if let genius = gcodeAnalysis?.compensatedPrintTime, genius > 0 { return (genius, .printTimeGenius) }
+        if let estimate = gcodeAnalysis?.estimatedPrintTime, estimate > 0 { return (estimate, .octoPrint) }
+        if let past = averagePrintTime?.values.first, past > 0 { return (past, .pastPrints) }
+        return nil
+    }
+}
+
+extension JobProgress {
+    /// True when Print Time Genius is supplying the time left.
+    public var timeLeftFromPrintTimeGenius: Bool { printTimeLeftOrigin == "genius" }
+    /// True when OctoPrint has nothing better than a straight-line guess from the progress so far.
+    public var timeLeftIsRough: Bool { printTimeLeftOrigin == "linear" }
 }

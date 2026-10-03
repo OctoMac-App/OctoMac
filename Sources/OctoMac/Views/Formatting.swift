@@ -1,3 +1,4 @@
+import OctoPrintKit
 import Foundation
 
 enum Fmt {
@@ -45,6 +46,14 @@ enum Fmt {
     static func filament(_ mm: Double?) -> String {
         guard let mm, mm > 0 else { return "–" }
         return String(format: "%.2f m", mm / 1000)
+    }
+
+    static func source(_ source: PrintTimeSource) -> String {
+        switch source {
+        case .printTimeGenius: "Print Time Genius"
+        case .octoPrint: "OctoPrint's estimate"
+        case .pastPrints: "from earlier prints"
+        }
     }
 
     static func number(_ value: Double?) -> String {

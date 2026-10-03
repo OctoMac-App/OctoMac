@@ -128,3 +128,22 @@ struct CancelObjectTests {
         #expect(CancelObject.message(["navBarActive": "x"]) == nil)
     }
 }
+
+struct PrintTimeTests {
+    private func file(_ analysis: JSONValue?, average: Double? = nil) throws -> FileEntry {
+        var json: [String: JSONValue] = ["name": "a.gcode", "path": "a.gcode", "type": "machinecode", "origin": "local"]
+        if let analysis { json["gcodeAnalysis"] = analysis }
+        if let average { json["statistics"] = ["averagePrintTime": ["_default": .number(average)]] }
+        return try JSONValue.object(json).decode(FileEntry.self)
+    }
+
+    @Test func prefersPrintTimeGeniusThenOctoPrintThenPastPrints() throws {
+        let genius = try file(["estimatedPrintTime": 5799, "compensatedPrintTime": 5799, "analysisPrintTime": 5517])
+        #expect(genius.expectedPrintTime?.source == .printTimeGenius)
+        let plain = try file(["estimatedPrintTime": 4200])
+        #expect(plain.expectedPrintTime?.seconds == 4200 && plain.expectedPrintTime?.source == .octoPrint)
+        let history = try file(nil, average: 3600)
+        #expect(history.expectedPrintTime?.source == .pastPrints)
+        #expect(try file(nil).expectedPrintTime == nil)
+    }
+}

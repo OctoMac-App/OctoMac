@@ -486,7 +486,7 @@ struct GCodeLayerViewer: View {
             VStack(alignment: .leading, spacing: 8) {
                 fact("Layers", "\(path.layers.count)")
                 fact("Height", String(format: "%.2f mm", path.layers.last?.z ?? 0))
-                if let time = file.gcodeAnalysis?.estimatedPrintTime { fact("Print time", Fmt.duration(time)) }
+                if let time = file.expectedPrintTime?.seconds { fact("Print time", Fmt.duration(time)) }
                 if let length = file.gcodeAnalysis?.totalFilamentLength { fact("Filament", Fmt.filament(length)) }
                 fact("Moves in this layer", "\(layerSegments.count.formatted())")
             }

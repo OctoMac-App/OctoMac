@@ -319,7 +319,7 @@ struct FileRow: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
 
-            number(file.isFolder ? "" : Fmt.duration(file.gcodeAnalysis?.estimatedPrintTime), width: FileColumns.time)
+            number(file.isFolder ? "" : Fmt.duration(file.expectedPrintTime?.seconds), width: FileColumns.time)
             if !compact {
                 number(file.isFolder ? "" : Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), width: FileColumns.filament)
                 number(file.isFolder ? "\(file.children?.count ?? 0) items" : file.size.map(Fmt.bytes) ?? "", width: FileColumns.size)

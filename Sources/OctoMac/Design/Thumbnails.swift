@@ -162,8 +162,10 @@ struct FilePreview: View {
                 }
 
                 if let analysis = file.gcodeAnalysis {
-                    section("Slicer estimate") {
-                        row("Print time", Fmt.duration(analysis.estimatedPrintTime))
+                    section("Estimate") {
+                        if let expected = file.expectedPrintTime {
+                            row("Print time", Fmt.duration(expected.seconds) + " (\(Fmt.source(expected.source)))")
+                        }
                         ForEach(analysis.filament.keys.sorted(), id: \.self) { tool in
                             let usage = analysis.filament[tool]
                             row(analysis.filament.count > 1 ? "Filament (\(HeaterKind(key: tool).displayName))" : "Filament",

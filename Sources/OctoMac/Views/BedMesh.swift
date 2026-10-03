@@ -241,7 +241,11 @@ struct BedMeshSurface: View {
                     path.addLines(points)
                     path.closeSubpath()
                     // Seen from above, the corners run one way round on screen; from below, the other way.
-                    let area = zip(points, points.dropFirst() + [points[0]]).reduce(0.0) { $0 + Double($1.0.x * $1.1.y - $1.1.x * $1.0.y) }
+                    var area = 0.0
+                    for index in points.indices {
+                        let a = points[index], b = points[(index + 1) % points.count]
+                        area += Double(a.x * b.y) - Double(b.x * a.y)
+                    }
                     faces.append(Face(path: path, depth: projected.map(\.depth).reduce(0, +) / 4,
                                       height: heights.compactMap { $0 }.reduce(0, +) / 4, underside: area > 0))
                 }
