@@ -49,7 +49,9 @@ struct RootView: View {
 
             ZStack {
                 LayerLineBackground()
-                if let session = store.session(for: selection) {
+                if selection == AllPrinters.id, !store.instances.isEmpty {
+                    AllPrintersStage(selection: $selection).id(unit)
+                } else if let session = store.session(for: selection) {
                     PrinterStage(session: session, editor: $editor)
                         .id("\(ObjectIdentifier(session).hashValue)-\(unit)")
                 } else {
@@ -78,7 +80,9 @@ struct RootView: View {
             InstanceEditor(target: target) { selection = $0 }
         }
         .onAppear {
-            selection = UUID(uuidString: selectionStorage).flatMap { id in store.instances.contains { $0.id == id } ? id : nil }
+            selection = UUID(uuidString: selectionStorage).flatMap { id in
+                id == AllPrinters.id || store.instances.contains { $0.id == id } ? id : nil
+            }
                 ?? store.instances.first?.id
             // Demo screenshots: `--demo --select 2` picks the second printer.
             if store.isDemo, let flag = CommandLine.arguments.firstIndex(of: "--select"),
@@ -139,6 +143,9 @@ struct PrinterRail: View {
 
             ScrollView {
                 VStack(spacing: 8) {
+                    if store.instances.count > 1 {
+                        AllPrintersTile(selected: selection == AllPrinters.id) { selection = AllPrinters.id }
+                    }
                     ForEach(store.instances) { instance in
                         if let session = store.sessions[instance.id] {
                             Button { selection = instance.id } label: {
@@ -303,5 +310,35 @@ struct EmptyStage: View {
             Button(firstRun ? "Add your first printer" : "Add a printer", action: add).buttonStyle(.plate)
         }
         .frame(maxWidth: 420)
+    }
+}
+
+/// The sidebar entry for the grid of every printer.
+struct AllPrintersTile: View {
+    let selected: Bool
+    let action: () -> Void
+    @State private var hovering = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: "square.grid.2x2.fill")
+                    .font(.system(size: 13))
+                    .foregroundStyle(selected ? Palette.accent : Palette.dust)
+                    .frame(width: 18)
+                Text("All printers").font(Typeface.text(14, .demibold)).foregroundStyle(Palette.paper)
+                Spacer()
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background {
+                if selected || hovering {
+                    RoundedRectangle(cornerRadius: 12, style: .continuous).fill(selected ? Palette.extrusionHi : Palette.extrusion)
+                }
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .onHover { hovering = $0 }
     }
 }

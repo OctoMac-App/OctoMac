@@ -11,7 +11,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 ## What it does
 
-- **All your printers, side by side.** Add as many OctoPrint servers as you like. Each one shows its status, temperatures and print progress in the sidebar, and switching between them is instant.
+- **All your printers, side by side.** Add as many OctoPrint servers as you like. Each one shows its status, temperatures and print progress in the sidebar, switching between them is instant, and **All printers** shows every camera and print at once.
 - **Live updates.** OctoMac listens to OctoPrint's live connection, so temperatures, progress and events appear the moment they happen. No waiting, no refreshing.
 - **A clear overview.** See the webcam (switch between cameras if you have more than one, with a cinema mode, one-click snapshots, and a picture in picture window that floats above your other apps), the current print with time left and when it'll finish, and a temperature chart you can hover over and export as PNG or SVG.
 - **Print in a couple of clicks.** Browse your files as thumbnails, filter by name, open one to check its print time, filament and history, then press Print.
@@ -31,6 +31,8 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Celsius or Fahrenheit.** Celsius by default; switch in Settings.
 
 ![The 3D G-code preview following a live print](docs/screenshots/live-preview.png)
+
+![All printers, side by side](docs/screenshots/all-printers.png)
 
 ![The History tab, with recent prints and timelapses](docs/screenshots/history.png)
 
