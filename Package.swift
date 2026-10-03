@@ -29,6 +29,11 @@ let package = Package(
         ),
 
         .testTarget(
+            name: "OctoMacTests",
+            dependencies: ["OctoMac"]
+        ),
+
+        .testTarget(
             name: "OctoPrintKitTests",
             dependencies: ["OctoPrintKit"],
             resources: [.copy("Fixtures")]

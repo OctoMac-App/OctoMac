@@ -28,6 +28,10 @@ enum Diagnostics {
     }
 
     static func report(store: InstanceStore, notifications: UNAuthorizationStatus) -> String {
+        report(printers: store.instances.map { ($0, store.sessions[$0.id]) }, isDemo: store.isDemo, notifications: notifications)
+    }
+
+    static func report(printers: [(Instance, PrinterSession?)], isDemo: Bool, notifications: UNAuthorizationStatus) -> String {
         var lines: [String] = []
         lines.append("OctoMac diagnostics")
         lines.append("Written \(Date.now.formatted(.iso8601))")
@@ -36,16 +40,16 @@ enum Diagnostics {
         lines.append("OctoMac \(appVersion)")
         lines.append("macOS \(ProcessInfo.processInfo.operatingSystemVersionString)")
         lines.append("Mac \(sysctl("hw.model") ?? "unknown"), \(chip)")
-        lines.append("Demo mode: \(store.isDemo ? "on" : "off")")
+        lines.append("Demo mode: \(isDemo ? "on" : "off")")
         lines.append("API keys kept in: \(CredentialStore.usesKeychain ? "Keychain" : "OctoMac's own file")")
         lines.append("Notifications: \(describe(notifications)); switched on: "
                      + NotificationKind.allCases.filter(\.isEnabled).map(\.rawValue).joined(separator: ", "))
         lines.append("Temperature unit: \(TemperatureUnit.current.rawValue)")
 
-        for (index, instance) in store.instances.enumerated() {
+        for (index, (_, session)) in printers.enumerated() {
             lines.append("")
             lines.append("Printer \(index + 1)")
-            guard let session = store.sessions[instance.id] else {
+            guard let session else {
                 lines.append("  No session")
                 continue
             }
@@ -72,7 +76,7 @@ enum Diagnostics {
             lines.append("  Webcam configured: \(session.webcamStreamURL == nil ? "no" : "yes")")
             lines.append("  Files: \(session.files.count) at the top level")
         }
-        if store.instances.isEmpty { lines.append(""); lines.append("No printers added.") }
+        if printers.isEmpty { lines.append(""); lines.append("No printers added.") }
         return lines.joined(separator: "\n") + "\n"
     }
 
