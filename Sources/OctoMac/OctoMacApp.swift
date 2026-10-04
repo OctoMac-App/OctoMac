@@ -23,6 +23,7 @@ struct OctoMacApp: App {
                 Button("Check for Updates…") { Updates.shared.checkForUpdates() }
                     .disabled(!Updates.shared.canCheck)
             }
+            CommandMenu("Printer") { PrinterCommands(store: store) }
             CommandGroup(replacing: .help) { HelpCommands(store: store) }
         }
 

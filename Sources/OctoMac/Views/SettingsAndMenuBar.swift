@@ -304,6 +304,7 @@ struct MenuBarLabel: View {
 
 struct NotificationSettings: View {
     @State private var status: UNAuthorizationStatus = .notDetermined
+    @AppStorage(NotificationKind.cameraKey) private var includesCamera = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -334,6 +335,21 @@ struct NotificationSettings: View {
                     if kind != NotificationKind.allCases.last { Divider().overlay(Palette.edge) }
                 }
             }
+            .machined(radius: 14)
+
+            Toggle(isOn: $includesCamera) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Include a camera picture").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Text("Finished, failed and paused prints show what the camera sees, so you can check without opening OctoMac.")
+                        .font(Typeface.caption).foregroundStyle(Palette.faint)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .toggleStyle(.switch)
+            .tint(Palette.accent)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             .machined(radius: 14)
 
             Text("Banners for the printer on screen are skipped while OctoMac is in front.")

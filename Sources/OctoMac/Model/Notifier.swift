@@ -30,6 +30,18 @@ enum NotificationKind: String, CaseIterable, Identifiable {
 
     var defaultsKey: String { "notify.\(rawValue)" }
 
+    /// Whether this kind of notification comes with a picture from the printer's camera.
+    var showsCamera: Bool {
+        switch self {
+        case .printDone, .printFailed, .needsAttention: true
+        case .printerProblem, .piWarning: false
+        }
+    }
+
+    /// The Settings switch for camera pictures in notifications. On unless you turn it off.
+    static let cameraKey = "notify.camera"
+    static var includesCamera: Bool { UserDefaults.standard.object(forKey: cameraKey) as? Bool ?? true }
+
     var isEnabled: Bool {
         UserDefaults.standard.object(forKey: defaultsKey) as? Bool ?? true
     }
@@ -62,7 +74,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         }
     }
 
-    func post(_ kind: NotificationKind, printer: Instance, title: String, body: String) {
+    /// `picture` is a JPEG from the printer's camera, shown in the notification when the kind and Settings allow it.
+    func post(_ kind: NotificationKind, printer: Instance, title: String, body: String, picture: Data? = nil) {
         guard kind.isEnabled, let center else { return }
         let key = "\(printer.id)|\(title)|\(body)"
         if let last = recent[key], Date.now.timeIntervalSince(last) < 60 { return }
@@ -75,6 +88,9 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         content.sound = kind == .printDone ? .default : .defaultCritical
         content.threadIdentifier = printer.id.uuidString
         content.userInfo = ["printer": printer.id.uuidString]
+        if kind.showsCamera, NotificationKind.includesCamera, let picture, let attachment = Self.attachment(picture) {
+            content.attachments = [attachment]
+        }
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
 
         Task {
@@ -83,6 +99,18 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
                 _ = try? await center.requestAuthorization(options: [.alert, .sound])
             }
             try? await center.add(request)
+        }
+    }
+
+    /// Notification pictures have to be files; macOS moves this one into its own store when the notification is added.
+    private static func attachment(_ jpeg: Data) -> UNNotificationAttachment? {
+        let url = FileManager.default.temporaryDirectory.appending(path: "OctoMac-notification-\(UUID().uuidString).jpg")
+        do {
+            try jpeg.write(to: url)
+            return try UNNotificationAttachment(identifier: "camera", url: url, options: [UNNotificationAttachmentOptionsTypeHintKey: "public.jpeg"])
+        } catch {
+            try? FileManager.default.removeItem(at: url)
+            return nil
         }
     }
 

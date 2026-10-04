@@ -626,7 +626,9 @@ final class PrinterSession {
 
     private func notify(_ kind: NotificationKind, _ title: String, _ body: String) {
         guard !isDemoSession else { return }
-        Notifier.shared.post(kind, printer: instance, title: title, body: body)
+        // The camera picture is turned the same way as on screen.
+        let picture = kind.showsCamera ? camera.latestFrameData.flatMap { Snapshot.jpeg($0, transform: webcamTransform) } : nil
+        Notifier.shared.post(kind, printer: instance, title: title, body: body, picture: picture)
     }
 
     private func notifyAbout(_ event: ServerEvent) {

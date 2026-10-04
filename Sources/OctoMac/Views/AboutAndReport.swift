@@ -105,6 +105,7 @@ struct ReportProblemView: View {
 /// Settings → General.
 struct GeneralSettings: View {
     @AppStorage(TemperatureUnit.defaultsKey) private var unit = TemperatureUnit.celsius.rawValue
+    @AppStorage(DockProgress.defaultsKey) private var dockProgress = true
     @State private var checksAutomatically = true
 
     var body: some View {
@@ -124,6 +125,19 @@ struct GeneralSettings: View {
                 .labelsHidden()
                 .fixedSize()
             }
+            .padding(14)
+            .machined(radius: 12)
+
+            Toggle(isOn: $dockProgress) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Show progress on the Dock icon").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Text("A bar for the print that finishes soonest, amber while it's paused.")
+                        .font(Typeface.caption).foregroundStyle(Palette.faint)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .toggleStyle(.switch)
+            .tint(Palette.accent)
             .padding(14)
             .machined(radius: 12)
 

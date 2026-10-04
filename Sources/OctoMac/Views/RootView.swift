@@ -61,6 +61,7 @@ struct RootView: View {
         }
         }
         .ignoresSafeArea()
+        .focusedSceneValue(\.printerSelection, $selection)
         // The Prusa MMU plugin is waiting for a filament choice on some printer: ask, whichever printer is on screen.
         .overlay {
             if let session = store.instances.compactMap({ store.sessions[$0.id] }).first(where: { $0.mmuPromptSince != nil }),
@@ -72,7 +73,10 @@ struct RootView: View {
         .animation(.easeOut(duration: 0.2), value: store.instances.compactMap { store.sessions[$0.id]?.mmuPromptSince })
         .onChange(of: inbox.pending) { _, files in routeOpenedFiles(files) }
         .onAppear { routeOpenedFiles(inbox.pending) }
-        .onAppear { WidgetFeed.shared.start(store: store) }
+        .onAppear {
+            WidgetFeed.shared.start(store: store)
+            DockProgress.shared.start(store: store)
+        }
         .sheet(isPresented: $choosingPrinter, onDismiss: { inbox.pending = [] }) {
             UploadChooser(files: inbox.pending) { upload(inbox.pending, to: $0) }
         }
