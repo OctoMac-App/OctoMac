@@ -20,7 +20,7 @@ All of this stays on your Mac:
 
 ## Notifications
 
-Notifications are shown by macOS on your Mac only. They aren't sent anywhere else.
+Notifications are shown by macOS on your Mac only. They aren't sent anywhere else. Finished, failed and paused prints include a picture from the printer's camera, which macOS keeps with the notification until you clear it. You can turn the pictures off in **Settings → Notifications**.
 
 ## Bug reports
 
