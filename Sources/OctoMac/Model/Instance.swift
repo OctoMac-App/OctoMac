@@ -1,5 +1,6 @@
 import CryptoKit
 import Foundation
+import OctoPrintKit
 import Security
 
 /// A configured OctoPrint server. The API key lives in `CredentialStore`, not here.
@@ -27,7 +28,37 @@ struct Instance: Codable, Identifiable, Hashable, Sendable {
     }
 }
 
-/// API keys. By default they're stored in `~/Library/Application Support/OctoMac/api-keys.dat`: JSON sealed with
+/// How OctoMac gets past a reverse proxy in front of OctoPrint: a user name and password (HTTP basic
+/// authentication) and/or extra headers, such as Cloudflare Access service tokens. Kept with the API key, never in
+/// the printer list.
+struct ProxyAccess: Codable, Equatable, Sendable {
+    struct Header: Codable, Equatable, Identifiable, Sendable {
+        var id = UUID()
+        var name = ""
+        var value = ""
+    }
+
+    var user = ""
+    var password = ""
+    var headers: [Header] = []
+
+    var isEmpty: Bool { user.isEmpty && password.isEmpty && httpHeaders.isEmpty }
+
+    /// The headers to send with every request to the printer.
+    var httpHeaders: [String: String] {
+        var result: [String: String] = [:]
+        for header in headers {
+            let name = header.name.trimmingCharacters(in: .whitespaces)
+            if !name.isEmpty { result[name] = header.value.trimmingCharacters(in: .whitespaces) }
+        }
+        if !user.isEmpty || !password.isEmpty {
+            result["Authorization"] = OctoPrintClient.basicAuthorization(user: user, password: password)
+        }
+        return result
+    }
+}
+
+/// API keys, and any proxy sign-in (`ProxyAccess`). By default they're stored in `~/Library/Application Support/OctoMac/api-keys.dat`: JSON sealed with
 /// AES-GCM under a key compiled into the app, with owner-only (0600) permissions. This keeps keys out of plain text
 /// (backups, grep, screenshots) but isn't protection against someone who has the app binary, an accepted trade-off
 /// for printer API keys. Settings can switch to the macOS Keychain instead (off by default: builds that aren't
@@ -46,17 +77,39 @@ enum CredentialStore {
 
     private static let sealingKey = SymmetricKey(data: SHA256.hash(data: Data("uk.co.district5.OctoMac/credentials/v1/7c1e9a4b".utf8)))
 
-    static func apiKey(for id: UUID) -> String? {
-        usesKeychain ? Keychain.apiKey(for: id) : load()[id.uuidString]
+    static func apiKey(for id: UUID) -> String? { secret(id.uuidString) }
+
+    static func setAPIKey(_ key: String?, for id: UUID) { setSecret(key, id.uuidString) }
+
+    static func proxyAccess(for id: UUID) -> ProxyAccess? {
+        secret(accessAccount(id)).flatMap { try? JSONDecoder().decode(ProxyAccess.self, from: Data($0.utf8)) }
     }
 
-    static func setAPIKey(_ key: String?, for id: UUID) {
-        let key = (key?.isEmpty ?? true) ? nil : key
+    static func setProxyAccess(_ access: ProxyAccess?, for id: UUID) {
+        let json = access.flatMap { $0.isEmpty ? nil : try? JSONEncoder().encode($0) }
+        setSecret(json.map { String(decoding: $0, as: UTF8.self) }, accessAccount(id))
+    }
+
+    /// Forgets everything stored for a printer.
+    static func remove(_ id: UUID) {
+        setAPIKey(nil, for: id)
+        setProxyAccess(nil, for: id)
+    }
+
+    private static func accessAccount(_ id: UUID) -> String { id.uuidString + ".access" }
+    private static func accounts(_ ids: [UUID]) -> [String] { ids.flatMap { [$0.uuidString, accessAccount($0)] } }
+
+    private static func secret(_ account: String) -> String? {
+        usesKeychain ? Keychain.secret(account) : load()[account]
+    }
+
+    private static func setSecret(_ value: String?, _ account: String) {
+        let value = (value?.isEmpty ?? true) ? nil : value
         if usesKeychain {
-            if let key { Keychain.set(key, for: id) } else { Keychain.delete(id) }
+            if let value { Keychain.set(value, account) } else { Keychain.delete(account) }
         } else {
             var keys = load()
-            keys[id.uuidString] = key
+            keys[account] = value
             save(keys)
         }
     }
@@ -68,19 +121,19 @@ enum CredentialStore {
         guard on != usesKeychain else { return true }
         if on {
             let keys = load()
-            for id in ids {
-                guard let key = keys[id.uuidString] else { continue }
-                guard Keychain.set(key, for: id) else { return false }
+            for account in accounts(ids) {
+                guard let key = keys[account] else { continue }
+                guard Keychain.set(key, account) else { return false }
             }
             UserDefaults.standard.set(true, forKey: useKeychainKey)
             save([:])
             try? FileManager.default.removeItem(at: fileURL)
         } else {
             var keys: [String: String] = [:]
-            for id in ids { if let key = Keychain.apiKey(for: id) { keys[id.uuidString] = key } }
+            for account in accounts(ids) { if let key = Keychain.secret(account) { keys[account] = key } }
             save(keys)
             UserDefaults.standard.set(false, forKey: useKeychainKey)
-            ids.forEach(Keychain.delete)
+            accounts(ids).forEach(Keychain.delete)
         }
         return true
     }
@@ -91,10 +144,10 @@ enum CredentialStore {
         guard !UserDefaults.standard.bool(forKey: flag), !usesKeychain else { return }
         var keys = load()
         for id in ids where keys[id.uuidString] == nil {
-            if let key = Keychain.apiKey(for: id) { keys[id.uuidString] = key }
+            if let key = Keychain.secret(id.uuidString) { keys[id.uuidString] = key }
         }
         save(keys)
-        ids.forEach(Keychain.delete)
+        ids.map(\.uuidString).forEach(Keychain.delete)
         UserDefaults.standard.set(true, forKey: flag)
     }
 
@@ -131,20 +184,20 @@ enum CredentialStore {
     }
 }
 
-/// API keys in the macOS Keychain, one generic password per printer.
+/// API keys in the macOS Keychain, one generic password per printer (and one more for a proxy sign-in).
 private enum Keychain {
     private static let service = "uk.co.district5.OctoMac.apikey"
 
-    private static func query(_ id: UUID) -> [String: Any] {
+    private static func query(_ account: String) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: id.uuidString,
+            kSecAttrAccount as String: account,
         ]
     }
 
-    static func apiKey(for id: UUID) -> String? {
-        var request = query(id)
+    static func secret(_ account: String) -> String? {
+        var request = query(account)
         request[kSecReturnData as String] = true
         request[kSecMatchLimit as String] = kSecMatchLimitOne
         var result: AnyObject?
@@ -153,19 +206,19 @@ private enum Keychain {
     }
 
     @discardableResult
-    static func set(_ key: String, for id: UUID) -> Bool {
+    static func set(_ key: String, _ account: String) -> Bool {
         let data = Data(key.utf8)
-        let status = SecItemUpdate(query(id) as CFDictionary, [kSecValueData as String: data] as CFDictionary)
+        let status = SecItemUpdate(query(account) as CFDictionary, [kSecValueData as String: data] as CFDictionary)
         if status == errSecSuccess { return true }
         guard status == errSecItemNotFound else { return false }
-        var item = query(id)
+        var item = query(account)
         item[kSecValueData as String] = data
         item[kSecAttrLabel as String] = "OctoMac API key"
         item[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
         return SecItemAdd(item as CFDictionary, nil) == errSecSuccess
     }
 
-    static func delete(_ id: UUID) {
-        SecItemDelete(query(id) as CFDictionary)
+    static func delete(_ account: String) {
+        SecItemDelete(query(account) as CFDictionary)
     }
 }

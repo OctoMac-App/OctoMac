@@ -662,7 +662,7 @@ struct LockedStage: View {
         message = nil
         requesting = Task {
             do {
-                let key = try await AppKeysAuthorizer(baseURL: instance.baseURL).requestKey { url in
+                let key = try await AppKeysAuthorizer(client: session.client).requestKey { url in
                     await MainActor.run { _ = NSWorkspace.shared.open(url) }
                 }
                 store.update(instance, apiKey: key)

@@ -64,18 +64,21 @@ final class InstanceStore {
         instance.filamentHex.flatMap(Color.init(hexString:)) ?? Palette.filaments[0]
     }
 
-    func add(_ instance: Instance, apiKey: String?) {
+    func add(_ instance: Instance, apiKey: String?, access: ProxyAccess? = nil) {
         var instance = instance
         if instance.filamentHex == nil { instance.filamentHex = suggestedFilamentHex() }
         CredentialStore.setAPIKey(apiKey, for: instance.id)
+        CredentialStore.setProxyAccess(access, for: instance.id)
         instances.append(instance)
         save()
         startSession(for: instance)
     }
 
-    func update(_ instance: Instance, apiKey: String?) {
+    /// Saves changes to a printer and reconnects. Leaving `access` out keeps its proxy sign-in as it is.
+    func update(_ instance: Instance, apiKey: String?, access: ProxyAccess?? = .none) {
         guard let index = instances.firstIndex(where: { $0.id == instance.id }) else { return }
         CredentialStore.setAPIKey(apiKey, for: instance.id)
+        if case .some(let access) = access { CredentialStore.setProxyAccess(access, for: instance.id) }
         instances[index] = instance
         save()
         sessions[instance.id]?.stop()
@@ -93,7 +96,7 @@ final class InstanceStore {
         sessions[id]?.stop()
         sessions[id] = nil
         instances.removeAll { $0.id == id }
-        CredentialStore.setAPIKey(nil, for: id)
+        CredentialStore.remove(id)
         save()
     }
 
@@ -103,7 +106,8 @@ final class InstanceStore {
     }
 
     private func startSession(for instance: Instance) {
-        let session = PrinterSession(instance: instance, apiKey: CredentialStore.apiKey(for: instance.id))
+        let session = PrinterSession(instance: instance, apiKey: CredentialStore.apiKey(for: instance.id),
+                                     access: CredentialStore.proxyAccess(for: instance.id))
         sessions[instance.id] = session
         session.start()
     }

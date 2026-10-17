@@ -76,6 +76,8 @@ You can also open `Package.swift` in Xcode and press Run.
 3. Choose **Request access** and sign in to OctoPrint as an admin. Your browser opens OctoPrint, where you approve OctoMac with one click. (Prefer to paste an API key instead? Choose **Paste a key**.)
 4. That's it. Your printer appears in the sidebar.
 
+**Reaching OctoPrint from outside your home?** If it's behind a reverse proxy that asks for its own sign-in (nginx or Caddy with a password, Cloudflare Access and so on), open **Sign-in** when adding the printer and enter the user name and password, or the headers it needs, such as `CF-Access-Client-Id` and `CF-Access-Client-Secret`. OctoMac sends them only to that printer's address.
+
 Your API keys stay on your Mac. By default they're kept in an encrypted file only your account can read; if you'd rather use the macOS Keychain, switch it on in **Settings → Printers**. See [PRIVACY.md](PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.
 
 ### Just looking?

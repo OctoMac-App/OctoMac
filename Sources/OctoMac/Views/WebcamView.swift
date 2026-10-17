@@ -72,7 +72,7 @@ final class MJPEGStreamer {
     @ObservationIgnored private var latest: Data?
     @ObservationIgnored private var session: URLSession?
     @ObservationIgnored private var url: URL?
-    @ObservationIgnored private var apiKey: String?
+    @ObservationIgnored private var client: OctoPrintClient?
     @ObservationIgnored private var generation = 0
     @ObservationIgnored private var retry: Task<Void, Never>?
 
@@ -87,10 +87,11 @@ final class MJPEGStreamer {
     }
 
     /// Starts streaming `url`, or does nothing if that stream is already running.
-    func start(url: URL, apiKey: String?) {
+    /// `client` signs the request when the camera is on the printer's own host.
+    func start(url: URL, client: OctoPrintClient?) {
         guard url != self.url || session == nil else { return }
         self.url = url
-        self.apiKey = apiKey
+        self.client = client
         connect()
     }
 
@@ -130,7 +131,7 @@ final class MJPEGStreamer {
         configuration.timeoutIntervalForResource = .infinity
         let session = URLSession(configuration: configuration, delegate: delegate, delegateQueue: nil)
         var request = URLRequest(url: url)
-        if let apiKey { request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key") }
+        client?.authorize(&request)
         session.dataTask(with: request).resume()
         self.session = session
     }

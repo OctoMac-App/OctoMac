@@ -157,11 +157,11 @@ final class PrinterSession {
     static let temperatureWindow: TimeInterval = 30 * 60
     static let terminalLimit = 2000
 
-    init(instance: Instance, apiKey: String?) {
+    init(instance: Instance, apiKey: String?, access: ProxyAccess? = nil) {
         self.instance = instance
         let (urlSession, trust) = CertificateTrust.session(pinnedFingerprint: instance.trustedCertificate)
         self.trust = trust
-        client = OctoPrintClient(baseURL: instance.baseURL, apiKey: apiKey, session: urlSession)
+        client = OctoPrintClient(baseURL: instance.baseURL, apiKey: apiKey, session: urlSession, headers: access?.httpHeaders ?? [:])
         camera.pinnedFingerprint = instance.trustedCertificate
         push = PushClient(client: client, throttle: instance.pushThrottle)
         link = (apiKey?.isEmpty ?? true) ? .needsAPIKey : .connecting
@@ -236,7 +236,7 @@ final class PrinterSession {
     func chooseWebcam(_ cam: Webcam) {
         UserDefaults.standard.set(cam.name, forKey: "camera.\(instance.id.uuidString)")
         selectedWebcamName = cam.name
-        if !isDemoSession, let url = webcamStreamURL { camera.start(url: url, apiKey: client.apiKey) }
+        if !isDemoSession, let url = webcamStreamURL { camera.start(url: url, client: client) }
     }
 
     /// Changes when a camera is picked, so views showing the camera update.
@@ -434,7 +434,7 @@ final class PrinterSession {
     func refreshSettings() async {
         settings = await attempt { try await client.settings() } ?? settings
         if let url = webcamStreamURL {
-            camera.start(url: url, apiKey: client.apiKey)
+            camera.start(url: url, client: client)
         } else {
             camera.stop()
         }

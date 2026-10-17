@@ -158,7 +158,7 @@ public actor PushClient {
         let login = try await client.passiveLogin()
 
         var request = URLRequest(url: websocketURL)
-        if let apiKey = client.apiKey { request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key") }
+        client.authorize(&request)
         let socket = client.session.webSocketTask(with: request)
         self.socket = socket
         socket.resume()

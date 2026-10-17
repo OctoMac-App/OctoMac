@@ -93,7 +93,7 @@ extension OctoPrintClient {
     public func download(_ entry: FileEntry) async throws -> Data {
         guard let ref = entry.refs?.download, let url = resolve(ref) else { throw OctoPrintError.invalidResponse }
         var request = URLRequest(url: url)
-        if let apiKey { request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key") }
+        authorize(&request)
         return try await send(request).0
     }
 }

@@ -18,7 +18,7 @@ final class ThumbnailStore {
         if let task = inFlight[url] { return await task.value }
         let task = Task<NSImage?, Never> {
             var request = URLRequest(url: url)
-            if let apiKey = client.apiKey { request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key") }
+            client.authorize(&request)
             guard let (data, _) = try? await client.send(request) else { return nil }
             return NSImage(data: data)
         }

@@ -23,6 +23,9 @@ struct InstanceEditor: View {
     /// A certificate the printer presented that macOS doesn't trust, waiting for your decision.
     @State private var offeredCertificate: PresentedCertificate?
     @State private var discovery = PrinterDiscovery()
+    /// Sign-in for a reverse proxy in front of OctoPrint.
+    @State private var access = ProxyAccess()
+    @State private var showsSignIn = false
     @State private var resolving: String?
 
     enum Status: Equatable {
@@ -57,6 +60,7 @@ struct InstanceEditor: View {
                     if existing == nil { discoverySection }
                     serverSection
                     colourSection
+                    signInSection
                     accessSection
                     updatesSection
                 }
@@ -69,6 +73,7 @@ struct InstanceEditor: View {
         .frame(width: 560, height: 680)
         .background(Palette.extrusion)
         .onAppear(perform: load)
+        .onChange(of: address) { _, new in takeSignIn(from: new) }
         .onAppear { if existing == nil { discovery.start() } }
         .onDisappear { discovery.stop() }
         .sheet(isPresented: $confirmRemove) {
@@ -197,6 +202,67 @@ struct InstanceEditor: View {
                 ), supportsOpacity: false)
                 .labelsHidden()
                 .help("Pick any colour")
+            }
+        }
+    }
+
+    /// For OctoPrint reached through a reverse proxy (nginx, Caddy, Cloudflare Access and so on) that asks for its
+    /// own sign-in. Most people never need it, so it stays folded away unless it's in use.
+    private var signInSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Button {
+                withAnimation(.snappy(duration: 0.2)) { showsSignIn.toggle() }
+            } label: {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 11, weight: .bold))
+                        .rotationEffect(.degrees(showsSignIn ? 90 : 0))
+                        .foregroundStyle(Palette.faint)
+                    Text("Sign-in").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Text(access.isEmpty ? "Only if OctoPrint is behind a proxy that asks for its own sign-in" : "In use")
+                        .font(Typeface.caption)
+                        .foregroundStyle(access.isEmpty ? Palette.faint : Palette.ready)
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+
+            if showsSignIn {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("For printers you reach from outside your home through a reverse proxy. OctoMac sends these with every request to this address, and nowhere else.")
+                        .font(Typeface.caption).foregroundStyle(Palette.faint)
+                        .fixedSize(horizontal: false, vertical: true)
+                    HStack(spacing: 10) {
+                        TextField("", text: $access.user, prompt: Text("User name").foregroundStyle(Palette.faint))
+                            .plateField()
+                        SecureField("", text: $access.password, prompt: Text("Password").foregroundStyle(Palette.faint))
+                            .plateField()
+                    }
+                    ForEach($access.headers) { $header in
+                        HStack(spacing: 10) {
+                            TextField("", text: $header.name, prompt: Text("Header, e.g. CF-Access-Client-Id").foregroundStyle(Palette.faint))
+                                .plateField()
+                            SecureField("", text: $header.value, prompt: Text("Value").foregroundStyle(Palette.faint))
+                                .plateField()
+                            Button {
+                                access.headers.removeAll { $0.id == header.id }
+                            } label: {
+                                Image(systemName: "minus.circle.fill").foregroundStyle(Palette.faint)
+                            }
+                            .buttonStyle(.plain)
+                            .help("Remove this header")
+                        }
+                    }
+                    Button {
+                        access.headers.append(ProxyAccess.Header())
+                    } label: {
+                        Label("Add a header", systemImage: "plus")
+                    }
+                    .buttonStyle(.plateQuiet)
+                    .controlSize(.small)
+                }
+                .transition(.opacity)
             }
         }
     }
@@ -358,6 +424,21 @@ struct InstanceEditor: View {
         filamentHex = existing.filamentHex
         trustedCertificate = existing.trustedCertificate
         accessMode = apiKey.isEmpty ? .request : .paste
+        access = CredentialStore.proxyAccess(for: existing.id) ?? ProxyAccess()
+        showsSignIn = !access.isEmpty
+    }
+
+    /// An address typed as `https://user:password@host` moves its user name and password into Sign-in, so they're
+    /// stored with the API key rather than in the printer list.
+    private func takeSignIn(from text: String) {
+        guard text.contains("@"), text.contains("://"), var components = URLComponents(string: text),
+              let user = components.user, !user.isEmpty else { return }
+        access.user = user
+        access.password = components.password ?? ""
+        components.user = nil
+        components.password = nil
+        showsSignIn = true
+        if let clean = components.string { address = clean }
     }
 
     private func requestKey() {
@@ -366,7 +447,7 @@ struct InstanceEditor: View {
         let user = username
         work = Task {
             do {
-                apiKey = try await AppKeysAuthorizer(baseURL: url, session: trustingSession).requestKey(user: user) { dialog in
+                apiKey = try await AppKeysAuthorizer(baseURL: url, session: trustingSession, headers: access.httpHeaders).requestKey(user: user) { dialog in
                     await MainActor.run { _ = NSWorkspace.shared.open(dialog) }
                 }
                 status = .success("Access granted")
@@ -390,6 +471,8 @@ struct InstanceEditor: View {
             offeredCertificate = certificate
             status = .failure("This printer's HTTPS certificate isn't trusted yet.")
         } else {
+            if case OctoPrintError.signInRequired = error { withAnimation(.snappy(duration: 0.2)) { showsSignIn = true } }
+            if case OctoPrintError.notOctoPrint = error { withAnimation(.snappy(duration: 0.2)) { showsSignIn = true } }
             status = .failure(error.localizedDescription)
         }
     }
@@ -397,12 +480,15 @@ struct InstanceEditor: View {
     private func test() {
         guard let url else { return }
         status = .working("Connecting…")
-        let client = OctoPrintClient(baseURL: url, apiKey: apiKey, session: trustingSession)
+        let client = OctoPrintClient(baseURL: url, apiKey: apiKey, session: trustingSession, headers: access.httpHeaders)
         work = Task {
             do {
                 let version = try await client.version()
                 let user = try? await client.currentUser()
                 status = .success("OctoPrint \(version.server)" + (user?.name.map { ", signed in as \($0)" } ?? ""))
+            } catch OctoPrintError.unauthorized where apiKey.isEmpty {
+                // OctoPrint answered; it just wants a key, which is the next step.
+                status = .success("Reached OctoPrint. Now request access or paste a key.")
             } catch {
                 await failed(error, url: url)
             }
@@ -419,12 +505,12 @@ struct InstanceEditor: View {
             instance.pushThrottle = throttle
             instance.filamentHex = filamentHex
             instance.trustedCertificate = trustedCertificate
-            store.update(instance, apiKey: apiKey)
+            store.update(instance, apiKey: apiKey, access: access)
             onSave(instance.id)
         } else {
             let instance = Instance(name: trimmedName, baseURL: url, pushThrottle: throttle, filamentHex: filamentHex,
                                     trustedCertificate: trustedCertificate)
-            store.add(instance, apiKey: apiKey)
+            store.add(instance, apiKey: apiKey, access: access)
             onSave(instance.id)
         }
         dismiss()

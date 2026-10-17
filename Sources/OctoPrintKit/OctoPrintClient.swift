@@ -8,6 +8,10 @@ public enum OctoPrintError: LocalizedError, Sendable {
     case decoding(String)
     case appKeysUnsupported
     case appKeyDenied
+    /// Something in front of OctoPrint (a reverse proxy) wants a user name and password.
+    case signInRequired
+    /// The address answered with a web page rather than OctoPrint's API, for example a sign-in page.
+    case notOctoPrint
 
     public var errorDescription: String? {
         switch self {
@@ -25,6 +29,10 @@ public enum OctoPrintError: LocalizedError, Sendable {
             "This OctoPrint instance doesn't support the Application Keys workflow. Paste an API key instead."
         case .appKeyDenied:
             "The access request was denied or timed out."
+        case .signInRequired:
+            "This address asks for a user name and password before OctoPrint. Add them under Sign-in."
+        case .notOctoPrint:
+            "This address answered with a web page instead of OctoPrint, perhaps a sign-in page. Check the address, or add the headers it needs under Sign-in."
         }
     }
 }
@@ -41,11 +49,33 @@ public struct OctoPrintClient: Sendable {
     public let baseURL: URL
     public let apiKey: String?
     public let session: URLSession
+    /// Extra headers for a reverse proxy in front of OctoPrint, such as `Authorization` for a user name and
+    /// password, or Cloudflare Access service tokens.
+    public let headers: [String: String]
 
-    public init(baseURL: URL, apiKey: String?, session: URLSession = .shared) {
+    public init(baseURL: URL, apiKey: String?, session: URLSession = .shared, headers: [String: String] = [:]) {
         self.baseURL = baseURL
         self.apiKey = apiKey
         self.session = session
+        self.headers = headers
+    }
+
+    /// The same server and sign-in, with a different API key.
+    public func with(apiKey: String?) -> OctoPrintClient {
+        OctoPrintClient(baseURL: baseURL, apiKey: apiKey, session: session, headers: headers)
+    }
+
+    /// Adds the API key and any proxy headers, but only for requests to this printer's own host, so they never
+    /// reach a camera or other server elsewhere.
+    public func authorize(_ request: inout URLRequest) {
+        guard let host = request.url?.host(), host.caseInsensitiveCompare(baseURL.host() ?? "") == .orderedSame else { return }
+        for (name, value) in headers { request.setValue(value, forHTTPHeaderField: name) }
+        if let apiKey, !apiKey.isEmpty { request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key") }
+    }
+
+    /// An `Authorization` header value for HTTP basic authentication.
+    public static func basicAuthorization(user: String, password: String) -> String {
+        "Basic " + Data("\(user):\(password)".utf8).base64EncodedString()
     }
 
     public static let decoder = JSONDecoder()
@@ -74,7 +104,7 @@ public struct OctoPrintClient: Sendable {
         var request = URLRequest(url: url(path, query: query))
         request.httpMethod = method.rawValue
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-        if let apiKey, !apiKey.isEmpty { request.setValue(apiKey, forHTTPHeaderField: "X-Api-Key") }
+        authorize(&request)
         if let body {
             request.httpBody = body
             if let contentType { request.setValue(contentType, forHTTPHeaderField: "Content-Type") }
@@ -88,14 +118,7 @@ public struct OctoPrintClient: Sendable {
     public func send(_ request: URLRequest) async throws -> (Data, HTTPURLResponse) {
         let (data, response) = try await session.data(for: request)
         guard let http = response as? HTTPURLResponse else { throw OctoPrintError.invalidResponse }
-        guard (200..<300).contains(http.statusCode) else {
-            let message = Self.errorMessage(from: data)
-            switch http.statusCode {
-            case 401, 403: throw OctoPrintError.unauthorized(message: message)
-            case 409: throw OctoPrintError.conflict(message: message)
-            default: throw OctoPrintError.http(status: http.statusCode, message: message)
-            }
-        }
+        try Self.check(http, data: data)
         return (data, http)
     }
 
@@ -105,14 +128,7 @@ public struct OctoPrintClient: Sendable {
         let delegate = UploadProgressDelegate(onProgress: progress)
         let (data, response) = try await session.upload(for: request, from: body, delegate: delegate)
         guard let http = response as? HTTPURLResponse else { throw OctoPrintError.invalidResponse }
-        guard (200..<300).contains(http.statusCode) else {
-            let message = Self.errorMessage(from: data)
-            switch http.statusCode {
-            case 401, 403: throw OctoPrintError.unauthorized(message: message)
-            case 409: throw OctoPrintError.conflict(message: message)
-            default: throw OctoPrintError.http(status: http.statusCode, message: message)
-            }
-        }
+        try Self.check(http, data: data)
         return (data, http)
     }
 
@@ -147,10 +163,29 @@ public struct OctoPrintClient: Sendable {
 
     // MARK: Helpers
 
+    static func check(_ http: HTTPURLResponse, data: Data) throws {
+        // OctoPrint itself never asks for basic authentication; a proxy in front of it does.
+        if http.statusCode == 401, http.value(forHTTPHeaderField: "WWW-Authenticate")?.lowercased().hasPrefix("basic") == true {
+            throw OctoPrintError.signInRequired
+        }
+        guard (200..<300).contains(http.statusCode) else {
+            let message = errorMessage(from: data)
+            switch http.statusCode {
+            case 401, 403: throw OctoPrintError.unauthorized(message: message)
+            case 409: throw OctoPrintError.conflict(message: message)
+            default: throw OctoPrintError.http(status: http.statusCode, message: message)
+            }
+        }
+    }
+
     static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
         do {
             return try decoder.decode(T.self, from: data)
         } catch let error as DecodingError {
+            // A sign-in page (Cloudflare Access, Authelia and the like) instead of OctoPrint's JSON.
+            if data.prefix(256).contains(UInt8(ascii: "<")), String(decoding: data.prefix(256), as: UTF8.self).lowercased().contains("<html") {
+                throw OctoPrintError.notOctoPrint
+            }
             throw OctoPrintError.decoding(String(describing: error))
         }
     }
