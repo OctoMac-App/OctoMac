@@ -21,7 +21,16 @@ let package = Package(
         .target(name: "WidgetData"),
 
         // Desktop and Control Centre widgets, packaged as OctoMac.app/Contents/PlugIns/OctoMacWidgets.appex.
-        .executableTarget(name: "OctoMacWidgets", dependencies: ["WidgetData"]),
+        .executableTarget(
+            name: "OctoMacWidgets",
+            dependencies: ["WidgetData"],
+            swiftSettings: [.unsafeFlags(["-application-extension"])],
+            linkerSettings: [
+                // Start through Foundation's extension entry point, as Xcode does for app extensions. With a plain
+                // `main`, macOS's extension loader traps as soon as the widget system launches the extension.
+                .unsafeFlags(["-Xlinker", "-e", "-Xlinker", "_NSExtensionMain", "-Xlinker", "-application_extension"]),
+            ]
+        ),
 
         // The SwiftUI Mac app.
         .executableTarget(
