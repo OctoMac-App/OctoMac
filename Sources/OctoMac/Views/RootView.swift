@@ -114,15 +114,17 @@ struct RootView: View {
         guard !files.isEmpty, !choosingPrinter else { return }
         let online = store.instances.filter { store.sessions[$0.id]?.link == .online }
         if online.count == 1, store.instances.count == 1 {
-            upload(files, to: online[0].id)
+            upload(files, to: [online[0].id])
         } else {
             choosingPrinter = true
         }
     }
 
-    private func upload(_ files: [URL], to id: UUID) {
-        selection = id
-        store.sessions[id]?.upload(files)
+    /// Uploads to each printer and shows the first, where the upload's progress appears.
+    private func upload(_ files: [URL], to ids: [UUID]) {
+        guard let first = ids.first else { return }
+        selection = first
+        for id in ids { store.sessions[id]?.upload(files) }
         inbox.pending = []
     }
 }

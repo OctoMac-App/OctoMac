@@ -16,6 +16,7 @@ struct FilesPage: View {
     @State private var dropTargeted = false
     @State private var creatingFolder = false
     @State private var pendingDelete: FileEntry?
+    @State private var sending: FileEntry?
     @State private var selectedFile: FileEntry.ID?
     @State private var compactList = false
 
@@ -76,6 +77,7 @@ struct FilesPage: View {
                                         onOpened()
                                     },
                                     preview: { openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path)) },
+                                    send: { sending = file },
                                     delete: { pendingDelete = file })
                                 // Drag a file or folder onto a folder (or a folder name in the path above) to move it there.
                                 .draggable(FileDrag.payload(for: file, instance: session.instance.id)) {
@@ -144,6 +146,9 @@ struct FilesPage: View {
             NameSheet(title: "New folder", placeholder: "Folder name", confirmTitle: "Create folder") { name in
                 session.createFolder(name, in: folderPath)
             }
+        }
+        .sheet(item: $sending) { file in
+            SendToPrinterSheet(source: session, file: file, filament: filament)
         }
         .sheet(item: $pendingDelete) { file in
             ConfirmSheet(symbol: "trash", title: file.isFolder ? "Delete this folder?" : "Delete this file?",
@@ -234,8 +239,8 @@ private enum FileColumns {
     static let time: CGFloat = 100
     static let filament: CGFloat = 90
     static let size: CGFloat = 90
-    static let actions: CGFloat = 230
-    static let compactActions: CGFloat = 170
+    static let actions: CGFloat = 270
+    static let compactActions: CGFloat = 210
 }
 
 /// Folders first, then files, each in Finder-style alphabetical order ("part 2" before "part 10").
@@ -279,6 +284,7 @@ struct FileRow: View {
     let open: () -> Void
     let openFile: () -> Void
     let preview: () -> Void
+    let send: () -> Void
     let delete: () -> Void
     @State private var hovering = false
     @State private var previewing = false
@@ -333,6 +339,9 @@ struct FileRow: View {
                             .help("Show file info")
                     }
                     if file.isMachineCode {
+                        Button(action: send) { Image(systemName: "paperplane") }
+                            .buttonStyle(.plateQuiet)
+                            .help("Send to another printer")
                         Button("Open", action: openFile).buttonStyle(.plate(filament)).disabled(!canPrint)
                     }
                     Button(action: delete) { Image(systemName: "trash") }
@@ -362,6 +371,7 @@ struct FileRow: View {
                 if file.isMachineCode {
                     Button("Preview G-code", action: preview)
                     Button("Open", action: openFile).disabled(!canPrint)
+                    Button("Send to Another Printer…", action: send)
                 }
             }
             Divider()
