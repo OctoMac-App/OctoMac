@@ -15,6 +15,7 @@ All of this stays on your Mac:
 - **Your printers' names and addresses**, in OctoMac's preferences.
 - **Your API keys.** By default they're kept in `~/Library/Application Support/OctoMac/api-keys.dat`, readable only by your user account and encrypted with a key built into the app. Because OctoMac is open source, that built-in key is public, so this stops a casual look at the file rather than a determined attacker. If you'd prefer, turn on **Settings → Printers → Keep API keys in the Keychain** to store them in the macOS Keychain instead. A proxy sign-in (user name, password or headers) you add for a printer is stored the same way, alongside its API key, and is only ever sent to that printer's address.
 - **A small status file for the widgets** in `~/Library/Application Support/OctoMac/Widgets/`: printer names, states, progress, temperatures and a small camera picture. Only OctoMac's own widgets read it.
+- **A list of the prints OctoMac has seen finish or fail** in `~/Library/Application Support/OctoMac/History/`: file names, dates, how long they took and how much filament they used, for the statistics in the History tab. It's deleted when you remove the printer.
 - **Your choices**, such as console filters, highlights and notification settings.
 - **G-code previews and thumbnails** are kept in memory while OctoMac is open, and are not saved.
 

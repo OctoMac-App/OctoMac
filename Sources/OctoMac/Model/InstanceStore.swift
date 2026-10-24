@@ -97,6 +97,7 @@ final class InstanceStore {
         sessions[id] = nil
         instances.removeAll { $0.id == id }
         CredentialStore.remove(id)
+        PrintLog.remove(for: id)
         save()
     }
 

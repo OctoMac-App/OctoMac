@@ -16,7 +16,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **A clear overview.** See the webcam (switch between cameras if you have more than one, with a cinema mode, one-click snapshots, and a picture in picture window that floats above your other apps), the current print with time left and when it'll finish, and a temperature chart you can hover over and export as PNG or SVG.
 - **Print in a couple of clicks.** Browse your files as thumbnails, filter by name, open one to check its print time, filament and history, then press Print.
 - **Easy uploads and tidy folders.** Drag G-code onto the Files tab to upload it, or open a `.gcode` file from Finder (or drop it on OctoMac in the Dock) and pick a printer. Drag files onto folders to organise them. Send a file to another printer, or to several at once, and start it printing there if you like.
-- **History and timelapses.** The History tab lists what you've printed lately and whether it finished, and plays, saves or deletes OctoPrint's timelapse videos.
+- **History, statistics and timelapses.** The History tab shows how many prints finished, the hours and filament they took, and a month-by-month chart for one printer or all of them. It lists what you've printed lately and whether it finished, and plays, saves or deletes OctoPrint's timelapse videos.
 - **Your own buttons.** Custom controls set up in OctoPrint appear on the Move tab, including ones that ask for a value first.
 - **G-code preview.** See exactly what will be printed, layer by layer or as a 3D model you can spin around.
 - **Watch prints live.** While printing, the 3D preview follows along, with a little animated nozzle laying down the current layer.

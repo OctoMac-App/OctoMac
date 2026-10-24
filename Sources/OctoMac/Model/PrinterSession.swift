@@ -109,6 +109,8 @@ final class PrinterSession {
 
     // Files & system
     private(set) var files: [FileEntry] = []
+    /// Prints OctoMac has seen finish or fail on this printer (see `PrintLog`).
+    private(set) var printLog: [PrintRecord] = []
     private(set) var freeSpace: Int?
     private(set) var systemCommands: [SystemCommand] = []
     private(set) var settings: JSONValue?
@@ -165,6 +167,7 @@ final class PrinterSession {
         camera.pinnedFingerprint = instance.trustedCertificate
         push = PushClient(client: client, throttle: instance.pushThrottle)
         link = (apiKey?.isEmpty ?? true) ? .needsAPIKey : .connecting
+        printLog = PrintLog.records(for: instance.id)
     }
 
     // MARK: Derived
@@ -624,6 +627,24 @@ final class PrinterSession {
         }
     }
 
+    /// Remembers a finished or failed print for statistics.
+    private func log(_ event: ServerEvent) {
+        guard !isDemoSession, let path = event.payload["path"]?.stringValue else { return }
+        let file = Self.find(path, in: files)
+        let record = PrintRecord(path: path, date: .now, duration: event.payload["time"]?.doubleValue,
+                                 success: event.type == "PrintDone", filament: file?.gcodeAnalysis?.totalFilamentLength)
+        printLog.append(record)
+        PrintLog.append(record, for: instance.id)
+    }
+
+    private static func find(_ path: String, in entries: [FileEntry]) -> FileEntry? {
+        for entry in entries {
+            if entry.path == path { return entry }
+            if let found = find(path, in: entry.children ?? []) { return found }
+        }
+        return nil
+    }
+
     private func notify(_ kind: NotificationKind, _ title: String, _ body: String) {
         guard !isDemoSession else { return }
         // The camera picture is turned the same way as on screen.
@@ -659,6 +680,7 @@ final class PrinterSession {
 
     private func handle(_ event: ServerEvent) {
         notifyAbout(event)
+        if event.type == "PrintDone" || event.type == "PrintFailed" { log(event) }
         if let kind = ChartEvent.Kind(eventType: event.type) {
             chartEvents.append(ChartEvent(time: .now, kind: kind))
             let cutoff = Date.now.addingTimeInterval(-Self.temperatureWindow)
@@ -1012,6 +1034,15 @@ extension PrinterSession {
         if let list = try? filesJSON.decode(FileList.self) {
             files = list.files
             freeSpace = list.free
+        }
+        // A believable year of prints for the statistics, as many as the demo files' own counts.
+        var generator = SystemRandomNumberGenerator()
+        let total = PrintStatistics(files: files, log: []).total
+        printLog = (0..<max(total - 6, 0)).map { index in
+            let daysAgo = 10 + Double(index) * (340 / Double(max(total - 6, 1))) + Double.random(in: 0..<6, using: &generator)
+            return PrintRecord(path: "demo-\(index % 7).gcode", date: Date.now.addingTimeInterval(-daysAgo * 86400),
+                               duration: Double.random(in: 1800..<14400, using: &generator), success: index % 9 != 4,
+                               filament: Double.random(in: 1500..<12000, using: &generator))
         }
 
         let connectionJSON: JSONValue = [

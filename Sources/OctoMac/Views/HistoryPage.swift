@@ -2,7 +2,7 @@ import AVKit
 import OctoPrintKit
 import SwiftUI
 
-/// The History tab: what's been printed lately, and OctoPrint's timelapse videos.
+/// The History tab: statistics, what's been printed lately, and OctoPrint's timelapse videos.
 struct HistoryPage: View {
     let session: PrinterSession
     let filament: Color
@@ -11,14 +11,18 @@ struct HistoryPage: View {
     var body: some View {
         GeometryReader { geo in
             Group {
-                if geo.size.width >= 940 {
-                    HStack(alignment: .top, spacing: 20) {
-                        RecentPrintsPanel(session: session, filament: filament, openFile: openFile)
-                        TimelapsePanel(session: session, filament: filament)
+                if geo.size.width >= 940 && geo.size.height >= 560 {
+                    VStack(spacing: 20) {
+                        StatisticsPanel(session: session, filament: filament)
+                        HStack(alignment: .top, spacing: 20) {
+                            RecentPrintsPanel(session: session, filament: filament, openFile: openFile)
+                            TimelapsePanel(session: session, filament: filament)
+                        }
                     }
                 } else {
                     ScrollView {
                         VStack(spacing: 20) {
+                            StatisticsPanel(session: session, filament: filament)
                             RecentPrintsPanel(session: session, filament: filament, openFile: openFile).frame(height: 420)
                             TimelapsePanel(session: session, filament: filament).frame(height: 420)
                         }
