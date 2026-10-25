@@ -140,6 +140,12 @@ final class PrinterSession {
     private(set) var throttle: ThrottleState?
     private(set) var printerError: PrinterErrorInfo?
     private(set) var updates: [SoftwareComponent]?
+    /// Installed plugins, from the Plugin Manager.
+    private(set) var plugins: [InstalledPlugin]?
+    /// A plugin was switched on, off or uninstalled, and OctoPrint needs a restart to finish.
+    private(set) var pluginsNeedRestart = false
+    /// When an update was started; OctoPrint restarts once it's done.
+    private(set) var updatingSince: Date?
     private(set) var logs: [LogFile] = []
     /// Objects on the plate, from the Cancel Objects plugin, while a print runs.
     private(set) var printObjects: [CancelObject.Object] = []
@@ -356,6 +362,60 @@ final class PrinterSession {
         printerError = try? await client.lastPrinterError()
     }
 
+    func refreshPlugins() async {
+        guard !isDemoSession else { return }
+        if let list = try? await client.installedPlugins() {
+            plugins = list
+            pluginsNeedRestart = list.contains(where: \.pending)
+        }
+    }
+
+    func togglePlugin(_ plugin: InstalledPlugin) {
+        guard !isDemoSession else {
+            setPlugin(plugin.key) { $0.enabled.toggle(); $0.pending.toggle() }
+            pluginsNeedRestart = true
+            return
+        }
+        perform { [client, weak self] in
+            let change = try await client.togglePlugin(plugin.key)
+            await self?.applied(change, key: plugin.key)
+        }
+    }
+
+    func uninstallPlugin(_ plugin: InstalledPlugin) {
+        guard !isDemoSession else {
+            plugins?.removeAll { $0.key == plugin.key }
+            pluginsNeedRestart = true
+            return
+        }
+        perform { [client, weak self] in
+            let change = try await client.uninstallPlugin(plugin.key)
+            await self?.applied(change, key: plugin.key)
+            await self?.refreshPlugins()
+        }
+    }
+
+    private func applied(_ change: PluginChange, key: String) {
+        if let plugin = change.plugin { setPlugin(key) { $0 = plugin } }
+        if change.needsRestart { pluginsNeedRestart = true }
+    }
+
+    private func setPlugin(_ key: String, _ update: (inout InstalledPlugin) -> Void) {
+        guard let index = plugins?.firstIndex(where: { $0.key == key }) else { return }
+        update(&plugins![index])
+    }
+
+    /// Updates OctoPrint and/or plugins through the Software Update plugin. OctoPrint restarts when it's done.
+    func updateSoftware(_ targets: [String]) {
+        guard !targets.isEmpty, !flags.isJobActive else { return }
+        updatingSince = .now
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.updateSoftware(targets) }
+    }
+
+    /// Restarts OctoPrint with its own Restart command, when it has one.
+    var restartCommand: SystemCommand? { systemCommands.first { $0.source == "core" && $0.action == "restart" } }
+
     func refreshUpdates(force: Bool = false) async {
         guard !isDemoSession else { return }
         if force {
@@ -499,6 +559,15 @@ final class PrinterSession {
             if link != .online { link = .connecting }
         case .connected(let user):
             link = .online
+            if updatingSince != nil {
+                // Back after the update's restart.
+                updatingSince = nil
+                pluginsNeedRestart = false
+                Task {
+                    await refreshUpdates(force: true)
+                    await refreshPlugins()
+                }
+            }
             untrustedCertificate = nil
             self.user = user
             Task {
@@ -1148,6 +1217,22 @@ extension PrinterSession {
                 ]],
             ]])
         }
+        plugins = [
+            InstalledPlugin(key: "bedlevelvisualizer", name: "Bed Visualizer", version: "1.1.2", author: "jneilliii",
+                            summary: "Displays 3D mesh of bed topography report.", homepage: URL(string: "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer")),
+            InstalledPlugin(key: "cancelobject", name: "Cancel Objects", version: "0.5.0", author: "Paul Paukstelis",
+                            summary: "Cancel individual objects while printing.", enabled: false),
+            InstalledPlugin(key: "DisplayLayerProgress", name: "DisplayLayerProgress", version: "1.28.0", author: "Olli",
+                            summary: "Shows the current layer and height while printing."),
+            InstalledPlugin(key: "PrintTimeGenius", name: "Print Time Genius", version: "2.3.3", author: "Eyal",
+                            summary: "Better print time estimation."),
+            InstalledPlugin(key: "prusaslicerthumbnails", name: "Slicer Thumbnails", version: "1.2.4", author: "jneilliii",
+                            summary: "Shows the thumbnails slicers embed in G-code."),
+            InstalledPlugin(key: "pi_support", name: "Pi Support Plugin", version: "2024.10.0", author: "Gina Häußge",
+                            summary: "Raspberry Pi health and throttling.", bundled: true, managable: false),
+            InstalledPlugin(key: "softwareupdate", name: "Software Update", version: "1.10.3", author: "Gina Häußge",
+                            summary: "Updates OctoPrint and its plugins.", bundled: true, managable: false),
+        ]
         updates = [
             SoftwareComponent(id: "octoprint", name: "OctoPrint", installed: "1.10.3", available: printing ? "1.10.3" : "1.11.0",
                               updateAvailable: !printing, updatePossible: true),

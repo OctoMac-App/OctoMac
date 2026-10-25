@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import OctoPrintKit
 
@@ -145,5 +146,21 @@ struct PrintTimeTests {
         let history = try file(nil, average: 3600)
         #expect(history.expectedPrintTime?.source == .pastPrints)
         #expect(try file(nil).expectedPrintTime == nil)
+    }
+}
+
+struct PluginManagerTests {
+    @Test func readsInstalledPlugins() throws {
+        let json: JSONValue = try JSONDecoder().decode(JSONValue.self, from: Data("""
+        {"key": "cancelobject", "name": "Cancel Objects", "version": "0.5.0", "author": "Paul", "description": "Cancel parts",
+         "url": "https://github.com/paukstelis/Octoprint-Cancelobject", "enabled": false, "bundled": false, "managable": true,
+         "pending_enable": true, "safe_mode_victim": false}
+        """.utf8))
+        let plugin = try #require(InstalledPlugin(json))
+        #expect(plugin.key == "cancelobject")
+        #expect(plugin.summary == "Cancel parts")
+        #expect(!plugin.enabled)
+        #expect(plugin.pending)
+        #expect(plugin.homepage?.host() == "github.com")
     }
 }

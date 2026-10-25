@@ -62,6 +62,7 @@ struct UpdatesPanel: View {
     let updates: [SoftwareComponent]
     @State private var checking = false
     @State private var showAll = false
+    @State private var confirmingUpdate = false
 
     private var pending: [SoftwareComponent] { updates.filter(\.updateAvailable) }
 
@@ -113,13 +114,21 @@ struct UpdatesPanel: View {
                     .buttonStyle(.plateQuiet)
                     .disabled(checking)
                     if !pending.isEmpty {
-                        Button { NSWorkspace.shared.open(session.instance.baseURL) } label: { Label("Update in OctoPrint", systemImage: "arrow.up.right") }
-                            .buttonStyle(.plate)
-                            .help("Opens OctoPrint, which shows its update prompt")
+                        Button { confirmingUpdate = true } label: {
+                            Label(pending.count == 1 ? "Update" : "Update all", systemImage: "arrow.down.circle")
+                        }
+                        .buttonStyle(.plate)
+                        .disabled(session.flags.isJobActive || session.updatingSince != nil || !pending.allSatisfy(\.updatePossible))
+                        .help(session.flags.isJobActive ? "Wait until the print finishes" : "Install the updates; OctoPrint restarts afterwards")
                     }
                 }
                 .controlSize(.small)
             }
+        }
+        .sheet(isPresented: $confirmingUpdate) {
+            ConfirmSheet(symbol: "arrow.down.circle", tint: Palette.warm, title: pending.count == 1 ? "Update \(pending[0].name)?" : "Install \(pending.count) updates?",
+                         message: "OctoPrint downloads the updates, installs them and restarts. The printer stays connected, but OctoMac loses touch with it for a minute or two.",
+                         confirmTitle: "Update", onConfirm: { session.updateSoftware(pending.map(\.id)) })
         }
     }
 }

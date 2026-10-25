@@ -28,6 +28,7 @@ struct MachinePage: View {
                                 serverPanel
                                 if let pi = session.pi { PiHealthPanel(session: session, pi: pi) }
                                 if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
+                                if let plugins = session.plugins { PluginsPanel(session: session, plugins: plugins) }
                                 powerPanel
                             }
                         }
@@ -39,6 +40,7 @@ struct MachinePage: View {
                         connectionPanel
                         powerPanel
                         if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
+                        if let plugins = session.plugins { PluginsPanel(session: session, plugins: plugins) }
                         LogsPanel(session: session)
                     }
                 }
@@ -48,7 +50,8 @@ struct MachinePage: View {
             async let updates: Void = session.refreshUpdates()
             async let logs: Void = session.refreshLogs()
             async let health: Void = session.refreshHealth()
-            _ = await (updates, logs, health)
+            async let plugins: Void = session.refreshPlugins()
+            _ = await (updates, logs, health, plugins)
         }
         .onAppear(perform: syncConnection)
         .onChange(of: session.connection) { syncConnection() }
