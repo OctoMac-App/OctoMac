@@ -7,3 +7,6 @@ build/
 dist/
 # Your own signing details for scripts/release.sh. Never commit this.
 scripts/release.local
+
+# Local helper to resume the Claude Code conversation for this repository.
+claude.sh
