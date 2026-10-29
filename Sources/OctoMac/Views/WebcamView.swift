@@ -79,6 +79,11 @@ final class MJPEGStreamer {
     /// The most recent frame exactly as the camera sent it (JPEG), for saving snapshots.
     var latestFrameData: Data? { latest }
 
+    /// The last few seconds of frames, so a clip can start from just before you asked for it. Kept as the camera's
+    /// own JPEGs, at most 15 a second, so it costs little memory.
+    @ObservationIgnored private(set) var recentFrames: [(time: TimeInterval, jpeg: Data)] = []
+    static let recentWindow: TimeInterval = 12
+
     /// Shows a fixed picture instead of a stream (demo mode).
     func showStill(_ jpeg: Data) {
         latest = jpeg
@@ -140,6 +145,13 @@ final class MJPEGStreamer {
         guard generation == self.generation else { return }
         latest = data
         failure = nil
+        let now = ProcessInfo.processInfo.systemUptime
+        if now - (recentFrames.last?.time ?? 0) >= 1.0 / 15 {
+            recentFrames.append((now, data))
+            if let first = recentFrames.first, now - first.time > Self.recentWindow {
+                recentFrames.removeAll { now - $0.time > Self.recentWindow }
+            }
+        }
         if isVisible || frame == nil, let image = NSImage(data: data) { frame = image }
     }
 
@@ -248,6 +260,7 @@ enum Snapshot {
 struct SnapshotMenu: View {
     let session: PrinterSession
     @State private var copied = false
+    @State private var recordingClip = false
 
     var body: some View {
         HStack(spacing: 6) {
@@ -260,8 +273,9 @@ struct SnapshotMenu: View {
             AppMenu(items: menuItems) {
                 QuietMenuLabel(symbol: "camera", onDark: true)
             }
-            .help(session.webcams.count > 1 ? "Switch camera, or save or copy the current frame" : "Save or copy the current camera frame")
+            .help(session.webcams.count > 1 ? "Switch camera, save or copy a snapshot, or record a clip" : "Save or copy a snapshot, or record a clip")
         }
+        .sheet(isPresented: $recordingClip) { ClipSheet(session: session) }
         .animation(.easeOut(duration: 0.2), value: copied)
     }
 
@@ -281,6 +295,8 @@ struct SnapshotMenu: View {
             .action("Save snapshot (PNG)…", symbol: "square.and.arrow.down") { save(png: true) },
             .divider,
             .action("Copy snapshot", symbol: "doc.on.doc") { copy() },
+            .divider,
+            .action("Record GIF or video…", symbol: "record.circle") { recordingClip = true },
         ]
         return items
     }
