@@ -352,7 +352,8 @@ struct JobPanel: View {
                             Label(warming, systemImage: "flame.fill")
                                 .font(Typeface.caption)
                                 .foregroundStyle(Palette.warm)
-                                .lineLimit(2)
+                                .lineLimit(3)
+                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
