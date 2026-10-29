@@ -37,6 +37,7 @@ No printer handy? Start OctoMac with `--demo`, or choose **Help → Try Demo Mod
 - `Sources/OctoPrintKit` is a standalone library for the OctoPrint API. Anything that talks to OctoPrint belongs there, with a test in `Tests/OctoPrintKitTests` where it makes sense.
 - Write for people, not programmers. Text in the app and the README should be plain, friendly English. Please don't use long dashes; a comma, colon or full stop reads better.
 - Run `swift test` and try your change in the app (demo mode is fine) before opening the pull request.
+- Every push and pull request is built and tested on GitHub Actions. One of the tests checks that **Help → Report a Problem…** never includes printer names, addresses, API keys, user names or file names, so please keep it passing.
 
 ## Releases
 
