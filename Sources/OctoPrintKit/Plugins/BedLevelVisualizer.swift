@@ -38,6 +38,8 @@ public enum BedLevelVisualizer {
         /// The G-code that probes the bed, one command per line.
         public var command: String
         public var saveMesh: Bool
+        /// "Show Prusa adjustments": someone has told the plugin this is a nine-screw Prusa bed (the nylock mod).
+        public var prusaAdjustments: Bool
         /// Seconds to wait before giving up on a measurement.
         public var timeout: Double
         public var stored: Mesh?
@@ -46,6 +48,7 @@ public enum BedLevelVisualizer {
             guard let plugin = settings?.value(at: "plugins", BedLevelVisualizer.pluginID) else { return nil }
             command = plugin["command"]?.stringValue ?? ""
             saveMesh = plugin["save_mesh"]?.boolValue ?? true
+            prusaAdjustments = plugin["show_prusa_adjustments"]?.boolValue ?? false
             timeout = plugin["timeout"]?.doubleValue ?? 1800
             let z = BedLevelVisualizer.grid(plugin["stored_mesh"])
             if z.isEmpty {

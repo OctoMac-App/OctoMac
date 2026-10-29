@@ -267,7 +267,7 @@ struct MachinePage: View {
     }
 
     /// "Prusa-Firmware 3.14.1+8237_74a577bc0 based on Marlin" reads better as "Prusa-Firmware 3.14.1".
-    static func shortFirmware(_ firmware: String) -> String {
+    nonisolated static func shortFirmware(_ firmware: String) -> String {
         var text = firmware
         if let range = text.range(of: " based on ") { text = String(text[..<range.lowerBound]) }
         if let plus = text.firstIndex(of: "+") { text = String(text[..<plus]) }

@@ -16974,6 +16974,100 @@
         }
       }
     },
+    "Back middle": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vzadu uprostřed"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cefn yn y canol"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bagerst i midten"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hinten Mitte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back middle"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back middle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trasera central"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takareunan keskikohta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arrière milieu"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retro centro"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bak midten"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midden achter"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Środkowy tylny"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traseira central"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bak mitten"
+          }
+        }
+      }
+    },
     "Back right": {
       "localizations": {
         "cs": {
@@ -18478,6 +18572,100 @@
         }
       }
     },
+    "Bed Visualizer is set up for Prusa adjustments": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer je nastavený pro úpravy na Prusa"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae Bed Visualizer wedi'i osod ar gyfer addasiadau Prusa"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer er sat op til Prusa-justeringer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer ist für Prusa-Anpassungen eingerichtet"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer is set up for Prusa adjustments"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer is set up for Prusa adjustments"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer está configurado para ajustes de Prusa"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer on asetettu Prusan säätöjä varten"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer est configuré pour les réglages Prusa"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer è configurato per le regolazioni Prusa"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer er satt opp for Prusa-justeringer"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer is ingesteld voor Prusa-aanpassingen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer jest skonfigurowany do regulacji Prusa"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Bed Visualizer está configurado para ajustes da Prusa"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed Visualizer är inställt för Prusa-justeringar"
+          }
+        }
+      }
+    },
     "Bed Visualizer needs the G-code that measures your bed.": {
       "localizations": {
         "cs": {
@@ -18662,6 +18850,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bed Visualizer skickar de här kommandona, ett per rad, och läser skrivarens svar. Börja med @BEDLEVELVISUALIZER, som säger åt pluginet att lyssna. De sparas i OctoPrint, så dess egen Bed Visualizer-sida använder dem också."
+          }
+        }
+      }
+    },
+    "Bed chosen from what OctoMac could see (%@). Change it if that's not right.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podložka zvolená podle toho, co OctoMac zjistil (%@). Pokud nesedí, změňte ji."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gwely wedi'i ddewis o'r hyn y gallai OctoMac ei weld (%@). Newidiwch e os nad yw'n iawn."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pladen er valgt ud fra det, OctoMac kunne se (%@). Skift den, hvis det ikke passer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bett anhand dessen gewählt, was OctoMac erkennen konnte (%@). Ändere es, falls das nicht stimmt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed chosen from what OctoMac could see (%@). Change it if that's not right."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed chosen from what OctoMac could see (%@). Change it if that's not right."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cama elegida según lo que OctoMac ha podido ver (%@). Cámbiala si no es correcta."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alusta valittiin sen perusteella, mitä OctoMac näki (%@). Vaihda se, jos se ei ole oikein."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plateau choisi d’après ce qu’OctoMac a pu voir (%@). Changez-le si ce n’est pas le bon."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Piatto scelto in base a quello che OctoMac ha potuto vedere (%@). Cambialo se non è giusto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Platen er valgt ut fra det OctoMac kunne se (%@). Endre den hvis det ikke stemmer."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bed gekozen op basis van wat OctoMac kon zien (%@). Pas het aan als dat niet klopt."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stół wybrany na podstawie tego, co OctoMac zobaczył (%@). Zmień go, jeśli się nie zgadza."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mesa escolhida com base no que o OctoMac conseguiu ver (%@). Altere-a se não estiver certa."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bädden valdes utifrån vad OctoMac kunde se (%@). Ändra den om det inte stämmer."
           }
         }
       }
@@ -20450,6 +20732,194 @@
           "stringUnit": {
             "state": "translated",
             "value": "Celsius"
+          }
+        }
+      }
+    },
+    "Centre": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Střed"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canol"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midten"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Center"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keskikohta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midten"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midden"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Środkowy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitten"
+          }
+        }
+      }
+    },
+    "Centre (usual)": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Střed (obvykle)"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canol (fel arfer)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midten (normalt)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitte (üblich)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Center (usual)"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre (usual)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro (lo habitual)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keskikohta (tavallisesti)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centre (en général)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro (di solito)"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midten (vanligvis)"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midden (meestal)"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Środkowy (zwykle)"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro (o habitual)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mitten (vanligtvis)"
           }
         }
       }
@@ -25527,100 +25997,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kopiera ögonblicksbild"
-          }
-        }
-      }
-    },
-    "Corner to leave alone": {
-      "localizations": {
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Roh, se kterým nehýbat"
-          }
-        },
-        "cy": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cornel i'w gadael fel y mae"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hjørne, der ikke skal røres"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ecke, die so bleibt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Corner to leave alone"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Corner to leave alone"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Esquina que no se toca"
-          }
-        },
-        "fi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kulma, johon ei kosketa"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Coin à ne pas toucher"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Angolo da non toccare"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hjørne som får stå"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hoek die blijft zoals hij is"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Róg, którego nie ruszasz"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Canto a não mexer"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hörn att lämna orört"
           }
         }
       }
@@ -36950,6 +37326,100 @@
         }
       }
     },
+    "Four corner screws": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Čtyři šrouby v rozích"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pedair sgriw yn y corneli"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fire hjørneskruer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vier Eckschrauben"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four corner screws"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Four corner screws"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuatro tornillos en las esquinas"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neljä kulmaruuvia"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quatre vis aux coins"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quattro viti agli angoli"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fire hjørneskruer"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vier hoekschroeven"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cztery śruby w narożnikach"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quatro parafusos nos cantos"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fyra hörnskruvar"
+          }
+        }
+      }
+    },
     "Frames per second": {
       "localizations": {
         "cs": {
@@ -37605,6 +38075,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fram vänster"
+          }
+        }
+      }
+    },
+    "Front middle": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vpředu uprostřed"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blaen yn y canol"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forrest i midten"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorne Mitte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Front middle"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Front middle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Delantera central"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Etureunan keskikohta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avant milieu"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fronte centro"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Foran midten"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midden voor"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Środkowy przedni"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frente central"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fram mitten"
           }
         }
       }
@@ -40940,6 +41504,100 @@
         }
       }
     },
+    "Highest to lowest point: %@ mm. Under 0.2 mm is good, and more can still print fine.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Od nejvyššího k nejnižšímu bodu: %@ mm. Pod 0,2 mm je dobré a i víc se dá dobře tisknout."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O'r pwynt uchaf i'r isaf: %@ mm. Mae llai na 0.2 mm yn dda, a gall mwy na hynny argraffu'n iawn o hyd."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fra højeste til laveste punkt: %@ mm. Under 0,2 mm er godt, og mere kan stadig give fine print."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Höchster bis niedrigster Punkt: %@ mm. Unter 0,2 mm ist gut, und auch mehr kann noch gut drucken."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highest to lowest point: %@ mm. Under 0.2 mm is good, and more can still print fine."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Highest to lowest point: %@ mm. Under 0.2 mm is good, and more can still print fine."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Del punto más alto al más bajo: %@ mm. Menos de 0,2 mm está bien, y con algo más se puede seguir imprimiendo bien."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Korkeimmasta matalimpaan kohtaan: %@ mm. Alle 0,2 mm on hyvä, ja suuremmallakin voi yhä tulostaa hyvin."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du point le plus haut au plus bas : %@ mm. Moins de 0,2 mm, c’est bien, et au-delà l’impression peut encore être bonne."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dal punto più alto al più basso: %@ mm. Sotto 0,2 mm va bene, e anche con qualcosa in più si può stampare bene."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fra høyeste til laveste punkt: %@ mm. Under 0,2 mm er bra, og mer kan fortsatt gi fine utskrifter."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoogste tot laagste punt: %@ mm. Onder 0,2 mm is goed, en met meer kun je vaak nog prima printen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Od najwyższego do najniższego punktu: %@ mm. Poniżej 0,2 mm jest dobrze, a przy większej wartości nadal można dobrze drukować."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do ponto mais alto ao mais baixo: %@ mm. Abaixo de 0,2 mm é bom, e acima disso ainda pode imprimir bem."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Högsta till lägsta punkt: %@ mm. Under 0,2 mm är bra, och mer kan ändå ge fina utskrifter."
+          }
+        }
+      }
+    },
     "Highlight": {
       "localizations": {
         "cs": {
@@ -42890,6 +43548,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Så mäter du bädden"
+          }
+        }
+      }
+    },
+    "If the first layer still looks thin or squashed on one side, adjust Bed level correction in the printer's Calibration menu. The first layer shows which way. If your bed has adjustable screws (the nylock mod), choose Nine screws below.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokud první vrstva na jedné straně pořád vypadá tenká nebo rozmáčknutá, upravte Korekci podložky v nabídce Kalibrace na tiskárně. První vrstva ukáže kterým směrem. Pokud má vaše podložka nastavitelné šrouby (nylock mod), vyberte níže Devět šroubů."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os yw'r haen gyntaf yn dal i edrych yn denau neu wedi'i gwasgu ar un ochr, addaswch Bed level correction yn newislen Calibration yr argraffydd. Mae'r haen gyntaf yn dangos i ba gyfeiriad. Os oes gan eich gwely sgriwiau y gallwch eu haddasu (y nylock mod), dewiswch Naw sgriw isod."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvis det første lag stadig ser tyndt eller mast ud i den ene side, så justér Bed level correction i printerens Calibration-menu. Det første lag viser hvilken vej. Hvis din plade har justerbare skruer (nylock-modden), så vælg Ni skruer nedenfor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn die erste Schicht auf einer Seite noch zu dünn oder gequetscht aussieht, passe „Bett-Level-Korrektur“ im Menü „Kalibrierung“ des Druckers an. Die erste Schicht zeigt, in welche Richtung. Hat dein Bett verstellbare Schrauben (der Nylock-Mod), wähle unten „Neun Schrauben“."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the first layer still looks thin or squashed on one side, adjust Bed level correction in the printer's Calibration menu. The first layer shows which way. If your bed has adjustable screws (the nylock mod), choose Nine screws below."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the first layer still looks thin or squashed on one side, adjust Bed level correction in the printer's Calibration menu. The first layer shows which way. If your bed has adjustable screws (the nylock mod), choose Nine screws below."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si la primera capa sigue viéndose fina o aplastada por un lado, ajusta Corrección de la cama en el menú Calibración de la impresora. La primera capa indica en qué sentido. Si tu cama tiene tornillos ajustables (el mod nylock), elige Nueve tornillos abajo."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jos ensimmäinen kerros näyttää yhä ohuelta tai litistyneeltä toiselta puolelta, säädä Bed level correction -asetusta tulostimen Calibration-valikossa. Ensimmäinen kerros näyttää, mihin suuntaan. Jos alustassasi on säädettävät ruuvit (nylock-muutos), valitse alta Yhdeksän ruuvia."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si la première couche paraît encore trop fine ou écrasée d’un côté, ajustez Correction niveau plateau dans le menu Calibration de l’imprimante. La première couche indique dans quel sens. Si votre plateau a des vis réglables (le mod nylock), choisissez Neuf vis ci-dessous."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se il primo layer sembra ancora sottile o schiacciato da un lato, regola Correzione livello piatto nel menu Calibrazione della stampante. Il primo layer mostra in quale direzione. Se il tuo piatto ha viti regolabili (la mod nylock), scegli Nove viti qui sotto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvis første lag fortsatt ser tynt eller klemt ut på én side, juster Bed level correction i Calibration-menyen på skriveren. Første lag viser hvilken vei. Hvis platen din har justerbare skruer (nylock-modden), velg Ni skruer nedenfor."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als de eerste laag aan één kant nog steeds te dun of geplet lijkt, pas dan Bed level correction aan in het Calibration-menu van de printer. De eerste laag laat zien welke kant op. Heeft je bed verstelbare schroeven (de nylock-mod), kies dan hieronder Negen schroeven."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeśli pierwsza warstwa wciąż wygląda na cienką lub zgniecioną z jednej strony, dostosuj Korekcję poziomu stołu w menu Kalibracja drukarki. Pierwsza warstwa pokaże, w którą stronę. Jeśli twój stół ma regulowane śruby (mod nylock), wybierz poniżej Dziewięć śrub."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se a primeira camada ainda parecer fina ou esmagada de um lado, ajuste Correção da mesa no menu Calibração da impressora. A primeira camada mostra em que sentido. Se a sua mesa tiver parafusos ajustáveis (a modificação nylock), escolha Nove parafusos abaixo."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Om första lagret fortfarande ser tunt eller tillplattat ut på ena sidan, justera Bed level correction i skrivarens Calibration-meny. Första lagret visar åt vilket håll. Om din bädd har justerbara skruvar (nylock-modden), välj Nio skruvar nedan."
           }
         }
       }
@@ -48013,6 +48765,100 @@
         }
       }
     },
+    "Left middle": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vlevo uprostřed"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canol ar y chwith"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midt til venstre"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Links Mitte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left middle"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Left middle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro izquierda"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vasemman reunan keskikohta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Milieu gauche"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro sinistra"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midten venstre"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Links midden"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lewy środkowy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro esquerda"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vänster mitten"
+          }
+        }
+      }
+    },
     "Length": {
       "localizations": {
         "cs": {
@@ -50175,96 +51021,96 @@
         }
       }
     },
-    "Lowers the corner": {
+    "Lowers the bed": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sníží roh"
+            "value": "Sníží podložku"
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yn gostwng y gornel"
+            "value": "Yn gostwng y gwely"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sænker hjørnet"
+            "value": "Sænker pladen"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Senkt die Ecke"
+            "value": "Senkt das Bett"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lowers the corner"
+            "value": "Lowers the bed"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lowers the corner"
+            "value": "Lowers the bed"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Baja la esquina"
+            "value": "Baja la cama"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Laskee kulmaa"
+            "value": "Laskee alustaa"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abaisse le coin"
+            "value": "Abaisse le plateau"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Abbassa l'angolo"
+            "value": "Abbassa il piatto"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Senker hjørnet"
+            "value": "Senker platen"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Laat de hoek zakken"
+            "value": "Laat het bed zakken"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Obniża róg"
+            "value": "Obniża stół"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Desce o canto"
+            "value": "Desce a mesa"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sänker hörnet"
+            "value": "Sänker bädden"
           }
         }
       }
@@ -55099,6 +55945,100 @@
         }
       }
     },
+    "Nine screws (nylock mod)": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Devět šroubů (nylock mod)"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Naw sgriw (nylock mod)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ni skruer (nylock-mod)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neun Schrauben (Nylock-Mod)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nine screws (nylock mod)"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nine screws (nylock mod)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nueve tornillos (mod nylock)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yhdeksän ruuvia (nylock-muutos)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neuf vis (mod nylock)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nove viti (mod nylock)"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ni skruer (nylock-mod)"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Negen schroeven (nylock-mod)"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dziewięć śrub (mod nylock)"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nove parafusos (mod nylock)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nio skruvar (nylock-mod)"
+          }
+        }
+      }
+    },
     "No": {
       "localizations": {
         "cs": {
@@ -56885,6 +57825,100 @@
         }
       }
     },
+    "No screws to turn": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Žádné šrouby k otáčení"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dim sgriwiau i'w troi"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen skruer at dreje"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Schrauben zum Drehen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No screws to turn"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No screws to turn"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin tornillos que girar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei käännettäviä ruuveja"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune vis à tourner"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna vite da girare"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen skruer å skru på"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen schroeven om te draaien"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak śrub do kręcenia"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem parafusos para rodar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga skruvar att vrida"
+          }
+        }
+      }
+    },
     "No temperature presets saved in OctoPrint.": {
       "localizations": {
         "cs": {
@@ -57727,6 +58761,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inget skrivs ut"
+          }
+        }
+      }
+    },
+    "Nothing to turn": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Není co otáčet"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dim byd i'w droi"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intet at dreje"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichts zu drehen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to turn"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to turn"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nada que girar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei mitään käännettävää"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à tourner"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niente da girare"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingenting å skru på"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niets om aan te draaien"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie ma czym kręcić"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nada para rodar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inget att vrida"
           }
         }
       }
@@ -77497,96 +78625,96 @@
         }
       }
     },
-    "Raises the corner": {
+    "Raises the bed": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zvedne roh"
+            "value": "Zvedne podložku"
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Yn codi'r gornel"
+            "value": "Yn codi'r gwely"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hæver hjørnet"
+            "value": "Hæver pladen"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hebt die Ecke an"
+            "value": "Hebt das Bett an"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Raises the corner"
+            "value": "Raises the bed"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Raises the corner"
+            "value": "Raises the bed"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sube la esquina"
+            "value": "Sube la cama"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nostaa kulmaa"
+            "value": "Nostaa alustaa"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Relève le coin"
+            "value": "Relève le plateau"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Alza l'angolo"
+            "value": "Alza il piatto"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hever hjørnet"
+            "value": "Hever platen"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Brengt de hoek omhoog"
+            "value": "Brengt het bed omhoog"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Podnosi róg"
+            "value": "Podnosi stół"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sobe o canto"
+            "value": "Sobe a mesa"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Höjer hörnet"
+            "value": "Höjer bädden"
           }
         }
       }
@@ -84020,6 +85148,100 @@
         }
       }
     },
+    "Right middle": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vpravo uprostřed"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Canol ar y dde"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midt til højre"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechts Mitte"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right middle"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Right middle"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro derecha"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oikean reunan keskikohta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Milieu droit"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro destra"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Midten høyre"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechts midden"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prawy środkowy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Centro direita"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Höger mitten"
+          }
+        }
+      }
+    },
     "Rose by up to": {
       "localizations": {
         "cs": {
@@ -86930,6 +88152,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Skruvgänga"
+          }
+        }
+      }
+    },
+    "Screw to leave alone": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Šroub, který necháte být"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sgriw i'w gadael"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skrue, der skal være i fred"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schraube, die bleibt, wie sie ist"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screw to leave alone"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Screw to leave alone"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tornillo que no se toca"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruuvi, johon ei kosketa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vis à ne pas toucher"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vite da lasciare così"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skrue som skal være i fred"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schroef om met rust te laten"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Śruba, której nie ruszasz"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parafuso a não mexer"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skruv att låta vara"
           }
         }
       }
@@ -100609,96 +101925,96 @@
         }
       }
     },
-    "The others are matched to this corner": {
+    "The others are matched to this one": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ostatní se srovnávají podle tohoto rohu"
+            "value": "Ostatní se srovnají podle něj"
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mae'r lleill yn cael eu cyfateb i'r gornel hon"
+            "value": "Mae'r lleill yn cael eu cydweddu â hon"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "De andre tilpasses til dette hjørne"
+            "value": "De andre afstemmes efter denne"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Die anderen werden an diese Ecke angeglichen"
+            "value": "Die anderen werden an diese angepasst"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The others are matched to this corner"
+            "value": "The others are matched to this one"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "The others are matched to this corner"
+            "value": "The others are matched to this one"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Las demás se ajustan a esta esquina"
+            "value": "Los demás se ajustan a este"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Muut sovitetaan tähän kulmaan"
+            "value": "Muut säädetään tämän mukaan"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les autres sont alignés sur ce coin"
+            "value": "Les autres sont réglées sur celle-ci"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gli altri vengono allineati a questo angolo"
+            "value": "Le altre vengono allineate a questa"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "De andre tilpasses dette hjørnet"
+            "value": "De andre tilpasses denne"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "De andere worden op deze hoek afgestemd"
+            "value": "De andere worden hierop afgestemd"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Pozostałe są wyrównywane do tego rogu"
+            "value": "Pozostałe są dopasowane do niej"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Os outros são acertados por este canto"
+            "value": "Os outros são acertados por este"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "De andra anpassas efter det här hörnet"
+            "value": "De andra anpassas efter den här"
           }
         }
       }
@@ -102865,96 +104181,96 @@
         }
       }
     },
-    "This bed mesh doesn't reach the corners, so there's nothing to go on for the screws.": {
+    "This bed mesh doesn't reach far enough across the bed, so there's nothing to go on for the screws.": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tato síť podložky nesahá do rohů, takže pro šrouby není z čeho vycházet."
+            "value": "Tato síť podložky nezasahuje dost daleko přes podložku, takže pro šrouby není z čeho vycházet."
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dydy'r rhwyll gwely hon ddim yn cyrraedd y corneli, felly does dim byd i weithio ohono ar gyfer y sgriwiau."
+            "value": "Dydy'r rhwyll gwely hon ddim yn cyrraedd yn ddigon pell ar draws y gwely, felly does dim i fynd arno ar gyfer y sgriwiau."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dette bed mesh når ikke ud i hjørnerne, så der er intet at gå ud fra for skruerne."
+            "value": "Dette bed mesh når ikke langt nok ud over pladen, så der er intet at gå ud fra for skruerne."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dieses Bett-Mesh reicht nicht bis in die Ecken, daher gibt es für die Schrauben keine Anhaltspunkte."
+            "value": "Dieses Bett-Mesh reicht nicht weit genug über das Bett, daher gibt es für die Schrauben keine Anhaltspunkte."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "This bed mesh doesn't reach the corners, so there's nothing to go on for the screws."
+            "value": "This bed mesh doesn't reach far enough across the bed, so there's nothing to go on for the screws."
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "This bed mesh doesn't reach the corners, so there's nothing to go on for the screws."
+            "value": "This bed mesh doesn't reach far enough across the bed, so there's nothing to go on for the screws."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Esta malla de la cama no llega a las esquinas, así que no hay datos para los tornillos."
+            "value": "Esta malla de la cama no llega lo bastante lejos sobre la cama, así que no hay datos para los tornillos."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tämä alustan verkko ei ulotu kulmiin, joten ruuveille ei ole mitään, mistä lähteä."
+            "value": "Tämä alustan verkko ei ulotu tarpeeksi pitkälle alustan yli, joten ruuveille ei ole mitään, mistä lähteä."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ce maillage du plateau n’atteint pas les coins, il n’y a donc rien pour régler les vis."
+            "value": "Ce maillage du plateau ne s’étend pas assez loin sur le plateau, il n’y a donc rien sur quoi se baser pour les vis."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Questa mesh del piatto non arriva agli angoli, quindi non c'è nulla su cui basarsi per le viti."
+            "value": "Questa mesh del piatto non si estende abbastanza sul piatto, quindi non ci sono dati su cui basarsi per le viti."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dette platenettet når ikke ut til hjørnene, så det finnes ikke noe å gå etter for skruene."
+            "value": "Dette platenettet når ikke langt nok over platen, så det er ikke noe å gå etter for skruene."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Deze bedmesh komt niet tot in de hoeken, dus er is niets om de schroeven op af te stemmen."
+            "value": "Deze bedmesh reikt niet ver genoeg over het bed, dus er is niets om de schroeven op te baseren."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ta siatka stołu nie sięga narożników, więc nie ma na czym oprzeć ustawienia śrub."
+            "value": "Ta siatka stołu nie sięga wystarczająco daleko na stole, więc nie ma na czym oprzeć ustawienia śrub."
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Esta malha da mesa não chega aos cantos, por isso não há nada em que basear os parafusos."
+            "value": "Esta malha da mesa não chega suficientemente longe na mesa, por isso não há base para os parafusos."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Det här bäddnätet når inte ut till hörnen, så det finns inget att gå på för skruvarna."
+            "value": "Det här bäddnätet når inte tillräckligt långt över bädden, så det finns inget att gå på för skruvarna."
           }
         }
       }
@@ -103425,6 +104741,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Den här skrivaren"
+          }
+        }
+      }
+    },
+    "This printer measures the bed before every print and allows for its shape, so it has no levelling screws to turn.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tato tiskárna před každým tiskem změří podložku a počítá s jejím tvarem, takže nemá žádné vyrovnávací šrouby k otáčení."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae'r argraffydd hwn yn mesur y gwely cyn pob argraffiad ac yn ystyried ei siâp, felly does ganddo ddim sgriwiau lefelu i'w troi."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denne printer måler pladen før hvert print og tager højde for dens form, så den har ingen nivelleringsskruer at dreje."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Drucker vermisst das Bett vor jedem Druck und gleicht seine Form aus, daher gibt es keine Nivellierschrauben zum Drehen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This printer measures the bed before every print and allows for its shape, so it has no leveling screws to turn."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This printer measures the bed before every print and allows for its shape, so it has no levelling screws to turn."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta impresora mide la cama antes de cada impresión y compensa su forma, así que no tiene tornillos de nivelación que girar."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tämä tulostin mittaa alustan ennen jokaista tulostusta ja ottaa sen muodon huomioon, joten siinä ei ole käännettäviä tasausruuveja."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette imprimante mesure le plateau avant chaque impression et tient compte de sa forme : elle n’a donc pas de vis de nivellement à tourner."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Questa stampante misura il piatto prima di ogni stampa e ne compensa la forma, quindi non ha viti di livellamento da girare."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denne skriveren måler platen før hver utskrift og tar hensyn til formen, så den har ingen nivelleringsskruer å skru på."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deze printer meet het bed voor elke print en houdt rekening met de vorm ervan, dus hij heeft geen nivelleerschroeven om aan te draaien."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta drukarka mierzy stół przed każdym wydrukiem i uwzględnia jego kształt, więc nie ma śrub poziomujących do kręcenia."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta impressora mede a mesa antes de cada impressão e compensa a sua forma, por isso não tem parafusos de nivelamento para rodar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den här skrivaren mäter bädden före varje utskrift och tar hänsyn till dess form, så den har inga nivelleringsskruvar att vrida."
           }
         }
       }
