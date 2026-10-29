@@ -8,10 +8,10 @@ struct PiHealthPanel: View {
     let pi: PiSupportInfo
 
     var body: some View {
-        StagePanel(title: "Raspberry Pi", detail: pi.octoPiVersion.map { "OctoPi \($0)" }) {
+        StagePanel(title: "Raspberry Pi", verbatimDetail: pi.octoPiVersion.map { "OctoPi \($0)" }) {
             VStack(alignment: .leading, spacing: 14) {
                 if let model = pi.model {
-                    Text(model).font(Typeface.subhead).foregroundStyle(Palette.paper)
+                    Text(verbatim: model).font(Typeface.subhead).foregroundStyle(Palette.paper)
                 }
                 if let throttle = session.throttle {
                     row("Power", symbol: "bolt.fill",
@@ -34,8 +34,8 @@ struct PiHealthPanel: View {
         }
     }
 
-    private func row(_ title: String, symbol: String, now: Bool, earlier: Bool,
-                     good: String, bad: String, past: String, advice: String) -> some View {
+    private func row(_ title: LocalizedStringKey, symbol: String, now: Bool, earlier: Bool,
+                     good: LocalizedStringKey, bad: LocalizedStringKey, past: LocalizedStringKey, advice: LocalizedStringKey) -> some View {
         let color = now ? Palette.hot : earlier ? Palette.warm : Palette.ready
         return HStack(alignment: .top, spacing: 12) {
             Image(systemName: symbol)
@@ -67,7 +67,7 @@ struct UpdatesPanel: View {
     private var pending: [SoftwareComponent] { updates.filter(\.updateAvailable) }
 
     var body: some View {
-        StagePanel(title: "Software", detail: pending.isEmpty ? "Up to date" : "\(pending.count) update\(pending.count == 1 ? "" : "s")") {
+        StagePanel(title: "Software", detail: pending.isEmpty ? "Up to date" : "\(pending.count) updates") {
             VStack(alignment: .leading, spacing: 12) {
                 if pending.isEmpty {
                     Label("OctoPrint and its \(updates.count - 1) plugins are up to date.", systemImage: "checkmark.circle.fill")
@@ -75,7 +75,7 @@ struct UpdatesPanel: View {
                 } else {
                     ForEach(pending) { component in
                         HStack {
-                            Text(component.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                            Text(verbatim: component.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
                             Spacer()
                             Text("\(component.installed) → \(component.available ?? "?")")
                                 .font(Typeface.number(13)).foregroundStyle(Palette.warm)
@@ -89,9 +89,9 @@ struct UpdatesPanel: View {
                     VStack(spacing: 6) {
                         ForEach(updates.filter { !$0.updateAvailable }) { component in
                             HStack {
-                                Text(component.name).font(Typeface.body).foregroundStyle(Palette.dust).lineLimit(1)
+                                Text(verbatim: component.name).font(Typeface.body).foregroundStyle(Palette.dust).lineLimit(1)
                                 Spacer()
-                                Text(component.installed).font(Typeface.number(12)).foregroundStyle(Palette.faint)
+                                Text(verbatim: component.installed).font(Typeface.number(12)).foregroundStyle(Palette.faint)
                             }
                         }
                     }
@@ -225,7 +225,7 @@ struct LogViewer: View {
             }
             ScrollViewReader { proxy in
                 ScrollView([.vertical, .horizontal]) {
-                    Text(text ?? "Loading…")
+                    (text.map { Text(verbatim: $0) } ?? Text("Loading…"))
                         .font(.system(size: 11, design: .monospaced))
                         .foregroundStyle(Palette.dust)
                         .textSelection(.enabled)
@@ -241,7 +241,7 @@ struct LogViewer: View {
         .frame(width: 900, height: 620)
         .background(Palette.extrusion)
         .task {
-            guard let data = await session.logContents(file) else { text = "Couldn't load this log."; return }
+            guard let data = await session.logContents(file) else { text = String(localized: "Couldn't load this log."); return }
             text = String(decoding: data.suffix(Self.tail), as: UTF8.self)
         }
     }

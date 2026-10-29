@@ -81,13 +81,14 @@ struct ConsolePage: View {
         return VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 12) {
                 Text("Printer conversation").font(Typeface.subhead).foregroundStyle(Palette.paper)
+                    .lineLimit(1).minimumScaleFactor(0.75).layoutPriority(1)
                 Spacer()
                 if visible.hidden > 0 {
                     Text("\(visible.hidden) of \(session.terminal.count) lines hidden")
                         .font(Typeface.caption).foregroundStyle(Palette.faint)
                 }
                 Button { choosingFilters.toggle() } label: {
-                    Label(activeCount == 0 ? "Hide messages" : "Hiding \(activeCount) kind\(activeCount == 1 ? "" : "s")",
+                    Label(activeCount == 0 ? "Hide messages" : "Hiding \(activeCount) kinds",
                           systemImage: "line.3.horizontal.decrease")
                 }
                 .buttonStyle(.plateQuiet)
@@ -149,7 +150,7 @@ struct ConsolePage: View {
                             frozen = nil
                             withAnimation(.snappy) { proxy.scrollTo("end", anchor: .bottom) }
                         } label: {
-                            Label(waiting > 0 ? "Paused while you read. \(waiting) new line\(waiting == 1 ? "" : "s"). Jump to latest" : "Paused while you read. Jump to latest",
+                            Label(waiting > 0 ? "Paused while you read. \(waiting) new lines. Jump to latest" : "Paused while you read. Jump to latest",
                                   systemImage: "arrow.down")
                                 .font(Typeface.text(12, .demibold))
                                 .foregroundStyle(Palette.graphite)
@@ -167,7 +168,7 @@ struct ConsolePage: View {
             }
 
             HStack(spacing: 10) {
-                Text("›").font(.system(size: 18, weight: .bold, design: .monospaced)).foregroundStyle(Palette.accent)
+                Text(verbatim: "›").font(.system(size: 18, weight: .bold, design: .monospaced)).foregroundStyle(Palette.accent)
                 TextField("Send a G-code command, e.g. M115", text: $command)
                     .textFieldStyle(.plain)
                     .font(.system(size: 14, design: .monospaced))
@@ -306,10 +307,20 @@ struct TerminalFilter: Identifiable {
     let regex: NSRegularExpression
     var id: String { name }
 
-    /// "Suppress temperature messages" reads as "Temperature messages" under a "Hide" heading.
+    /// "Suppress temperature messages" reads as "Temperature messages" under a "Hide" heading. OctoPrint's standard
+    /// filters are named in the app's language; filters you added in OctoPrint keep your own names.
     var label: String {
-        let trimmed = name.hasPrefix("Suppress ") ? String(name.dropFirst("Suppress ".count)) : name
-        return trimmed.prefix(1).uppercased() + trimmed.dropFirst()
+        switch name {
+        case "Suppress temperature messages": return String(localized: "Temperature messages")
+        case "Suppress SD status messages": return String(localized: "SD status messages")
+        case "Suppress position messages": return String(localized: "Position messages")
+        case "Suppress wait responses": return String(localized: "Wait responses")
+        case "Suppress processing responses": return String(localized: "Processing responses")
+        case "Suppress MMU chatter": return String(localized: "MMU chatter")
+        default:
+            let trimmed = name.hasPrefix("Suppress ") ? String(name.dropFirst("Suppress ".count)) : name
+            return trimmed.prefix(1).uppercased() + trimmed.dropFirst()
+        }
     }
 
     func matches(_ line: String) -> Bool {

@@ -37,6 +37,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Progress on the Dock icon.** A bar across OctoMac's Dock icon shows how far along the print that finishes soonest is.
 - **Keyboard shortcuts.** ⌥⌘1 to ⌥⌘9 jump between printers and ⌥⌘0 shows them all. ⌥⌘P pauses or resumes the print on screen, and ⌥⌘C pops its camera out into picture in picture. ⌘1 to ⌘6 switch tabs.
 - **Celsius or Fahrenheit.** Celsius by default; switch in Settings.
+- **In your language.** OctoMac speaks English (UK and US), Czech, Danish, Dutch, Finnish, French, German, Italian, Norwegian, Polish, Portuguese, Spanish and Swedish. It follows your Mac's language, falling back to UK English, and you can choose a different one in **Settings → General**.
 
 ![The 3D G-code preview following a live print](docs/screenshots/live-preview.png)
 

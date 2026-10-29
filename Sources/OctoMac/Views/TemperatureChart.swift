@@ -280,8 +280,8 @@ struct ChartExportMenu: View {
 
     var body: some View {
         AppMenu(items: [
-            .action("Export as PNG…", symbol: "photo") { export(.png) },
-            .action("Export as SVG…", symbol: "square.on.square") { export(.svg) },
+            .action(String(localized: "Export as PNG…"), symbol: "photo") { export(.png) },
+            .action(String(localized: "Export as SVG…"), symbol: "square.on.square") { export(.svg) },
         ]) {
             QuietMenuLabel(symbol: "square.and.arrow.down")
         }
@@ -295,11 +295,11 @@ struct ChartExportMenu: View {
         let title = session.instance.name
         let subtitle = ChartExport.subtitle(for: data)
         let stamp = Date.now.formatted(.iso8601.year().month().day()) + " " + Date.now.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-        let base = "\(title) temperatures \(stamp)".replacingOccurrences(of: ":", with: ".")
+        let base = String(localized: "\(title) temperatures \(stamp)").replacingOccurrences(of: ":", with: ".")
         switch format {
         case .png:
             guard let png = ChartExport.png(data: data, title: title, subtitle: subtitle) else {
-                session.error = ErrorBanner(message: "Couldn't render the chart as an image.")
+                session.error = ErrorBanner(message: String(localized: "Couldn't render the chart as an image."))
                 return
             }
             SaveFile.present(data: png, name: base + ".png", type: .png)
@@ -334,11 +334,11 @@ enum ChartExport {
     static let size = CGSize(width: 1600, height: 800)
 
     static func subtitle(for data: ChartData) -> String {
-        guard let range = data.timeRange else { return "Temperatures" }
+        guard let range = data.timeRange else { return String(localized: "Temperatures") }
         let day = range.upperBound.formatted(date: .abbreviated, time: .omitted)
         let from = range.lowerBound.formatted(date: .omitted, time: .shortened)
         let to = range.upperBound.formatted(date: .omitted, time: .shortened)
-        return "Temperatures, \(from) to \(to), \(day)"
+        return String(localized: "Temperatures, \(from) to \(to), \(day)")
     }
 
     /// Renders the same SwiftUI chart used on screen, at 2× for a crisp image.

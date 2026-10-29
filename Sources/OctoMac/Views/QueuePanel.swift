@@ -23,7 +23,7 @@ struct QueuePanel: View {
             VStack(spacing: 0) {
                 ForEach(Array(queue.enumerated()), id: \.element.id) { index, item in
                     HStack(spacing: 12) {
-                        Text("\(index + 1)").font(Typeface.number(14)).foregroundStyle(Palette.faint).frame(width: 20)
+                        Text(verbatim: "\(index + 1)").font(Typeface.number(14)).foregroundStyle(Palette.faint).frame(width: 20)
                         Text(item.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
                         Spacer(minLength: 8)
                         Button { session.moveInQueue(item.id, by: -1) } label: { Image(systemName: "chevron.up") }
@@ -45,7 +45,7 @@ struct QueuePanel: View {
         .padding(16)
         .machined(radius: 16)
         .sheet(isPresented: $startingNext) {
-            ConfirmSheet(symbol: "list.number", title: "Start \(queue.first?.name ?? "the next print")?",
+            ConfirmSheet(symbol: "list.number", title: queue.first.map { "Start \($0.name)?" } ?? "Start the next print?",
                          message: "Make sure the bed is clear first. The printer starts straight away.",
                          confirmTitle: "Start print", onConfirm: { session.startNextInQueue() })
         }

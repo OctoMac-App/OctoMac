@@ -132,11 +132,11 @@ public enum HeaterKind: Sendable, Hashable {
 
     public var displayName: String {
         switch self {
-        case .tool(let index): index == 0 ? "Hotend" : "Hotend \(index + 1)"
-        case .bed: "Bed"
-        case .chamber: "Chamber"
-        case .ambient: "Ambient"
-        case .probe: "Probe"
+        case .tool(let index): index == 0 ? String(localized: "Hotend") : String(localized: "Hotend \(index + 1)")
+        case .bed: String(localized: "Bed")
+        case .chamber: String(localized: "Chamber")
+        case .ambient: String(localized: "Ambient")
+        case .probe: String(localized: "Probe")
         case .other(let key): key.capitalized
         }
     }

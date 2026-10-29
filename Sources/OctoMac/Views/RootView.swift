@@ -20,12 +20,12 @@ enum StageTab: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .overview: "Overview"
-        case .move: "Move"
-        case .files: "Files"
-        case .history: "History"
-        case .console: "Console"
-        case .machine: "Machine"
+        case .overview: String(localized: "Overview")
+        case .move: String(localized: "Move")
+        case .files: String(localized: "Files")
+        case .history: String(localized: "History")
+        case .console: String(localized: "Console")
+        case .machine: String(localized: "Machine")
         }
     }
 }
@@ -282,8 +282,8 @@ struct PrinterTile: View {
     private func subtitle(_ mood: PrinterMood) -> String {
         switch mood {
         case .printing, .paused:
-            let left = session.progress?.printTimeLeft.map { "\(Fmt.duration($0)) left" }
-            return [session.state?.text, left].compactMap { $0 }.joined(separator: ", ")
+            let left = session.progress?.printTimeLeft.map { String(localized: "\(Fmt.duration($0)) left") }
+            return [session.state.map { OctoPrintWords.state($0.text) }, left].compactMap { $0 }.joined(separator: ", ")
         default:
             return session.stateText
         }

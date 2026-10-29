@@ -99,14 +99,14 @@ struct GCodePreviewWindow: View {
         }
         .frame(minWidth: 900, minHeight: 640)
         .preferredColorScheme(.dark)
-        .navigationTitle(file.map { SlicedName($0.displayName).title } ?? "G-code preview")
+        .navigationTitle(file.map { SlicedName($0.displayName).title } ?? String(localized: "G-code preview"))
     }
 
     @ViewBuilder
     private func content(session: PrinterSession, file: FileEntry) -> some View {
         switch loader.phase {
         case .downloading:
-            progress("Downloading \(file.size.map(Fmt.bytes) ?? "file")…", value: nil)
+            progress(file.size.map { "Downloading \(Fmt.bytes($0))…" } ?? "Downloading the file…", value: nil)
         case .reading(let fraction):
             progress("Reading G-code…", value: fraction)
         case .failed(let reason):
@@ -132,7 +132,7 @@ struct GCodePreviewWindow: View {
         return offset.flatMap(path.segmentIndex(atFileOffset:))
     }
 
-    private func progress(_ text: String, value: Double?) -> some View {
+    private func progress(_ text: LocalizedStringKey, value: Double?) -> some View {
         VStack(spacing: 14) {
             BrandMark().frame(width: 64, height: 64)
             Text(text).font(Typeface.subhead).foregroundStyle(Palette.paper)
@@ -145,7 +145,7 @@ struct GCodePreviewWindow: View {
         }
     }
 
-    private func message(_ text: String, symbol: String) -> some View {
+    private func message(_ text: LocalizedStringKey, symbol: String) -> some View {
         VStack(spacing: 10) {
             Image(systemName: symbol).font(.system(size: 30, weight: .light)).foregroundStyle(Palette.faint)
             Text(text).font(Typeface.body).foregroundStyle(Palette.dust).multilineTextAlignment(.center)
@@ -270,7 +270,7 @@ struct GCodeLayerViewer: View {
             CapsulePicker(selection: $mode, options: [(.layer, "Layer"), (.threeD, "3D")], compact: true)
                 .padding(.trailing, 8)
             Text("Layer \(layer + 1) of \(path.layers.count)").font(Typeface.number(17)).foregroundStyle(Palette.paper)
-            Text(String(format: "Z %.2f mm", current.z)).font(Typeface.number(17)).foregroundStyle(filament)
+            Text(verbatim: "Z " + Fmt.decimal(Double(current.z), 2) + " mm").font(Typeface.number(17)).foregroundStyle(filament)
         }
     }
 
@@ -468,7 +468,7 @@ struct GCodeLayerViewer: View {
         .machined(radius: 16)
     }
 
-    private func stepButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
+    private func stepButton(_ symbol: String, help: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol).font(.system(size: 12, weight: .bold))
                 .frame(width: 36, height: 32)
@@ -498,7 +498,7 @@ struct GCodeLayerViewer: View {
                                 .foregroundStyle(hidden.contains(feature) ? Palette.faint : Palette.paper)
                             Spacer()
                             if let count = counts[feature] {
-                                Text("\(count)").font(Typeface.number(12)).foregroundStyle(Palette.faint)
+                                Text(verbatim: "\(count)").font(Typeface.number(12)).foregroundStyle(Palette.faint)
                             }
                         }
                         .contentShape(Rectangle())
@@ -519,7 +519,7 @@ struct GCodeLayerViewer: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 fact("Layers", "\(path.layers.count)")
-                fact("Height", String(format: "%.2f mm", path.layers.last?.z ?? 0))
+                fact("Height", Fmt.decimal(Double(path.layers.last?.z ?? 0), 2) + " mm")
                 if let time = file.expectedPrintTime?.seconds { fact("Print time", Fmt.duration(time)) }
                 if let length = file.gcodeAnalysis?.totalFilamentLength { fact("Filament", Fmt.filament(length)) }
                 fact("Moves in this layer", "\(layerSegments.count.formatted())")
@@ -542,7 +542,7 @@ struct GCodeLayerViewer: View {
         if hidden.contains(feature) { hidden.remove(feature) } else { hidden.insert(feature) }
     }
 
-    private func fact(_ title: String, _ value: String) -> some View {
+    private func fact(_ title: LocalizedStringKey, _ value: String) -> some View {
         HStack {
             Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
             Spacer()
@@ -553,7 +553,7 @@ struct GCodeLayerViewer: View {
 
 /// A small "live" pill with a pulsing dot.
 struct LiveBadge: View {
-    let text: String
+    let text: LocalizedStringKey
     @State private var pulse = false
 
     var body: some View {

@@ -67,14 +67,14 @@ final class WidgetFeed {
             let tool = session?.heaters["tool0"], bed = session?.heaters["bed"]
             return WidgetSnapshot.Printer(
                 id: instance.id, name: instance.name, colorHex: instance.filamentHex, status: status,
-                statusText: status == .ready ? "Ready" : (session?.stateText ?? "Offline"),
+                statusText: status == .ready ? String(localized: "Ready") : (session?.stateText ?? String(localized: "Offline")),
                 job: active ? session?.job?.file.displayName.map { SlicedName($0).title } : nil,
                 progress: active ? session?.progress?.fraction : nil,
                 timeLeft: active ? session?.progress?.printTimeLeft : nil,
                 hotend: tool?.actual, hotendTarget: tool?.target, bed: bed?.actual, bedTarget: bed?.target,
                 hasCamera: FileManager.default.fileExists(atPath: WidgetSnapshot.cameraURL(for: instance.id).path))
         }
-        return WidgetSnapshot(written: .now, printers: printers, temperatureUnit: TemperatureUnit.current.rawValue)
+        return WidgetSnapshot(written: .now, printers: printers, temperatureUnit: TemperatureUnit.current.rawValue, language: AppLanguage.current)
     }
 
     /// Whether two snapshots would look the same in a widget: same states and jobs, same whole percentage,

@@ -5,8 +5,16 @@ import UserNotifications
 /// OctoMac's Settings window, in the same style as the main window.
 struct SettingsView: View {
     enum Page: String, CaseIterable, Identifiable {
-        case general = "General", printers = "Printers", notifications = "Notifications"
+        case general, printers, notifications
         var id: String { rawValue }
+
+        var title: LocalizedStringKey {
+            switch self {
+            case .general: "General"
+            case .printers: "Printers"
+            case .notifications: "Notifications"
+            }
+        }
     }
 
     @State private var page = Page.general
@@ -19,7 +27,7 @@ struct SettingsView: View {
                     Button {
                         withAnimation(.snappy(duration: 0.25)) { page = item }
                     } label: {
-                        Text(item.rawValue)
+                        Text(item.title)
                             .font(Typeface.text(13, .demibold))
                             .foregroundStyle(page == item ? Palette.graphite : Palette.dust)
                             .padding(.horizontal, 16)
@@ -214,7 +222,7 @@ struct MenuBarView: View {
 
     private var summary: String {
         let printing = store.instances.compactMap { store.sessions[$0.id] }.filter(\.flags.isJobActive).count
-        return printing == 0 ? "Nothing printing" : printing == 1 ? "1 printing" : "\(printing) printing"
+        return printing == 0 ? String(localized: "Nothing printing") : String(localized: "\(printing) printing")
     }
 
     private func open(_ instance: Instance?) {

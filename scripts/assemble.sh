@@ -27,6 +27,14 @@ cp "$WIDGETS_BIN" "$APPEX/Contents/MacOS/OctoMacWidgets"
 cp Support/Widgets/Info.plist "$APPEX/Contents/Info.plist"
 $PB -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $BUILD" "$APPEX/Contents/Info.plist"
 
+# Translations, from the String Catalog, for the app and its widgets.
+mkdir -p "$APPEX/Contents/Resources"
+for RESOURCES in "$APP/Contents/Resources" "$APPEX/Contents/Resources"; do
+  xcrun xcstringstool compile Support/Localization/Localizable.xcstrings --output-directory "$RESOURCES" >/dev/null
+done
+# The permission message and file kinds macOS shows on OctoMac's behalf.
+xcrun xcstringstool compile Support/Localization/InfoPlist.xcstrings --output-directory "$APP/Contents/Resources" >/dev/null
+
 # Sign from the inside out, each part with the hardened runtime; the widgets get their sandbox entitlements.
 FLAGS=(--force --options runtime --sign "$IDENTITY")
 [[ "${TIMESTAMP:-0}" == 1 && "$IDENTITY" != "-" ]] && FLAGS+=(--timestamp)

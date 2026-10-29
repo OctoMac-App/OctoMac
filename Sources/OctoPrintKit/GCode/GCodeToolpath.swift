@@ -9,22 +9,22 @@ public struct GCodeToolpath: Sendable {
 
         public var displayName: String {
             switch self {
-            case .outerWall: "Outer wall"
-            case .innerWall: "Inner wall"
-            case .overhangWall: "Overhang wall"
-            case .solidInfill: "Solid infill"
-            case .topSolidInfill: "Top surface"
-            case .sparseInfill: "Infill"
-            case .bridgeInfill: "Bridge"
-            case .gapFill: "Gap fill"
-            case .skirt: "Skirt / brim"
-            case .support: "Support"
-            case .supportInterface: "Support interface"
-            case .wipeTower: "Wipe tower"
-            case .ironing: "Ironing"
-            case .custom: "Custom"
-            case .other: "Other"
-            case .travel: "Travel"
+            case .outerWall: String(localized: "Outer wall", comment: "A kind of move in sliced G-code")
+            case .innerWall: String(localized: "Inner wall", comment: "A kind of move in sliced G-code")
+            case .overhangWall: String(localized: "Overhang wall", comment: "A kind of move in sliced G-code")
+            case .solidInfill: String(localized: "Solid infill", comment: "A kind of move in sliced G-code")
+            case .topSolidInfill: String(localized: "Top surface", comment: "A kind of move in sliced G-code")
+            case .sparseInfill: String(localized: "Infill", comment: "A kind of move in sliced G-code")
+            case .bridgeInfill: String(localized: "Bridge", comment: "A kind of move in sliced G-code")
+            case .gapFill: String(localized: "Gap fill", comment: "A kind of move in sliced G-code")
+            case .skirt: String(localized: "Skirt / brim", comment: "A kind of move in sliced G-code")
+            case .support: String(localized: "Support", comment: "A kind of move in sliced G-code")
+            case .supportInterface: String(localized: "Support interface", comment: "A kind of move in sliced G-code")
+            case .wipeTower: String(localized: "Wipe tower", comment: "A kind of move in sliced G-code")
+            case .ironing: String(localized: "Ironing", comment: "A kind of move in sliced G-code")
+            case .custom: String(localized: "Custom", comment: "A kind of move in sliced G-code")
+            case .other: String(localized: "Other", comment: "A kind of move in sliced G-code")
+            case .travel: String(localized: "Travel", comment: "A kind of move in sliced G-code")
             }
         }
 

@@ -3,7 +3,7 @@ import SwiftUI
 /// A choice between a few options, in the same capsule as the tab bar: the chosen one slides along in green.
 struct CapsulePicker<Value: Hashable>: View {
     @Binding var selection: Value
-    let options: [(value: Value, title: String)]
+    let options: [(value: Value, title: LocalizedStringKey)]
     var compact = false
     @Namespace private var carriage
 

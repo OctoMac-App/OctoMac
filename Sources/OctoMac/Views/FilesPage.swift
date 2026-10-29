@@ -64,7 +64,7 @@ struct FilesPage: View {
                 ScrollView {
                     LazyVStack(spacing: 2) {
                         if !folder.isEmpty && search.isEmpty {
-                            UpRow(parentName: folder.count > 1 ? folder[folder.count - 2] : "All files", tint: filament) { goUp() }
+                            UpRow(parentName: folder.count > 1 ? folder[folder.count - 2] : String(localized: "All files"), tint: filament) { goUp() }
                                 .modifier(FolderDropTarget(enabled: true, folderPath: folder.dropLast().joined(separator: "/"), tint: filament) { payload in
                                     moveDropped(payload, to: folder.dropLast().joined(separator: "/"))
                                 })
@@ -102,7 +102,7 @@ struct FilesPage: View {
                     Button("Upload files…") { importing = true }
                     if !folder.isEmpty {
                         Divider()
-                        Button("Back to \(folder.count > 1 ? folder[folder.count - 2] : "All files")") { goUp() }
+                        Button("Back to \(folder.count > 1 ? folder[folder.count - 2] : String(localized: "All files"))") { goUp() }
                     }
                 }
                 .overlay {
@@ -134,7 +134,7 @@ struct FilesPage: View {
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .strokeBorder(Palette.accent, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
                         .background(RoundedRectangle(cornerRadius: 20).fill(Palette.accent.opacity(0.08)))
-                        .overlay(Label("Drop to upload to \(folder.last ?? "All files")", systemImage: "arrow.up.doc")
+                        .overlay(Label("Drop to upload to \(folder.last ?? String(localized: "All files"))", systemImage: "arrow.up.doc")
                             .font(Typeface.subhead).foregroundStyle(Palette.accent))
                         .allowsHitTesting(false)
                 }
@@ -192,7 +192,7 @@ struct FilesPage: View {
                 Button("", action: goUp).keyboardShortcut("[", modifiers: .command).opacity(0).allowsHitTesting(false)
             }
             .padding(.trailing, 4)
-            crumb("All files", depth: 0)
+            crumb(String(localized: "All files"), depth: 0)
             ForEach(Array(folder.enumerated()), id: \.offset) { index, name in
                 Image(systemName: "chevron.right").font(.system(size: 10, weight: .bold)).foregroundStyle(Palette.faint)
                 crumb(name, depth: index + 1)
@@ -335,7 +335,7 @@ struct FileRow: View {
             number(file.isFolder ? "" : Fmt.duration(file.expectedPrintTime?.seconds), width: FileColumns.time)
             if !compact {
                 number(file.isFolder ? "" : Fmt.filament(file.gcodeAnalysis?.totalFilamentLength), width: FileColumns.filament)
-                number(file.isFolder ? "\(file.children?.count ?? 0) items" : file.size.map(Fmt.bytes) ?? "", width: FileColumns.size)
+                number(file.isFolder ? String(localized: "\(file.children?.count ?? 0) items") : file.size.map(Fmt.bytes) ?? "", width: FileColumns.size)
             }
 
             HStack(spacing: 8) {

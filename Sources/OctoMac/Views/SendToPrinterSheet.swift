@@ -37,7 +37,7 @@ struct SendToPrinterSheet: View {
                 Text("Add another printer first, then you can send files between them.")
                     .font(Typeface.body).foregroundStyle(Palette.dust)
             } else {
-                Text(phase == .choosing ? "Choose one or more printers. The file goes to the top level of their files." : statusLine)
+                (phase == .choosing ? Text("Choose one or more printers. The file goes to the top level of their files.") : Text(verbatim: statusLine))
                     .font(Typeface.body).foregroundStyle(Palette.dust)
                 VStack(spacing: 8) {
                     ForEach(targets) { instance in row(instance) }
@@ -79,9 +79,9 @@ struct SendToPrinterSheet: View {
     private var statusLine: String {
         switch phase {
         case .choosing: ""
-        case .fetching: "Fetching the file from \(source.instance.name)…"
-        case .sending: "Sending…"
-        case .finished: failures.isEmpty ? "Sent." : "Some printers didn't get the file."
+        case .fetching: String(localized: "Fetching the file from \(source.instance.name)…")
+        case .sending: String(localized: "Sending…")
+        case .finished: failures.isEmpty ? String(localized: "Sent.") : String(localized: "Some printers didn't get the file.")
         }
     }
 

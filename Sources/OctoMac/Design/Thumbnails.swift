@@ -150,9 +150,9 @@ struct FilePreview: View {
                 section("File") {
                     row("Name", file.name, selectable: true)
                     row("Folder", folder)
-                    row("Stored on", file.origin == .sdcard ? "Printer's SD card" : "OctoPrint (Raspberry Pi)")
+                    row("Stored on", file.origin == .sdcard ? String(localized: "Printer's SD card") : String(localized: "OctoPrint (Raspberry Pi)"))
                     if let size = file.size {
-                        row("Size", "\(Fmt.bytes(size))  (\(size.formatted()) bytes)")
+                        row("Size", String(localized: "\(Fmt.bytes(size))  (\(size.formatted()) bytes)"))
                     }
                     if let date = file.date {
                         row("Added", "\(date.formatted(date: .long, time: .shortened))  (\(date.formatted(.relative(presentation: .named))))")
@@ -168,8 +168,8 @@ struct FilePreview: View {
                         }
                         ForEach(analysis.filament.keys.sorted(), id: \.self) { tool in
                             let usage = analysis.filament[tool]
-                            row(analysis.filament.count > 1 ? "Filament (\(HeaterKind(key: tool).displayName))" : "Filament",
-                                [usage?.length.map { Fmt.filament($0) }, usage?.volume.map { String(format: "%.1f cm³", $0) }]
+                            row(analysis.filament.count > 1 ? "Filament (\(HeaterKind(key: tool).displayName))" : "Filament" as LocalizedStringKey,
+                                [usage?.length.map { Fmt.filament($0) }, usage?.volume.map { Fmt.decimal($0, 1) + " cm³" }]
                                     .compactMap { $0 }.joined(separator: ", "))
                         }
                         if let d = analysis.dimensions, let w = d.width, let dp = d.depth, let h = d.height {
@@ -187,9 +187,10 @@ struct FilePreview: View {
                         }
                         if let last = prints.last {
                             let when = last.date.map { Date(timeIntervalSince1970: $0).formatted(date: .abbreviated, time: .shortened) } ?? "–"
-                            let result = last.success.map { $0 ? "finished" : "failed or stopped" } ?? "unknown result"
-                            let duration = last.printTime.map { ", took \(Fmt.duration($0))" } ?? ""
-                            row("Last print", "\(when), \(result)\(duration)")
+                            let result = last.success.map { $0 ? String(localized: "finished") : String(localized: "failed or stopped") }
+                                ?? String(localized: "unknown result")
+                            row("Last print", last.printTime.map { String(localized: "\(when), \(result), took \(Fmt.duration($0))") }
+                                ?? String(localized: "\(when), \(result)"))
                         }
                     }
                 }
@@ -229,11 +230,11 @@ struct FilePreview: View {
 
     private var folder: String {
         let parts = file.path.split(separator: "/").dropLast()
-        return parts.isEmpty ? "Top level" : parts.joined(separator: " / ")
+        return parts.isEmpty ? String(localized: "Top level") : parts.joined(separator: " / ")
     }
 
     @ViewBuilder
-    private func section<Content: View>(_ title: String, @ViewBuilder _ content: () -> Content) -> some View {
+    private func section<Content: View>(_ title: LocalizedStringKey, @ViewBuilder _ content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
             VStack(alignment: .leading, spacing: 7) { content() }
@@ -243,7 +244,7 @@ struct FilePreview: View {
         }
     }
 
-    private func row(_ label: String, _ value: String, selectable: Bool = false, monospaced: Bool = false) -> some View {
+    private func row(_ label: LocalizedStringKey, _ value: String, selectable: Bool = false, monospaced: Bool = false) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 12) {
             Text(label).font(Typeface.caption).foregroundStyle(Palette.faint).frame(width: 110, alignment: .leading)
             Group {
@@ -265,7 +266,7 @@ struct FilePreview: View {
                 let type = UTType(filenameExtension: (file.name as NSString).pathExtension) ?? .data
                 SaveFile.present(data: data, name: file.name, type: type)
             } catch {
-                downloadError = "Couldn't download: \(error.localizedDescription)"
+                downloadError = String(localized: "Couldn't download: \(error.localizedDescription)")
             }
             downloading = false
         }

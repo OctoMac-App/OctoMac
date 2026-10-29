@@ -34,7 +34,7 @@ struct ClipSheet: View {
             switch recorder.phase {
             case .idle: choose
             case .recording(let progress, let secondsLeft): recording(progress: progress, secondsLeft: secondsLeft)
-            case .encoding: working("Making the \(settings.format == .gif ? "GIF" : "video")…")
+            case .encoding: working(settings.format == .gif ? "Making the GIF…" : "Making the video…")
             case .done(let url, let bytes): result(url: url, bytes: bytes)
             case .failed(let message):
                 Label(message, systemImage: "exclamationmark.triangle.fill").font(Typeface.body).foregroundStyle(Palette.hot)
@@ -59,7 +59,7 @@ struct ClipSheet: View {
             if mode == ClipSettings.Mode.next.rawValue {
                 row("Length") { CapsulePicker(selection: $seconds, options: [(5, "5 seconds"), (10, "10 seconds"), (30, "30 seconds")], compact: true) }
             } else if mode == ClipSettings.Mode.timelapse.rawValue {
-                row("Over") { CapsulePicker(selection: $timelapseMinutes, options: [(1, "1 minute"), (5, "5 minutes"), (15, "15 minutes"), (60, "1 hour")], compact: true) }
+                row("Duration") { CapsulePicker(selection: $timelapseMinutes, options: [(1, "1 minute"), (5, "5 minutes"), (15, "15 minutes"), (60, "1 hour")], compact: true) }
             }
             row("Format") {
                 CapsulePicker(selection: $format, options: [(ClipSettings.Format.gif.rawValue, "GIF"), (ClipSettings.Format.mp4.rawValue, "MP4")], compact: true)
@@ -108,17 +108,17 @@ struct ClipSheet: View {
 
     private var summary: String {
         let s = settings
-        let size = s.size == .full ? "at the camera's size" : "\(s.size.rawValue) pixels wide"
+        let size = s.size == .full ? String(localized: "at the camera's size") : String(localized: "\(s.size.rawValue) pixels wide")
         switch s.mode {
-        case .last: return "The last 10 seconds of the camera, \(size). Good for catching something that just happened."
-        case .next: return "Records the next \(s.seconds) seconds, \(size)."
+        case .last: return String(localized: "The last 10 seconds of the camera, \(size). Good for catching something that just happened.")
+        case .next: return String(localized: "Records the next \(s.seconds) seconds, \(size).")
         case .timelapse:
-            let span = s.timelapseMinutes == 60 ? "an hour" : s.timelapseMinutes == 1 ? "a minute" : "\(s.timelapseMinutes) minutes"
-            return "A picture every \(Fmt.duration(s.frameInterval)) over \(span), played back in \(Int(ClipSettings.timelapsePlayback)) seconds, \(size). Keep this window open while it records."
+            let span = Duration.seconds(Double(s.timelapseMinutes * 60)).formatted(.units(allowed: [.hours, .minutes], width: .wide))
+            return String(localized: "A picture every \(Fmt.duration(s.frameInterval)) over \(span), played back in \(Int(ClipSettings.timelapsePlayback)) seconds, \(size). Keep this window open while it records.")
         }
     }
 
-    private func row<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+    private func row<Content: View>(_ title: LocalizedStringKey, @ViewBuilder content: () -> Content) -> some View {
         HStack(spacing: 14) {
             Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).frame(width: 90, alignment: .leading)
             content()
@@ -147,7 +147,7 @@ struct ClipSheet: View {
         }
     }
 
-    private func working(_ text: String) -> some View {
+    private func working(_ text: LocalizedStringKey) -> some View {
         HStack(spacing: 10) {
             ProgressView().controlSize(.small).tint(Palette.accent)
             Text(text).font(Typeface.body).foregroundStyle(Palette.dust)

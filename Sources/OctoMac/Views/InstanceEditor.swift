@@ -77,7 +77,7 @@ struct InstanceEditor: View {
         .onAppear { if existing == nil { discovery.start() } }
         .onDisappear { discovery.stop() }
         .sheet(isPresented: $confirmRemove) {
-            ConfirmSheet(symbol: "minus.circle", title: "Remove \(existing?.name ?? "this printer")?",
+            ConfirmSheet(symbol: "minus.circle", title: existing.map { "Remove \($0.name)?" } ?? "Remove this printer?",
                          message: "OctoMac forgets this server and its API key. Nothing changes on the printer, and you can add it again later.",
                          confirmTitle: "Remove printer") {
                 if let existing { store.remove(existing.id) }
@@ -93,7 +93,7 @@ struct InstanceEditor: View {
             BrandMark()
                 .frame(width: 52, height: 52)
             VStack(alignment: .leading, spacing: 2) {
-                Text(existing == nil ? "Add a printer" : "Edit \(existing?.name ?? "printer")")
+                Text(existing.map { "Edit \($0.name)" } ?? "Add a printer")
                     .font(Typeface.title)
                     .foregroundStyle(Palette.paper)
                 Text(existing == nil ? "Connect OctoMac to an OctoPrint server." : "Change how OctoMac reaches this OctoPrint server.")
@@ -120,7 +120,7 @@ struct InstanceEditor: View {
                     HStack(spacing: 12) {
                         Image(systemName: "printer.fill").foregroundStyle(Palette.accent).frame(width: 20)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(found.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                            Text(verbatim: found.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
                             if let version = found.version {
                                 Text("OctoPrint \(version)").font(Typeface.caption).foregroundStyle(Palette.faint)
                             }
@@ -151,7 +151,7 @@ struct InstanceEditor: View {
                 if name.isEmpty { name = found.displayName }
                 status = .idle
             } else {
-                status = .failure("Couldn't reach \(found.displayName). Try typing its address instead.")
+                status = .failure(String(localized: "Couldn't reach \(found.displayName). Try typing its address instead."))
             }
             resolving = nil
         }
@@ -317,8 +317,9 @@ struct InstanceEditor: View {
     private var updatesSection: some View {
         field("Live updates", detail: "How often OctoPrint sends temperatures and progress") {
             HStack(spacing: 8) {
-                ForEach([(1, "Every 0.5s"), (2, "1s"), (4, "2s"), (10, "5s")], id: \.0) { value, title in
-                    Chip(title: title, selected: throttle == value) { throttle = value }
+                ForEach([(1, 0.5), (2, 1.0), (4, 2.0), (10, 5.0)], id: \.0) { value, seconds in
+                    let time = Duration.seconds(seconds).formatted(.units(allowed: [.seconds], width: .narrow, fractionalPart: .show(length: seconds < 1 ? 1 : 0)))
+                    Chip(title: value == 1 ? "Every \(time)" : "\(time)", selected: throttle == value) { throttle = value }
                 }
             }
             Text("Events like a print finishing always arrive instantly. Slow updates down only on a poor connection.")
@@ -351,7 +352,7 @@ struct InstanceEditor: View {
 
     // MARK: Pieces
 
-    private func field<Content: View>(_ title: String, detail: String? = nil, @ViewBuilder content: () -> Content) -> some View {
+    private func field<Content: View>(_ title: LocalizedStringKey, detail: LocalizedStringKey? = nil, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
@@ -361,7 +362,7 @@ struct InstanceEditor: View {
         }
     }
 
-    private func accessOption(_ mode: AccessMode, title: String, detail: String, symbol: String) -> some View {
+    private func accessOption(_ mode: AccessMode, title: LocalizedStringKey, detail: LocalizedStringKey, symbol: String) -> some View {
         let selected = accessMode == mode
         return Button { accessMode = mode } label: {
             HStack(spacing: 12) {
@@ -443,14 +444,14 @@ struct InstanceEditor: View {
 
     private func requestKey() {
         guard let url else { return }
-        status = .working("Approve the request in the OctoPrint page that just opened…")
+        status = .working(String(localized: "Approve the request in the OctoPrint page that just opened…"))
         let user = username
         work = Task {
             do {
                 apiKey = try await AppKeysAuthorizer(baseURL: url, session: trustingSession, headers: access.httpHeaders).requestKey(user: user) { dialog in
                     await MainActor.run { _ = NSWorkspace.shared.open(dialog) }
                 }
-                status = .success("Access granted")
+                status = .success(String(localized: "Access granted"))
                 if name.isEmpty { name = url.host() ?? "OctoPrint" }
             } catch is CancellationError {
                 status = .idle
@@ -469,7 +470,7 @@ struct InstanceEditor: View {
     private func failed(_ error: Error, url: URL) async {
         if let certificate = await CertificateTrust.untrustedCertificate(at: url), certificate.fingerprint != trustedCertificate {
             offeredCertificate = certificate
-            status = .failure("This printer's HTTPS certificate isn't trusted yet.")
+            status = .failure(String(localized: "This printer's HTTPS certificate isn't trusted yet."))
         } else {
             if case OctoPrintError.signInRequired = error { withAnimation(.snappy(duration: 0.2)) { showsSignIn = true } }
             if case OctoPrintError.notOctoPrint = error { withAnimation(.snappy(duration: 0.2)) { showsSignIn = true } }
@@ -479,16 +480,17 @@ struct InstanceEditor: View {
 
     private func test() {
         guard let url else { return }
-        status = .working("Connecting…")
+        status = .working(String(localized: "Connecting…"))
         let client = OctoPrintClient(baseURL: url, apiKey: apiKey, session: trustingSession, headers: access.httpHeaders)
         work = Task {
             do {
                 let version = try await client.version()
                 let user = try? await client.currentUser()
-                status = .success("OctoPrint \(version.server)" + (user?.name.map { ", signed in as \($0)" } ?? ""))
+                status = .success(user?.name.map { String(localized: "OctoPrint \(version.server), signed in as \($0)") }
+                                  ?? String(localized: "OctoPrint \(version.server)"))
             } catch OctoPrintError.unauthorized where apiKey.isEmpty {
                 // OctoPrint answered; it just wants a key, which is the next step.
-                status = .success("Reached OctoPrint. Now request access or paste a key.")
+                status = .success(String(localized: "Reached OctoPrint. Now request access or paste a key."))
             } catch {
                 await failed(error, url: url)
             }

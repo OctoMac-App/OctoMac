@@ -44,7 +44,7 @@ struct StatisticsPanel: View {
             GridRow {
                 tile("Prints", value: "\(stats.total)",
                      note: stats.total == 0 ? "None yet" : "\(stats.finished) finished")
-                tile("Finished", value: stats.successRate.map { "\(Int(($0 * 100).rounded()))%" } ?? "–",
+                tile("Finished", value: stats.successRate.map { $0.formatted(.percent.precision(.fractionLength(0))) } ?? "–",
                      note: stats.failed == 0 ? "No failures" : "\(stats.failed) failed or stopped")
             }
             GridRow {
@@ -57,17 +57,17 @@ struct StatisticsPanel: View {
         .help("From OctoPrint's records of each file: how often it finished or failed, and its usual print time and filament.")
     }
 
-    private func tile(_ title: String, value: String, note: String) -> some View {
+    private func tile(_ title: LocalizedStringKey, value: String, note: LocalizedStringKey) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
-            Text(value).font(Typeface.number(22)).foregroundStyle(Palette.paper).lineLimit(1).minimumScaleFactor(0.7)
+            Text(verbatim: value).font(Typeface.number(22)).foregroundStyle(Palette.paper).lineLimit(1).minimumScaleFactor(0.7)
             Text(note).font(Typeface.caption).foregroundStyle(Palette.dust).lineLimit(1).truncationMode(.tail)
         }
     }
 
     static func metres(_ mm: Double) -> String {
         let metres = mm / 1000
-        return metres >= 1000 ? String(format: "%.1f km", metres / 1000) : "\(Int(metres.rounded())) m"
+        return metres >= 1000 ? (metres / 1000).formatted(.number.precision(.fractionLength(1))) + " km" : metres.formatted(.number.precision(.fractionLength(0))) + " m"
     }
 }
 
@@ -126,7 +126,7 @@ private struct MonthsChart: View {
                 AxisMarks(position: .leading, values: .automatic(desiredCount: 3)) { value in
                     AxisGridLine().foregroundStyle(Palette.edge.opacity(0.6))
                     AxisValueLabel {
-                        if let count = value.as(Int.self) { Text("\(count)").font(Typeface.number(11)).foregroundStyle(Palette.faint) }
+                        if let count = value.as(Int.self) { Text(verbatim: "\(count)").font(Typeface.number(11)).foregroundStyle(Palette.faint) }
                     }
                 }
             }
@@ -143,7 +143,7 @@ private struct MonthsChart: View {
         .help("Months before OctoMac was watching only count each file's latest print.")
     }
 
-    private func legend(_ title: String, _ color: Color) -> some View {
+    private func legend(_ title: LocalizedStringKey, _ color: Color) -> some View {
         HStack(spacing: 5) {
             RoundedRectangle(cornerRadius: 2).fill(color).frame(width: 8, height: 8)
             Text(title).font(Typeface.caption).foregroundStyle(Palette.dust)

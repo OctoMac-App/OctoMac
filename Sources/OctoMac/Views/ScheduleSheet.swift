@@ -40,8 +40,8 @@ struct ScheduleSheet: View {
             }
 
             HStack(spacing: 28) {
-                fact("Print time", duration > 0 ? Fmt.duration(duration) : "Unknown")
-                fact("If you start now", duration > 0 ? "Done at \(Self.time(Date.now.addingTimeInterval(duration + Self.warmUp)))" : "–")
+                fact("Print time", duration > 0 ? Fmt.duration(duration) : String(localized: "Unknown"))
+                fact("If you start now", duration > 0 ? String(localized: "Done at \(Self.time(Date.now.addingTimeInterval(duration + Self.warmUp)))") : "–")
             }
             .padding(14)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,7 +51,7 @@ struct ScheduleSheet: View {
                 CapsulePicker(selection: $mode, options: [(Mode.finishBy.rawValue, "Finish by"), (Mode.startAt.rawValue, "Start at")])
                 PlateMenu(selection: $hour, options: (0..<24).map { ($0, String(format: "%02d", $0)) })
                     .frame(width: 80)
-                Text(":").font(Typeface.number(18)).foregroundStyle(Palette.dust)
+                Text(verbatim: ":").font(Typeface.number(18)).foregroundStyle(Palette.dust)
                 PlateMenu(selection: $minute, options: stride(from: 0, to: 60, by: 5).map { ($0, String(format: "%02d", $0)) })
                     .frame(width: 80)
                 Spacer()
@@ -109,7 +109,7 @@ struct ScheduleSheet: View {
         }
     }
 
-    private func fact(_ title: String, _ value: String) -> some View {
+    private func fact(_ title: LocalizedStringKey, _ value: String) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
             Text(value).font(Typeface.number(18)).foregroundStyle(Palette.paper)
@@ -119,7 +119,8 @@ struct ScheduleSheet: View {
     static func time(_ date: Date) -> String { date.formatted(date: .omitted, time: .shortened) }
 
     static func day(_ date: Date) -> String {
-        Calendar.current.isDateInToday(date) ? "today" : Calendar.current.isDateInTomorrow(date) ? "tomorrow" : date.formatted(.dateTime.weekday(.wide))
+        Calendar.current.isDateInToday(date) ? String(localized: "today") : Calendar.current.isDateInTomorrow(date) ? String(localized: "tomorrow")
+            : date.formatted(.dateTime.weekday(.wide))
     }
 }
 

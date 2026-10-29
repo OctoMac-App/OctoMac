@@ -51,7 +51,7 @@ public enum CancelObject {
             var text = name
             if let match = text.firstMatch(of: /\.(stl|3mf|obj|step)_id_\d+_copy_(\d+)$/.ignoresCase()) {
                 let copy = (Int(match.2) ?? 0) + 1
-                text = String(text[..<match.range.lowerBound]) + ", copy \(copy)"
+                text = String(text[..<match.range.lowerBound]) + String(localized: ", copy \(copy)")
             }
             return text.replacingOccurrences(of: "_", with: " ")
         }

@@ -10,27 +10,27 @@ enum NotificationKind: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .printDone: "Print finished"
-        case .printFailed: "Print failed or stopped"
-        case .firstLayer: "First layer done"
-        case .layerReached: "Layer alerts"
-        case .scheduled: "Scheduled and queued prints"
-        case .needsAttention: "Printer needs you"
-        case .printerProblem: "Printer stopped answering"
-        case .piWarning: "Raspberry Pi warnings"
+        case .printDone: String(localized: "Print finished")
+        case .printFailed: String(localized: "Print failed or stopped")
+        case .firstLayer: String(localized: "First layer done")
+        case .layerReached: String(localized: "Layer alerts")
+        case .scheduled: String(localized: "Scheduled and queued prints")
+        case .needsAttention: String(localized: "Printer needs you")
+        case .printerProblem: String(localized: "Printer stopped answering")
+        case .piWarning: String(localized: "Raspberry Pi warnings")
         }
     }
 
     var detail: String {
         switch self {
-        case .printDone: "When a print completes."
-        case .printFailed: "When a print fails, or is stopped from the printer."
-        case .firstLayer: "A camera picture once the first layer is down, so you can catch a bad start early."
-        case .layerReached: "When a print reaches a layer you chose to be told about or pause at."
-        case .scheduled: "When a scheduled print starts, and when the next print in the queue is ready to go."
-        case .needsAttention: "Filament changes, a paused print, or a filament choice for the Prusa MMU."
-        case .printerProblem: "When the printer reports an error or drops its connection mid-print."
-        case .piWarning: "Low power or overheating on the Raspberry Pi, which can spoil prints."
+        case .printDone: String(localized: "When a print completes.")
+        case .printFailed: String(localized: "When a print fails, or is stopped from the printer.")
+        case .firstLayer: String(localized: "A camera picture once the first layer is down, so you can catch a bad start early.")
+        case .layerReached: String(localized: "When a print reaches a layer you chose to be told about or pause at.")
+        case .scheduled: String(localized: "When a scheduled print starts, and when the next print in the queue is ready to go.")
+        case .needsAttention: String(localized: "Filament changes, a paused print, or a filament choice for the Prusa MMU.")
+        case .printerProblem: String(localized: "When the printer reports an error or drops its connection mid-print.")
+        case .piWarning: String(localized: "Low power or overheating on the Raspberry Pi, which can spoil prints.")
         }
     }
 
@@ -68,12 +68,12 @@ enum NotificationActions: String {
         switch self {
         case .printControls:
             UNNotificationCategory(identifier: rawValue, actions: [
-                UNNotificationAction(identifier: Self.pause, title: "Pause", options: []),
-                UNNotificationAction(identifier: Self.stop, title: "Stop Print", options: [.destructive]),
+                UNNotificationAction(identifier: Self.pause, title: String(localized: "Pause"), options: []),
+                UNNotificationAction(identifier: Self.stop, title: String(localized: "Stop Print"), options: [.destructive]),
             ], intentIdentifiers: [])
         case .queueNext:
             UNNotificationCategory(identifier: rawValue, actions: [
-                UNNotificationAction(identifier: Self.startNext, title: "Bed's Clear, Start Next", options: []),
+                UNNotificationAction(identifier: Self.startNext, title: String(localized: "Bed's Clear, Start Next"), options: []),
             ], intentIdentifiers: [])
         }
     }

@@ -254,12 +254,12 @@ struct CinemaHUD: View {
             }
             Spacer()
             if running {
-                hud("\(Int((session.progress?.fraction ?? 0) * 100))%", "done")
-                hud(Fmt.duration(session.progress?.printTimeLeft), "left")
-                hud(Fmt.eta(session.progress?.printTimeLeft), "finishes")
+                hud((session.progress?.fraction ?? 0).formatted(.percent.precision(.fractionLength(0))), Text("done", comment: "Cinema overlay: percentage of the print done"))
+                hud(Fmt.duration(session.progress?.printTimeLeft), Text("left", comment: "Cinema overlay: time left"))
+                hud(Fmt.eta(session.progress?.printTimeLeft), Text("finishes", comment: "Cinema overlay: when the print finishes"))
             }
             ForEach(session.heaters.filter { HeaterKind(key: $0.key).isHeater && $0.value.actual != nil }.keys.sorted(), id: \.self) { key in
-                hud(Fmt.temp(session.heaters[key]?.actual), HeaterKind(key: key).displayName.lowercased())
+                hud(Fmt.temp(session.heaters[key]?.actual), Text(verbatim: HeaterKind(key: key).displayName))
             }
             Color.clear.frame(width: 40, height: 1)
         }
@@ -270,10 +270,10 @@ struct CinemaHUD: View {
         .allowsHitTesting(false)
     }
 
-    private func hud(_ value: String, _ label: String) -> some View {
+    private func hud(_ value: String, _ label: Text) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(value).font(Typeface.number(26)).foregroundStyle(.white)
-            Text(label).font(Typeface.caption).foregroundStyle(.white.opacity(0.6))
+            Text(verbatim: value).font(Typeface.number(26)).foregroundStyle(.white)
+            label.font(Typeface.caption).foregroundStyle(.white.opacity(0.6))
         }
     }
 }
@@ -314,13 +314,13 @@ struct JobPanel: View {
                         if !name.tags.isEmpty { TagRow(tags: name.tags) }
 
                         HStack(alignment: .firstTextBaseline, spacing: 2) {
-                            Text("\(Int(fraction * 100))")
+                            Text(verbatim: "\(Int(fraction * 100))")
                                 .font(Typeface.number(76))
                                 .foregroundStyle(Palette.paper)
                                 .contentTransition(.numericText(value: fraction))
-                            Text("%").font(Typeface.number(26)).foregroundStyle(Palette.faint)
+                            Text(verbatim: "%").font(Typeface.number(26)).foregroundStyle(Palette.faint)
                             if let z = session.currentZ, z > 0 {
-                                Text(String(format: "Z %.2f mm", z)).font(Typeface.number(15)).foregroundStyle(filament).padding(.leading, 14)
+                                Text(verbatim: "Z " + Fmt.decimal(z, 2) + " mm").font(Typeface.number(15)).foregroundStyle(filament).padding(.leading, 14)
                             }
                         }
                         .padding(.top, 4)
@@ -376,56 +376,14 @@ struct JobPanel: View {
                     }
                 }
 
+                // The times come first; when their words and the buttons' don't both fit (in longer languages, or a
+                // narrow window), the buttons show just their icons, with the words as tooltips.
                 HStack(alignment: .bottom) {
-                    Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 14) {
-                        GridRow {
-                            stat(timeLeftTitle, Fmt.duration(session.progress?.printTimeLeft), big: true)
-                                .help(timeLeftHelp)
-                            stat("Done at", Fmt.eta(session.progress?.printTimeLeft), big: true)
-                        }
-                        GridRow {
-                            stat("Printing for", Fmt.duration(session.progress?.printTime))
-                            stat("Filament", Fmt.filament(session.job?.filament.values.compactMap(\.length).reduce(0, +)))
-                        }
-                    }
+                    printStats.layoutPriority(1)
                     Spacer(minLength: 12)
-                    VStack(alignment: .trailing, spacing: 8) {
-                    if flags.isJobActive && !flags.cancelling {
-                        let alerts = session.layerAlerts.count
-                        Button { showingLayerAlerts = true } label: {
-                            Label(alerts == 0 ? "Layer alerts" : alerts == 1 ? "1 layer alert" : "\(alerts) layer alerts",
-                                  systemImage: alerts == 0 ? "bell" : "bell.badge.fill")
-                                .lineLimit(1)
-                        }
-                        .buttonStyle(.plateQuiet)
-                        .fixedSize()
-                        .disabled(session.layerProgress?.hasLayers != true)
-                        .help(session.layerProgress?.hasLayers == true
-                              ? "Pause or get a notification when the print reaches a layer"
-                              : "Layer alerts need the DisplayLayerProgress plugin in OctoPrint")
-                    }
-                    let objects = session.printObjects.filter { !$0.ignored }
-                    if session.hasCancelObject, objects.count > 1 {
-                        Button { showingObjects = true } label: {
-                            Label("\(objects.count) objects", systemImage: "square.on.square.dashed")
-                                .lineLimit(1)
-                        }
-                        .buttonStyle(.plateQuiet)
-                        .fixedSize()
-                        .help("Stop one part if it fails, and let the rest finish")
-                    }
-                    if let entry {
-                        Button {
-                            openWindow(id: "gcode-preview",
-                                       value: GCodePreviewRequest(instanceID: session.instance.id, origin: entry.origin.rawValue, path: entry.path))
-                        } label: {
-                            Label("Live preview", systemImage: "square.stack.3d.up")
-                                .lineLimit(1)
-                        }
-                        .buttonStyle(.plateQuiet)
-                        .fixedSize()
-                        .help("Watch the print build up layer by layer in 3D")
-                    }
+                    ViewThatFits(in: .horizontal) {
+                        VStack(alignment: .trailing, spacing: 8) { printActions(entry: entry, iconsOnly: false) }
+                        VStack(alignment: .trailing, spacing: 8) { printActions(entry: entry, iconsOnly: true) }
                     }
                 }
             }
@@ -438,13 +396,71 @@ struct JobPanel: View {
         .sheet(isPresented: $showingLayerAlerts) { LayerAlertsSheet(session: session, filament: filament) }
     }
 
-    private var timeLeftTitle: String {
+    private var printStats: some View {
+        Grid(alignment: .leading, horizontalSpacing: 28, verticalSpacing: 14) {
+            GridRow {
+                stat(timeLeftTitle, Fmt.duration(session.progress?.printTimeLeft), big: true)
+                    .help(timeLeftHelp)
+                stat("Done at", Fmt.eta(session.progress?.printTimeLeft), big: true)
+            }
+            GridRow {
+                stat("Printing for", Fmt.duration(session.progress?.printTime))
+                stat("Filament", Fmt.filament(session.job?.filament.values.compactMap(\.length).reduce(0, +)))
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func printActions(entry: FileEntry?, iconsOnly: Bool) -> some View {
+        let flags = session.flags
+            if flags.isJobActive && !flags.cancelling {
+                let alerts = session.layerAlerts.count
+                Button { showingLayerAlerts = true } label: {
+                    Label(alerts == 0 ? "Layer alerts" : alerts == 1 ? "1 layer alert" : "\(alerts) layer alerts",
+                          systemImage: alerts == 0 ? "bell" : "bell.badge.fill")
+                        .lineLimit(1)
+                        .labelStyle(PrintActionLabelStyle(iconsOnly: iconsOnly))
+                }
+                .buttonStyle(.plateQuiet)
+                .fixedSize()
+                .disabled(session.layerProgress?.hasLayers != true)
+                .help(session.layerProgress?.hasLayers == true
+                      ? "Pause or get a notification when the print reaches a layer"
+                      : "Layer alerts need the DisplayLayerProgress plugin in OctoPrint")
+            }
+            let objects = session.printObjects.filter { !$0.ignored }
+            if session.hasCancelObject, objects.count > 1 {
+                Button { showingObjects = true } label: {
+                    Label("\(objects.count) objects", systemImage: "square.on.square.dashed")
+                        .lineLimit(1)
+                        .labelStyle(PrintActionLabelStyle(iconsOnly: iconsOnly))
+                }
+                .buttonStyle(.plateQuiet)
+                .fixedSize()
+                .help("Stop one part if it fails, and let the rest finish")
+            }
+            if let entry {
+                Button {
+                    openWindow(id: "gcode-preview",
+                               value: GCodePreviewRequest(instanceID: session.instance.id, origin: entry.origin.rawValue, path: entry.path))
+                } label: {
+                    Label("Live preview", systemImage: "square.stack.3d.up")
+                        .lineLimit(1)
+                        .labelStyle(PrintActionLabelStyle(iconsOnly: iconsOnly))
+                }
+                .buttonStyle(.plateQuiet)
+                .fixedSize()
+                .help("Watch the print build up layer by layer in 3D")
+            }
+    }
+
+    private var timeLeftTitle: LocalizedStringKey {
         if session.progress?.timeLeftFromPrintTimeGenius == true { return "Time left (Genius)" }
         if session.progress?.timeLeftIsRough == true { return "Time left (rough)" }
         return "Time left"
     }
 
-    private var timeLeftHelp: String {
+    private var timeLeftHelp: LocalizedStringKey {
         if session.progress?.timeLeftFromPrintTimeGenius == true { return "Worked out by the Print Time Genius plugin, which is usually close." }
         if session.progress?.timeLeftIsRough == true { return "A rough guess from progress so far. It gets better as the print goes on." }
         return "OctoPrint's estimate. The Print Time Genius plugin gives more accurate times."
@@ -454,11 +470,10 @@ struct JobPanel: View {
     private var layerLine: String? {
         guard let progress = session.layerProgress, progress.hasLayers,
               let current = progress.currentLayer, let total = progress.totalLayers else { return nil }
-        var line = "Layer \(current) of \(total)"
         if let average = progress.averageLayerDuration, average > 0 {
-            line += ", about \(Fmt.duration(average)) each"
+            return String(localized: "Layer \(current) of \(total), about \(Fmt.duration(average)) each")
         }
-        return line
+        return String(localized: "Layer \(current) of \(total)")
     }
 
     /// While the print is waiting for heaters (start of a job), say so; "0%" alone looks stuck.
@@ -469,19 +484,33 @@ struct JobPanel: View {
             .sorted { $0.key > $1.key } // "tool0" before "bed"
             .compactMap { key, data -> String? in
                 guard let actual = data.actual, let target = data.target, target > 0, actual < target - 3 else { return nil }
-                return "\(HeaterKind(key: key).displayName.lowercased()) \(Fmt.deg(actual)) → \(Fmt.deg(target))"
+                return "\(HeaterKind(key: key).displayName) \(Fmt.deg(actual)) → \(Fmt.deg(target))"
             }
-        return heating.isEmpty ? nil : "Heating up: " + heating.joined(separator: ", ")
+        return heating.isEmpty ? nil : String(localized: "Heating up: \(heating.formatted(.list(type: .and, width: .narrow)))")
     }
 
-    private func stat(_ title: String, _ value: String, big: Bool = false) -> some View {
+    private func stat(_ title: LocalizedStringKey, _ value: String, big: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(title).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
+            Text(title).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1).minimumScaleFactor(0.8)
+            // Durations run longer in some languages ("1 Std., 18 Min."); shrink rather than cut off.
             Text(value)
                 .font(Typeface.number(big ? 26 : 18))
                 .foregroundStyle(Palette.paper)
                 .lineLimit(1)
-                .minimumScaleFactor(0.7)
+                .minimumScaleFactor(0.5)
+        }
+    }
+}
+
+/// The print panel's buttons: icon and words, or just the icon when space is short.
+private struct PrintActionLabelStyle: LabelStyle {
+    let iconsOnly: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        if iconsOnly {
+            IconOnlyLabelStyle().makeBody(configuration: configuration)
+        } else {
+            TitleAndIconLabelStyle().makeBody(configuration: configuration)
         }
     }
 }
@@ -597,7 +626,7 @@ struct OpenedFilePanel: View {
                     if let prints = file.prints, (prints.success ?? 0) + (prints.failure ?? 0) > 0 {
                         GridRow {
                             stat("Printed before", "\(prints.success ?? 0) ok, \(prints.failure ?? 0) failed")
-                            stat("Last time", prints.last?.success.map { $0 ? "Finished" : "Failed or stopped" } ?? "–")
+                            stat("Last time", prints.last?.success.map { $0 ? String(localized: "Finished") : String(localized: "Failed or stopped") } ?? "–")
                         }
                     }
                 }
@@ -610,13 +639,13 @@ struct OpenedFilePanel: View {
         .clipped()
         .sheet(isPresented: $scheduling) { ScheduleSheet(session: session, file: file, filament: filament) }
         .sheet(isPresented: $startingNext) {
-            ConfirmSheet(symbol: "list.number", title: "Start \(session.journal.queue.first?.name ?? "the next print")?",
+            ConfirmSheet(symbol: "list.number", title: session.journal.queue.first.map { "Start \($0.name)?" } ?? "Start the next print?",
                          message: "Make sure the bed is clear first. The printer starts straight away.",
                          confirmTitle: "Start print", onConfirm: { session.startNextInQueue() })
         }
     }
 
-    private func actions(print: String, preview: String?, another: String?) -> some View {
+    private func actions(print: LocalizedStringKey, preview: LocalizedStringKey?, another: LocalizedStringKey?) -> some View {
         HStack(spacing: 8) {
             Button { session.jobCommand(.start) } label: {
                 Label(print, systemImage: "play.fill").font(Typeface.text(14, .demibold)).lineLimit(1)
@@ -659,7 +688,7 @@ struct OpenedFilePanel: View {
         return "\(Fmt.number(w)) × \(Fmt.number(dp)) × \(Fmt.number(h)) mm"
     }
 
-    private func stat(_ title: String, _ value: String, big: Bool = false) -> some View {
+    private func stat(_ title: LocalizedStringKey, _ value: String, big: Bool = false) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
             Text(value)
@@ -830,7 +859,7 @@ struct FileCard: View {
         )
         .onHover { hovering = $0 }
         .animation(.easeOut(duration: 0.12), value: hovering)
-        .help(file.date.map { "Added \($0.formatted(.relative(presentation: .named)))" } ?? file.name)
+        .help(file.date.map { String(localized: "Added \($0.formatted(.relative(presentation: .named)))") } ?? file.name)
     }
 
     private func open() { onOpen() }
@@ -869,7 +898,7 @@ struct PresetPanel: View {
                 Button { choosing.toggle() } label: {
                     HStack {
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(selected?.name ?? "Choose a preset")
+                            (selected.map { Text(verbatim: $0.name) } ?? Text("Choose a preset"))
                                 .font(Typeface.bodyStrong)
                                 .foregroundStyle(selected == nil ? Palette.dust : Palette.paper)
                             if let selected {
@@ -1010,17 +1039,19 @@ struct ChartTooltip: View {
     }
 }
 
-/// Chart series colour per heater name, shared by the chart and its header readings.
+/// Chart series colour per heater, shared by the chart and its header readings. The chart knows heaters by their
+/// (translated) names, so the name is matched back to the heater it belongs to.
 func seriesColor(_ name: String) -> Color {
-    switch name {
-    case "Bed": return Palette.cold
-    case "Chamber": return Palette.ready
-    case "Hotend": return Palette.hot
-    default:
-        // "Hotend 2", "Hotend 3", ...: each gets its own colour.
-        guard name.hasPrefix("Hotend "), let number = Int(name.dropFirst(7)) else { return Palette.dust }
+    let kinds: [HeaterKind] = [.bed, .chamber] + (0..<8).map { HeaterKind.tool($0) }
+    switch kinds.first(where: { $0.displayName == name }) {
+    case .bed: return Palette.cold
+    case .chamber: return Palette.ready
+    case .tool(0): return Palette.hot
+    case .tool(let index):
+        // Hotend 2, Hotend 3, ...: each gets its own colour.
         let extra = [Palette.warm, Color(hex: 0xE86A92), Color(hex: 0x8F7CFF), Color(hex: 0xF29E4C), Color(hex: 0x4FD1C5)]
-        return extra[(number - 2) % extra.count]
+        return extra[(index - 1) % extra.count]
+    default: return Palette.dust
     }
 }
 
@@ -1073,8 +1104,8 @@ struct PrinterOfflineBanner: View {
 
     private func plainReason(_ reason: String?) -> String? {
         switch reason {
-        case "autodetect": "OctoPrint couldn't find the printer on any USB port. Check the printer is switched on and its USB cable is plugged in, then connect."
-        case "timeout": "The printer stopped replying to OctoPrint. Check it's still switched on, then connect again."
+        case "autodetect": String(localized: "OctoPrint couldn't find the printer on any USB port. Check the printer is switched on and its USB cable is plugged in, then connect.")
+        case "timeout": String(localized: "The printer stopped replying to OctoPrint. Check it's still switched on, then connect again.")
         default: nil
         }
     }
@@ -1083,10 +1114,10 @@ struct PrinterOfflineBanner: View {
     private var lastError: String? {
         guard let info = session.printerError, !info.isEmpty, info.error != reportedError else { return nil }
         switch info.reason {
-        case "autodetect": return "Last attempt: OctoPrint couldn't find the printer on any USB port."
-        case "timeout": return "Last attempt: the printer stopped replying to OctoPrint."
-        case "firmware": return "The printer's firmware reported: \(info.error)"
-        default: return "OctoPrint reported: \(info.error)"
+        case "autodetect": return String(localized: "Last attempt: OctoPrint couldn't find the printer on any USB port.")
+        case "timeout": return String(localized: "Last attempt: the printer stopped replying to OctoPrint.")
+        case "firmware": return String(localized: "The printer's firmware reported: \(info.error)")
+        default: return String(localized: "OctoPrint reported: \(info.error)")
         }
     }
 
@@ -1098,12 +1129,15 @@ struct PrinterOfflineBanner: View {
         }
         let port = session.connection?.current.port ?? session.connection?.options.portPreference
         if session.isPrinterConnecting {
-            return "OctoPrint is opening the serial port and waiting for the printer to reply. This usually takes a few seconds."
+            return String(localized: "OctoPrint is opening the serial port and waiting for the printer to reply. This usually takes a few seconds.")
         }
         if afterError {
-            return "OctoPrint tried to talk to the printer\(port.map { " on \($0)" } ?? "") and got no reply. Check the printer is switched on and its USB cable is plugged in, then connect."
+            if let port {
+                return String(localized: "OctoPrint tried to talk to the printer on \(port) and got no reply. Check the printer is switched on and its USB cable is plugged in, then connect.")
+            }
+            return String(localized: "OctoPrint tried to talk to the printer and got no reply. Check the printer is switched on and its USB cable is plugged in, then connect.")
         }
-        return "OctoPrint is running, but it isn't connected to the printer. Switch the printer on, then connect."
+        return String(localized: "OctoPrint is running, but it isn't connected to the printer. Switch the printer on, then connect.")
     }
 
     var body: some View {
@@ -1143,11 +1177,11 @@ struct PrinterOfflineBanner: View {
 
 /// A compact "− Speed 100% +" control for adjusting a running print.
 struct RateStepper: View {
-    let title: String
+    let title: LocalizedStringKey
     let value: Double
     let step: Double
     let range: ClosedRange<Double>
-    let help: String
+    let help: LocalizedStringKey
     let apply: (Int) -> Void
 
     var body: some View {
@@ -1167,7 +1201,7 @@ struct RateStepper: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(value == 100 ? help : "\(help) Click to go back to 100%.")
+            .help(value == 100 ? Text(help) : Text(help) + Text(verbatim: " ") + Text("Click to go back to 100%."))
             nudge("plus", by: step)
         }
         .background(Capsule().fill(Palette.graphite))

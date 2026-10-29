@@ -49,11 +49,14 @@ public struct WidgetSnapshot: Codable, Sendable, Equatable {
     public var printers: [Printer]
     /// "celsius" or "fahrenheit".
     public var temperatureUnit: String
+    /// The language OctoMac is showing, so the widgets match it.
+    public var language: String?
 
-    public init(written: Date, printers: [Printer], temperatureUnit: String) {
+    public init(written: Date, printers: [Printer], temperatureUnit: String, language: String? = nil) {
         self.written = written
         self.printers = printers
         self.temperatureUnit = temperatureUnit
+        self.language = language
     }
 
     /// The printer most worth showing on its own: one that's printing, then paused, then any.

@@ -76,7 +76,7 @@ private struct RecentPrintRow: View {
                 .frame(width: 52, height: 52)
             VStack(alignment: .leading, spacing: 3) {
                 HStack(spacing: 8) {
-                    Text(name.title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                    Text(verbatim: name.title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
                     if let rating = note?.rating {
                         StarRating(rating: .constant(rating), size: 9, editable: false).fixedSize()
                     }
@@ -94,7 +94,7 @@ private struct RecentPrintRow: View {
                 .font(Typeface.caption).foregroundStyle(Palette.faint)
                 .lineLimit(1)
                 if let text = note?.text, !text.isEmpty {
-                    Text(text).font(Typeface.caption).foregroundStyle(Palette.dust).lineLimit(1)
+                    Text(verbatim: text).font(Typeface.caption).foregroundStyle(Palette.dust).lineLimit(1)
                 }
             }
             Spacer(minLength: 8)
@@ -122,7 +122,7 @@ private struct RecentPrintRow: View {
             .buttonStyle(.plateQuiet)
             .controlSize(.small)
             .disabled(!session.canControl)
-            .help(session.controlBlocker ?? "Open this file, ready to print again")
+            .help(session.controlBlocker ?? String(localized: "Open this file, ready to print again"))
         }
         .padding(8)
         .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(hovering ? Palette.extrusionHi : .clear))
@@ -173,7 +173,7 @@ private struct TimelapsePanel: View {
         }
     }
 
-    private func timelapseMode(_ list: TimelapseList) -> String {
+    private func timelapseMode(_ list: TimelapseList) -> LocalizedStringKey {
         switch list.config?["type"]?.stringValue {
         case "off": "Off"
         case "zchange": "On layer change"
@@ -205,7 +205,7 @@ private struct TimelapseRow: View {
             .frame(width: 80, height: 45)
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             VStack(alignment: .leading, spacing: 3) {
-                Text(file.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1).truncationMode(.middle)
+                Text(verbatim: file.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1).truncationMode(.middle)
                 Text([file.date, file.size].compactMap { $0 }.joined(separator: ", "))
                     .font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
             }
@@ -254,7 +254,7 @@ private struct TimelapsePlayer: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Text(file.name).font(Typeface.subhead).foregroundStyle(Palette.paper).lineLimit(1)
+                Text(verbatim: file.name).font(Typeface.subhead).foregroundStyle(Palette.paper).lineLimit(1)
                 Spacer()
                 Button("Done") { dismiss() }.buttonStyle(.plate).keyboardShortcut(.defaultAction)
             }
@@ -267,7 +267,7 @@ private struct TimelapsePlayer: View {
                 } else {
                     VStack(spacing: 10) {
                         ProgressView().tint(Palette.accent)
-                        Text("Downloading \(file.size ?? "the video")…").font(Typeface.caption).foregroundStyle(Palette.faint)
+                        Text(file.size.map { "Downloading \($0)…" } ?? "Downloading the video…").font(Typeface.caption).foregroundStyle(Palette.faint)
                     }
                 }
             }

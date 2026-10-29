@@ -95,7 +95,7 @@ struct ReportProblemView: View {
 
     private func save() {
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "OctoMac diagnostics.txt"
+        panel.nameFieldStringValue = String(localized: "OctoMac diagnostics.txt")
         guard panel.runModal() == .OK, let url = panel.url else { return }
         try? text.write(to: url, atomically: true, encoding: .utf8)
         saved = url
@@ -106,6 +106,9 @@ struct ReportProblemView: View {
 struct GeneralSettings: View {
     @AppStorage(TemperatureUnit.defaultsKey) private var unit = TemperatureUnit.celsius.rawValue
     @AppStorage(DockProgress.defaultsKey) private var dockProgress = true
+    /// "" follows macOS.
+    @State private var language = AppLanguage.chosen ?? ""
+    @State private var showing = AppLanguage.chosen ?? ""
     @State private var checksAutomatically = true
 
     var body: some View {
@@ -119,6 +122,29 @@ struct GeneralSettings: View {
                 }
                 Spacer()
                 CapsulePicker(selection: $unit, options: TemperatureUnit.allCases.map { ($0.rawValue, $0.title) })
+            }
+            .padding(14)
+            .machined(radius: 12)
+
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Language").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                    Text(language == showing ? "OctoMac follows your Mac's language unless you choose one here."
+                                             : "OctoMac needs to restart to switch language.")
+                        .font(Typeface.caption).foregroundStyle(language == showing ? Palette.faint : Palette.warm)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer()
+                if language != showing {
+                    Button("Restart now") { AppLanguage.restart() }
+                        .buttonStyle(.plate)
+                        .controlSize(.small)
+                }
+                PlateMenu(selection: Binding(get: { language }, set: { code in
+                    language = code
+                    AppLanguage.chosen = code.isEmpty ? nil : code
+                }), options: [("", String(localized: "Same as macOS"))] + AppLanguage.available.map { ($0.code, $0.name) })
+                .frame(width: 190)
             }
             .padding(14)
             .machined(radius: 12)

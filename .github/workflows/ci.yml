@@ -39,6 +39,12 @@ jobs:
       - name: Build the app
         run: scripts/build-app.sh debug
 
+      - name: Check every string is in the String Catalog
+        run: scripts/extract-strings.sh --check
+
+      - name: Check every string is translated
+        run: scripts/translations.py check
+
       - name: Check llms-full.txt is up to date
         run: scripts/make-llms-full.sh --check
 

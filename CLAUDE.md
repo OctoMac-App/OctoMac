@@ -30,6 +30,7 @@ Each new build is a new binary to macOS, which can silently block its local netw
 ## Conventions
 
 - Match the surrounding code: its naming, comment density and SwiftUI style.
+- Everything people can see in the app is translated into all 14 languages (UK English is the source; see `scripts/translations.py`). New text must be marked for translation (a literal in a SwiftUI view, or `String(localized:)`), extracted with `scripts/extract-strings.sh`, and translated before it ships; CI fails otherwise. Data from OctoPrint, printers or files uses `Text(verbatim:)`. Numbers, durations and dates use the formatters in `Fmt` or Foundation's, never `String(format:)`, so they follow the language.
 - Text in the app, README and comments is plain, friendly British English, written for people rather than programmers. Never use long (em) dashes; use a comma, colon or full stop. CI fails if one appears.
 - Bug reports are GitHub issues only. Help → Report a Problem builds a diagnostics file that must never include printer names, addresses, API keys, proxy sign-ins, user names or file names; `DiagnosticsPrivacyTests` enforces this.
 - OctoPrint plugins are optional: check a plugin is present before using it, and fall back gracefully when it isn't.

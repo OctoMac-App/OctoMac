@@ -201,7 +201,7 @@ struct HeatEditor: View {
                 .tint(kind.color)
             HStack(spacing: 6) {
                 ForEach(presets, id: \.self) { preset in
-                    Chip(title: Fmt.deg(preset), selected: value == preset) { value = preset }
+                    Chip(verbatim: Fmt.deg(preset), selected: value == preset) { value = preset }
                 }
             }
             HStack {

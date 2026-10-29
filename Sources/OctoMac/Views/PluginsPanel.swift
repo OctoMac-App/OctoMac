@@ -86,7 +86,7 @@ struct PluginsPanel: View {
         }
     }
 
-    private func notice(_ text: String, symbol: String, busy: Bool) -> some View {
+    private func notice(_ text: LocalizedStringKey, symbol: String, busy: Bool) -> some View {
         HStack(spacing: 8) {
             if busy {
                 ProgressView().controlSize(.small).tint(Palette.warm)
@@ -109,11 +109,11 @@ private struct PluginRow: View {
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(plugin.name).font(Typeface.bodyStrong)
+                    Text(verbatim: plugin.name).font(Typeface.bodyStrong)
                         .foregroundStyle(plugin.enabled ? Palette.paper : Palette.dust)
                         .lineLimit(1)
                     if let version = plugin.version {
-                        Text(version).font(Typeface.number(12)).foregroundStyle(Palette.faint).lineLimit(1)
+                        Text(verbatim: version).font(Typeface.number(12)).foregroundStyle(Palette.faint).lineLimit(1)
                     }
                     if plugin.pending {
                         Text("After restart").font(Typeface.caption).foregroundStyle(Palette.warm)
@@ -122,7 +122,7 @@ private struct PluginRow: View {
                     }
                 }
                 if let summary = plugin.summary, !summary.isEmpty {
-                    Text(summary).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
+                    Text(verbatim: summary).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
                 }
             }
             Spacer(minLength: 8)
@@ -151,10 +151,10 @@ private struct PluginRow: View {
     private var menuItems: [AppMenuItem] {
         var items: [AppMenuItem] = []
         if let homepage = plugin.homepage {
-            items.append(.action("Open plugin website", symbol: "safari") { NSWorkspace.shared.open(homepage) })
+            items.append(.action(String(localized: "Open plugin website"), symbol: "safari") { NSWorkspace.shared.open(homepage) })
         }
         if !plugin.bundled && plugin.managable {
-            items.append(.action("Uninstall…", symbol: "trash", destructive: true, run: uninstall))
+            items.append(.action(String(localized: "Uninstall…"), symbol: "trash", destructive: true, run: uninstall))
         }
         return items
     }

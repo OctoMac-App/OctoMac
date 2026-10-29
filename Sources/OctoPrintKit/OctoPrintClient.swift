@@ -16,23 +16,23 @@ public enum OctoPrintError: LocalizedError, Sendable {
     public var errorDescription: String? {
         switch self {
         case .invalidResponse:
-            "The server returned an invalid response."
+            String(localized: "The server returned an invalid response.")
         case .http(let status, let message):
-            message ?? "The server returned HTTP \(status)."
+            message ?? String(localized: "The server returned HTTP \(status).")
         case .unauthorized(let message):
-            message ?? "Not authorised. Check the API key for this instance."
+            message ?? String(localized: "Not authorised. Check the API key for this printer.")
         case .conflict(let message):
-            message ?? "The printer is not in a state that allows this (is it connected / idle?)."
+            message ?? String(localized: "The printer can't do that right now. Is it connected and idle?")
         case .decoding(let detail):
-            "Could not understand the server's response: \(detail)"
+            String(localized: "Could not understand the server's response: \(detail)")
         case .appKeysUnsupported:
-            "This OctoPrint instance doesn't support the Application Keys workflow. Paste an API key instead."
+            String(localized: "This OctoPrint can't hand out access this way. Paste an API key instead.")
         case .appKeyDenied:
-            "The access request was denied or timed out."
+            String(localized: "The access request was denied or timed out.")
         case .signInRequired:
-            "This address asks for a user name and password before OctoPrint. Add them under Sign-in."
+            String(localized: "This address asks for a user name and password before OctoPrint. Add them under Sign-in.")
         case .notOctoPrint:
-            "This address answered with a web page instead of OctoPrint, perhaps a sign-in page. Check the address, or add the headers it needs under Sign-in."
+            String(localized: "This address answered with a web page instead of OctoPrint, perhaps a sign-in page. Check the address, or add the headers it needs under Sign-in.")
         }
     }
 }

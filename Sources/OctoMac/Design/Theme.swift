@@ -240,13 +240,28 @@ extension ButtonStyle where Self == KeyButtonStyle {
 
 /// A selectable capsule chip (step sizes, filters).
 struct Chip: View {
-    let title: String
+    private let title: Text
     let selected: Bool
     let action: () -> Void
 
+    init(title: LocalizedStringKey, selected: Bool, action: @escaping () -> Void) {
+        self.init(text: Text(title), selected: selected, action: action)
+    }
+
+    /// For a value shown as it is, such as a temperature.
+    init(verbatim title: String, selected: Bool, action: @escaping () -> Void) {
+        self.init(text: Text(verbatim: title), selected: selected, action: action)
+    }
+
+    private init(text: Text, selected: Bool, action: @escaping () -> Void) {
+        self.title = text
+        self.selected = selected
+        self.action = action
+    }
+
     var body: some View {
         Button(action: action) {
-            Text(title)
+            title
                 .font(Typeface.number(13))
                 .foregroundStyle(selected ? Palette.graphite : Palette.dust)
                 .padding(.horizontal, 12)
@@ -297,14 +312,21 @@ extension View {
 
 /// Small section heading used inside panels: sentence case, quiet.
 struct PanelHeading: View {
-    let title: String
-    var detail: String?
+    let title: LocalizedStringKey
+    /// A translated note beside the title.
+    var detail: LocalizedStringKey?
+    /// Data shown as it is beside the title, such as a printer model from OctoPrint.
+    var verbatimDetail: String?
 
     var body: some View {
         HStack(alignment: .firstTextBaseline) {
             Text(title).font(Typeface.subhead).foregroundStyle(Palette.paper)
             Spacer()
-            if let detail { Text(detail).font(Typeface.caption).foregroundStyle(Palette.dust) }
+            if let detail {
+                Text(detail).font(Typeface.caption).foregroundStyle(Palette.dust)
+            } else if let verbatimDetail {
+                Text(verbatim: verbatimDetail).font(Typeface.caption).foregroundStyle(Palette.dust)
+            }
         }
     }
 }

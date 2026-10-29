@@ -88,7 +88,7 @@ public struct Webcam: Sendable, Hashable, Identifiable {
         let legacy = settings?.value(at: "plugins", "classicwebcam") ?? settings?["webcam"]
         guard let stream = (settings?.value(at: "plugins", "classicwebcam", "stream") ?? settings?.value(at: "webcam", "streamUrl"))?.stringValue,
               !stream.isEmpty else { return [] }
-        return [Webcam(name: "classic", displayName: "Camera", stream: stream,
+        return [Webcam(name: "classic", displayName: String(localized: "Camera"), stream: stream,
                        flipH: legacy?["flipH"]?.boolValue ?? false, flipV: legacy?["flipV"]?.boolValue ?? false,
                        rotate90: legacy?["rotate90"]?.boolValue ?? false)]
     }

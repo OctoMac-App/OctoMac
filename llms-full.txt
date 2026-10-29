@@ -47,6 +47,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Progress on the Dock icon.** A bar across OctoMac's Dock icon shows how far along the print that finishes soonest is.
 - **Keyboard shortcuts.** ⌥⌘1 to ⌥⌘9 jump between printers and ⌥⌘0 shows them all. ⌥⌘P pauses or resumes the print on screen, and ⌥⌘C pops its camera out into picture in picture. ⌘1 to ⌘6 switch tabs.
 - **Celsius or Fahrenheit.** Celsius by default; switch in Settings.
+- **In your language.** OctoMac speaks English (UK and US), Czech, Danish, Dutch, Finnish, French, German, Italian, Norwegian, Polish, Portuguese, Spanish and Swedish. It follows your Mac's language, falling back to UK English, and you can choose a different one in **Settings → General**.
 
 ![The 3D G-code preview following a live print](https://raw.githubusercontent.com/OctoMac-App/OctoMac/master/docs/screenshots/live-preview.png)
 
@@ -285,6 +286,7 @@ No printer handy? Start OctoMac with `--demo`, or choose **Help → Try Demo Mod
 - Keep pull requests focused: one fix or feature each.
 - Match the style of the code around your change. The app is SwiftUI, and the colours, fonts and shared controls live in `Sources/OctoMac/Design`.
 - `Sources/OctoPrintKit` is a standalone library for the OctoPrint API. Anything that talks to OctoPrint belongs there, with a test in `Tests/OctoPrintKitTests` where it makes sense.
+- Every piece of text people can see must be translatable. In SwiftUI, a string literal in `Text`, `Button`, `Label` and the like already is; text built in code uses `String(localized:)`. Data from OctoPrint or the printer (names, file names, its own messages) is shown as it is with `Text(verbatim:)`. Then run `scripts/extract-strings.sh` to add new text to `Support/Localization/Localizable.xcstrings`, and translate it into every language: `scripts/translations.py export DIR` lists what's missing, and `scripts/translations.py import DIR` merges translation files back in. GitHub Actions fails if any text isn't in the catalog or isn't translated into every language. OctoMac is translated into everything or nothing.
 - Write for people, not programmers. Text in the app and the README should be plain, friendly English. Please don't use long dashes; a comma, colon or full stop reads better.
 - Run `swift test` and try your change in the app (demo mode is fine) before opening the pull request.
 - Every push and pull request is built and tested on GitHub Actions. One of the tests checks that **Help → Report a Problem…** never includes printer names, addresses, API keys, user names or file names, so please keep it passing.
@@ -335,6 +337,7 @@ Each new build is a new binary to macOS, which can silently block its local netw
 ## Conventions
 
 - Match the surrounding code: its naming, comment density and SwiftUI style.
+- Everything people can see in the app is translated into all 14 languages (UK English is the source; see `scripts/translations.py`). New text must be marked for translation (a literal in a SwiftUI view, or `String(localized:)`), extracted with `scripts/extract-strings.sh`, and translated before it ships; CI fails otherwise. Data from OctoPrint, printers or files uses `Text(verbatim:)`. Numbers, durations and dates use the formatters in `Fmt` or Foundation's, never `String(format:)`, so they follow the language.
 - Text in the app, README and comments is plain, friendly British English, written for people rather than programmers. Never use long (em) dashes; use a comma, colon or full stop. CI fails if one appears.
 - Bug reports are GitHub issues only. Help → Report a Problem builds a diagnostics file that must never include printer names, addresses, API keys, proxy sign-ins, user names or file names; `DiagnosticsPrivacyTests` enforces this.
 - OctoPrint plugins are optional: check a plugin is present before using it, and fall back gracefully when it isn't.

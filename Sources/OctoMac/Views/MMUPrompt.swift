@@ -65,7 +65,7 @@ struct MMUPromptOverlay: View {
     }
 
     private var jobName: String {
-        guard let name = session.job?.file.displayName else { return "a print" }
+        guard let name = session.job?.file.displayName else { return String(localized: "a print") }
         return SlicedName(name).title
     }
 }
@@ -84,7 +84,7 @@ struct FilamentChoice: View {
                 ZStack {
                     Circle().fill(color ?? Palette.graphite)
                     Circle().strokeBorder(.white.opacity(0.25), lineWidth: 1)
-                    Text("\(number)")
+                    Text(verbatim: "\(number)")
                         .font(Typeface.number(15))
                         .foregroundStyle(color.map { $0.isLight ? Color.black.opacity(0.75) : Color.white } ?? Palette.paper)
                 }

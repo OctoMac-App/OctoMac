@@ -35,15 +35,15 @@ struct ChartEvent: Identifiable, Hashable {
 
         var label: String {
             switch self {
-            case .started: "Start"
-            case .done: "Done"
-            case .cancelled: "Cancel"
-            case .failed: "Failed"
-            case .paused: "Pause"
-            case .resumed: "Resume"
-            case .connected: "Connected"
-            case .disconnected: "Disconnected"
-            case .error: "Error"
+            case .started: String(localized: "Start", comment: "Chart marker: a print started")
+            case .done: String(localized: "Done", comment: "Chart marker: a print finished")
+            case .cancelled: String(localized: "Cancel", comment: "Chart marker: a print was cancelled")
+            case .failed: String(localized: "Failed", comment: "Chart marker: a print failed")
+            case .paused: String(localized: "Pause", comment: "Chart marker: a print was paused")
+            case .resumed: String(localized: "Resume", comment: "Chart marker: a print was resumed")
+            case .connected: String(localized: "Connected", comment: "Chart marker: the printer connected")
+            case .disconnected: String(localized: "Disconnected", comment: "Chart marker: the printer disconnected")
+            case .error: String(localized: "Error", comment: "Chart marker: the printer reported an error")
             }
         }
     }
@@ -228,22 +228,22 @@ final class PrinterSession {
 
     var stateText: String {
         switch link {
-        case .needsAPIKey: "Needs API key"
-        case .connecting: "Connecting…"
-        case .offline(let reason): reason.map { "Offline – \($0)" } ?? "Offline"
+        case .needsAPIKey: String(localized: "Needs API key")
+        case .connecting: String(localized: "Connecting…")
+        case .offline(let reason): reason.map { String(localized: "Offline: \($0)") } ?? String(localized: "Offline")
         case .online:
-            if isPrinterConnecting { "Connecting to printer…" }
-            else if !isPrinterConnected { printerFault ? "Printer stopped answering" : "Printer not connected" }
-            else { state?.text ?? "Online" }
+            if isPrinterConnecting { String(localized: "Connecting to printer…") }
+            else if !isPrinterConnected { printerFault ? String(localized: "Printer stopped answering") : String(localized: "Printer not connected") }
+            else { state.map { OctoPrintWords.state($0.text) } ?? String(localized: "Online") }
         }
     }
 
     /// Plain-language reason an action can't run right now, or nil if it can.
     var controlBlocker: String? {
-        if link != .online { return "OctoMac isn't connected to this OctoPrint server." }
-        if isPrinterConnecting { return "OctoPrint is still connecting to the printer." }
-        if !isPrinterConnected { return "The printer isn't connected. Connect it, then try again." }
-        if flags.isJobActive { return "The printer is busy with a print. Wait for it to finish, or stop it first." }
+        if link != .online { return String(localized: "OctoMac isn't connected to this OctoPrint server.") }
+        if isPrinterConnecting { return String(localized: "OctoPrint is still connecting to the printer.") }
+        if !isPrinterConnected { return String(localized: "The printer isn't connected. Connect it, then try again.") }
+        if flags.isJobActive { return String(localized: "The printer is busy with a print. Wait for it to finish, or stop it first.") }
         return nil
     }
 
@@ -624,9 +624,9 @@ final class PrinterSession {
         case .plugin(let id, let data) where id == PiSupportInfo.pluginID:
             if let update = PiSupportInfo.throttleUpdate(data) {
                 if update.currentIssue, throttle?.currentIssue != true {
-                    notify(.piWarning, "Raspberry Pi warning",
-                           update.currentUndervoltage ? "The Pi isn't getting enough power. Prints may stutter; try a better power supply."
-                                                      : "The Pi is too hot and is slowing down. Prints may stutter.")
+                    notify(.piWarning, String(localized: "Raspberry Pi warning"),
+                           update.currentUndervoltage ? String(localized: "The Pi isn't getting enough power. Prints may stutter; try a better power supply.")
+                                                      : String(localized: "The Pi is too hot and is slowing down. Prints may stutter."))
                 }
                 throttle = update
             }
@@ -672,7 +672,7 @@ final class PrinterSession {
         switch PrusaMMU.Message(data) {
         case .showPrompt:
             mmuPromptSince = .now
-            notify(.needsAttention, "Choose a filament", "The print is waiting for you to pick an MMU filament.")
+            notify(.needsAttention, String(localized: "Choose a filament"), String(localized: "The print is waiting for you to pick an MMU filament."))
         case .closePrompt:
             mmuPromptSince = nil
         case .state(let tool, let version):
@@ -707,7 +707,7 @@ final class PrinterSession {
             }
         case .error(let message):
             bedMeasuringSince = nil
-            error = ErrorBanner(message: "Bed Visualizer couldn't read the bed: \(message)")
+            error = ErrorBanner(message: String(localized: "Bed Visualizer couldn't read the bed: \(message)"))
         case nil:
             break
         }
@@ -737,11 +737,11 @@ final class PrinterSession {
     /// DisplayLayerProgress says a new layer has started: check the first layer, and run any alerts for it.
     private func layerChanged(from previous: Int?, to current: Int?) {
         guard let current, current != previous, flags.isJobActive, !isDemoSession else { return }
-        let file = job?.file.displayName.map { SlicedName($0).title } ?? "The print"
+        let file = job?.file.displayName.map { SlicedName($0).title } ?? String(localized: "The print")
         if current >= 2, !firstLayerChecked {
             firstLayerChecked = true
-            Notifier.shared.post(.firstLayer, printer: instance, title: "First layer done",
-                                 body: "\(file): check it looks right before it carries on.",
+            Notifier.shared.post(.firstLayer, printer: instance, title: String(localized: "First layer done"),
+                                 body: String(localized: "\(file): check it looks right before it carries on."),
                                  picture: cameraPicture(), actions: .printControls)
         }
         let due = layerAlerts.filter { $0.layer <= current && $0.layer > (previous ?? 0) }
@@ -750,12 +750,12 @@ final class PrinterSession {
         let layer = due.map(\.layer).max() ?? current
         if due.contains(where: { $0.action == .pause }) {
             jobCommand(.pause)
-            Notifier.shared.post(.layerReached, printer: instance, title: "Paused at layer \(layer)",
-                                 body: "\(file) is paused. Resume it when you're ready.", picture: cameraPicture())
+            Notifier.shared.post(.layerReached, printer: instance, title: String(localized: "Paused at layer \(layer)"),
+                                 body: String(localized: "\(file) is paused. Resume it when you're ready."), picture: cameraPicture())
         } else {
-            let total = layerProgress?.totalLayers.map { " of \($0)" } ?? ""
-            Notifier.shared.post(.layerReached, printer: instance, title: "Layer \(layer)\(total)",
-                                 body: "\(file) has reached layer \(layer).", picture: cameraPicture(), actions: .printControls)
+            let title = layerProgress?.totalLayers.map { String(localized: "Layer \(layer) of \($0)") } ?? String(localized: "Layer \(layer)")
+            Notifier.shared.post(.layerReached, printer: instance, title: title,
+                                 body: String(localized: "\(file) has reached layer \(layer)."), picture: cameraPicture(), actions: .printControls)
         }
     }
 
@@ -790,25 +790,32 @@ final class PrinterSession {
     }
 
     private func notifyAbout(_ event: ServerEvent) {
-        let file = event.payload["name"]?.stringValue.map { SlicedName($0).title }
+        let file = event.payload["name"]?.stringValue.map { SlicedName($0).title } ?? String(localized: "The print")
         switch event.type {
         case "PrintDone":
-            let time = event.payload["time"]?.doubleValue.map { " after \(Fmt.duration($0))" } ?? ""
-            notify(.printDone, "Print finished", "\(file ?? "The print") finished\(time).")
+            let body = event.payload["time"]?.doubleValue.map { String(localized: "\(file) finished after \(Fmt.duration($0)).") }
+                ?? String(localized: "\(file) finished.")
+            notify(.printDone, String(localized: "Print finished"), body)
         case "PrintFailed":
             // A cancel from OctoMac or OctoPrint arrives as PrintCancelled; this is the printer or an error.
-            let reason = event.payload["reason"]?.stringValue == "cancelled" ? "was stopped" : "failed"
-            notify(.printFailed, "Print \(reason == "failed" ? "failed" : "stopped")", "\(file ?? "The print") \(reason).")
+            if event.payload["reason"]?.stringValue == "cancelled" {
+                notify(.printFailed, String(localized: "Print stopped"), String(localized: "\(file) was stopped."))
+            } else {
+                notify(.printFailed, String(localized: "Print failed"), String(localized: "\(file) failed."))
+            }
         case "FilamentChange":
-            notify(.needsAttention, "Filament change", "The printer is asking for a filament change.")
+            notify(.needsAttention, String(localized: "Filament change"), String(localized: "The printer is asking for a filament change."))
         case "PrintPaused":
-            if !pausedHere { notify(.needsAttention, "Print paused", "\(file ?? "The print") is paused and waiting for you.") }
+            if !pausedHere { notify(.needsAttention, String(localized: "Print paused"), String(localized: "\(file) is paused and waiting for you.")) }
             pausedHere = false
         case "Error":
-            let message = event.payload["error"]?.stringValue ?? "The printer reported an error."
-            notify(.printerProblem, "Printer error", message)
+            // The printer's own message, as it sent it.
+            let message = event.payload["error"]?.stringValue ?? String(localized: "The printer reported an error.")
+            notify(.printerProblem, String(localized: "Printer error"), message)
         case "Disconnected":
-            if wasPrinting { notify(.printerProblem, "Printer disconnected", "The printer stopped answering in the middle of a print.") }
+            if wasPrinting {
+                notify(.printerProblem, String(localized: "Printer disconnected"), String(localized: "The printer stopped answering in the middle of a print."))
+            }
             wasPrinting = false
         default:
             break
@@ -819,9 +826,10 @@ final class PrinterSession {
         notifyAbout(event)
         if event.type == "PrintDone" || event.type == "PrintFailed" { log(event) }
         if event.type == "PrintDone", let next = journal.queue.first {
-            let more = journal.queue.count > 1 ? " (and \(journal.queue.count - 1) more)" : ""
-            Notifier.shared.post(.scheduled, printer: instance, title: "Next up: \(next.name)\(more)",
-                                 body: "Clear the bed, then start the next print.", picture: cameraPicture(), actions: .queueNext)
+            let others = journal.queue.count - 1
+            let title = others > 0 ? String(localized: "Next up: \(next.name) (and \(others) more)") : String(localized: "Next up: \(next.name)")
+            Notifier.shared.post(.scheduled, printer: instance, title: title,
+                                 body: String(localized: "Clear the bed, then start the next print."), picture: cameraPicture(), actions: .queueNext)
         }
         if let kind = ChartEvent.Kind(eventType: event.type) {
             chartEvents.append(ChartEvent(time: .now, kind: kind))
@@ -887,16 +895,16 @@ final class PrinterSession {
         } catch OctoPrintError.conflict(let message) {
             // OctoPrint's 409 messages are generic (e.g. "already printing" when the printer is simply disconnected),
             // so prefer what we know about the printer's state.
-            self.error = ErrorBanner(message: controlBlocker ?? message ?? "The printer can't do that right now.")
+            self.error = ErrorBanner(message: controlBlocker ?? message ?? String(localized: "The printer can't do that right now."))
             return nil
         } catch OctoPrintError.unauthorized(let message) {
             // 403 means either a bad key or a permission the account lacks; only the first should lock the printer.
             let user = try? await client.currentUser()
             if user?.name == nil {
                 link = .needsAPIKey
-                self.error = ErrorBanner(message: "OctoPrint no longer accepts this API key. Request access again.")
+                self.error = ErrorBanner(message: String(localized: "OctoPrint no longer accepts this API key. Request access again."))
             } else {
-                self.error = ErrorBanner(message: message ?? "Your OctoPrint account doesn't have permission to do that.")
+                self.error = ErrorBanner(message: message ?? String(localized: "Your OctoPrint account doesn't have permission to do that."))
             }
             return nil
         } catch {
@@ -1033,8 +1041,8 @@ final class PrinterSession {
         scheduleTimer = nil
         guard let scheduled = journal.scheduled else { return }
         if scheduled.start < Date.now.addingTimeInterval(-300) {
-            notify(.scheduled, "Scheduled print missed",
-                   "\(scheduled.name) was due to start at \(scheduled.start.formatted(date: .omitted, time: .shortened)), but OctoMac wasn't open.")
+            notify(.scheduled, String(localized: "Scheduled print missed"),
+                   String(localized: "\(scheduled.name) was due to start at \(scheduled.start.formatted(date: .omitted, time: .shortened)), but OctoMac wasn't open."))
             updateJournal { $0.scheduled = nil }
             return
         }
@@ -1050,12 +1058,13 @@ final class PrinterSession {
         updateJournal { $0.scheduled = nil }
         guard !isDemoSession else { return }
         if let blocker = controlBlocker {
-            notify(.scheduled, "Scheduled print didn't start", "\(scheduled.name): \(blocker)")
+            notify(.scheduled, String(localized: "Scheduled print didn't start"), String(localized: "\(scheduled.name): \(blocker)"))
             return
         }
         let origin = FileOrigin(rawValue: scheduled.origin) ?? .local
         perform { [client] in try await client.select(scheduled.path, origin: origin, print: true) }
-        notify(.scheduled, "Scheduled print started", "\(scheduled.name) should be done around \(scheduled.finish.formatted(date: .omitted, time: .shortened)).")
+        notify(.scheduled, String(localized: "Scheduled print started"),
+               String(localized: "\(scheduled.name) should be done around \(scheduled.finish.formatted(date: .omitted, time: .shortened))."))
     }
 
     func addToQueue(_ file: FileEntry) {

@@ -198,7 +198,7 @@ struct StageHeader: View {
 /// A small icon button beside the printer's name; quiet until hovered.
 struct HeaderIconButton: View {
     let symbol: String
-    let help: String
+    let help: LocalizedStringKey
     let action: () -> Void
     @State private var hovering = false
 
@@ -381,7 +381,7 @@ struct EmergencyStopConfirmation: View {
         }
     }
 
-    private func bullet(_ symbol: String, _ text: String) -> some View {
+    private func bullet(_ symbol: String, _ text: LocalizedStringKey) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {
             Image(systemName: symbol).foregroundStyle(Palette.hot).frame(width: 18)
             Text(text).font(Typeface.body).foregroundStyle(Palette.dust).fixedSize(horizontal: false, vertical: true)
@@ -469,9 +469,9 @@ struct StopPrintConfirmation: View {
 
     private var progressSummary: String {
         let percent = Int((session.progress?.fraction ?? 0) * 100)
-        var parts = ["\(percent)% done"]
-        if let printTime = session.progress?.printTime, printTime > 0 { parts.append("printing for \(Fmt.duration(printTime))") }
-        if let left = session.progress?.printTimeLeft, left > 0 { parts.append("\(Fmt.duration(left)) left") }
+        var parts = [String(localized: "\(percent)% done")]
+        if let printTime = session.progress?.printTime, printTime > 0 { parts.append(String(localized: "printing for \(Fmt.duration(printTime))")) }
+        if let left = session.progress?.printTimeLeft, left > 0 { parts.append(String(localized: "\(Fmt.duration(left)) left")) }
         return parts.joined(separator: ", ")
     }
 }
@@ -483,7 +483,9 @@ struct ConnectionButton: View {
         AppMenu(items: items) {
             HStack(spacing: 8) {
                 StatusLamp(color: session.isPrinterConnected ? Palette.ready : Palette.faint, lit: session.isPrinterConnected)
-                Text(session.isPrinterConnected ? (session.connection?.current.port.map { ($0 as NSString).lastPathComponent } ?? "Connected") : "Not connected")
+                (session.isPrinterConnected
+                    ? (session.connection?.current.port.map { Text(verbatim: ($0 as NSString).lastPathComponent) } ?? Text("Connected"))
+                    : Text("Not connected"))
                     .font(Typeface.text(13, .demibold))
                     .foregroundStyle(Palette.paper)
                 Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold)).foregroundStyle(Palette.faint)
@@ -492,17 +494,19 @@ struct ConnectionButton: View {
             .padding(.vertical, 8)
             .machined(radius: 17)
         }
-        .help(session.isPrinterConnected ? "Printer connected (\(session.connection?.current.port ?? "serial"))" : "Printer not connected")
+        .help(session.isPrinterConnected
+              ? (session.connection?.current.port.map { String(localized: "Printer connected (\($0))") } ?? String(localized: "Printer connected"))
+              : String(localized: "Printer not connected"))
         .disabled(session.link != .online)
     }
 
     private var items: [AppMenuItem] {
         if session.isPrinterConnected {
-            return [.action("Disconnect from printer", symbol: "bolt.slash", disabled: session.flags.isJobActive) { session.disconnectPrinter() }]
+            return [.action(String(localized: "Disconnect from printer"), symbol: "bolt.slash", disabled: session.flags.isJobActive) { session.disconnectPrinter() }]
         }
-        return [.action("Connect automatically", symbol: "bolt") { session.connectPrinter() }]
+        return [.action(String(localized: "Connect automatically"), symbol: "bolt") { session.connectPrinter() }]
             + (session.connection?.options.ports ?? []).map { port in
-                .action("Connect on \(port)", symbol: "cable.connector") { session.connectPrinter(ConnectRequest(port: port)) }
+                .action(String(localized: "Connect on \(port)"), symbol: "cable.connector") { session.connectPrinter(ConnectRequest(port: port)) }
             }
     }
 }
@@ -530,8 +534,10 @@ struct UploadPanel: View {
 
     private var heading: String {
         let active = session.uploads.filter { $0.state == .uploading }.count
-        if active == 0 { return session.uploads.contains { if case .failed = $0.state { true } else { false } } ? "Upload problem" : "Uploaded" }
-        return active == 1 ? "Uploading 1 file" : "Uploading \(active) files"
+        if active == 0 {
+            return session.uploads.contains { if case .failed = $0.state { true } else { false } } ? String(localized: "Upload problem") : String(localized: "Uploaded")
+        }
+        return active == 1 ? String(localized: "Uploading 1 file") : String(localized: "Uploading \(active) files")
     }
 }
 

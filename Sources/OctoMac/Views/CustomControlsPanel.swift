@@ -87,11 +87,12 @@ private struct ControlButton: View {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .help(action.script.map { "Runs the \($0) script" } ?? action.commands.joined(separator: "\n"))
+            .help(action.script.map { String(localized: "Runs the \($0) script") } ?? action.commands.joined(separator: "\n"))
         }
         .sheet(isPresented: $confirming) {
-            ConfirmSheet(symbol: "questionmark.circle", tint: Palette.warm, title: "\(action.name)?",
-                         message: action.confirm ?? "", confirmTitle: action.name, onConfirm: run)
+            // The control's name and message are written in OctoPrint, so they're shown as they are.
+            ConfirmSheet(symbol: "questionmark.circle", tint: Palette.warm, title: Text(verbatim: "\(action.name)?"),
+                         message: Text(verbatim: action.confirm ?? ""), confirmTitle: Text(verbatim: action.name), onConfirm: run)
         }
     }
 

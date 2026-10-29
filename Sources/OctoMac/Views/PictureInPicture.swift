@@ -142,7 +142,7 @@ struct PictureInPictureView: View {
         ["tool0", "bed", "chamber"].filter { session.heaters[$0]?.actual != nil }
     }
 
-    private func pipButton(_ symbol: String, help: String, action: @escaping () -> Void) -> some View {
+    private func pipButton(_ symbol: String, help: LocalizedStringKey, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: 11, weight: .bold))

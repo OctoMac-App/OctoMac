@@ -158,7 +158,7 @@ final class MJPEGStreamer {
     private func ended(_ message: String?, generation: Int) {
         // Ignore callbacks from a session we've already replaced.
         guard generation == self.generation else { return }
-        failure = message ?? "The camera stream ended"
+        failure = message ?? String(localized: "The camera stream ended")
         retry = Task { [weak self] in
             try? await Task.sleep(for: .seconds(5))
             guard !Task.isCancelled else { return }
@@ -205,7 +205,7 @@ private final class StreamDelegate: NSObject, URLSessionDataDelegate, @unchecked
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         if let error = error as? URLError, error.code == .cancelled { return }
         if let http = task.response as? HTTPURLResponse, !(200..<300).contains(http.statusCode) {
-            onEnd("Webcam returned HTTP \(http.statusCode)")
+            onEnd(String(localized: "The camera returned HTTP \(http.statusCode)"))
         } else if error == nil, task.response?.mimeType?.hasPrefix("image/") == true {
             // Single-image snapshot: nothing more to stream, keep the frame.
             return
@@ -252,7 +252,7 @@ enum Snapshot {
     static func fileName(printer: String, ext: String) -> String {
         let stamp = Date.now.formatted(.iso8601.year().month().day()) + " "
             + Date.now.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).second(.twoDigits))
-        return "\(printer) snapshot \(stamp).\(ext)".replacingOccurrences(of: ":", with: ".")
+        return String(localized: "\(printer) snapshot \(stamp)").replacingOccurrences(of: ":", with: ".") + ".\(ext)"
     }
 }
 
@@ -284,19 +284,19 @@ struct SnapshotMenu: View {
         // Printers with more than one camera: pick which one to watch.
         let cams = session.webcams
         if cams.count > 1 {
-            items.append(.heading("Camera"))
+            items.append(.heading(String(localized: "Camera")))
             items += cams.map { cam in
                 .action(cam.displayName, checked: session.webcam?.name == cam.name) { session.chooseWebcam(cam) }
             }
             items.append(.divider)
         }
         items += [
-            .action("Save snapshot (JPEG)…", symbol: "square.and.arrow.down") { save(png: false) },
-            .action("Save snapshot (PNG)…", symbol: "square.and.arrow.down") { save(png: true) },
+            .action(String(localized: "Save snapshot (JPEG)…"), symbol: "square.and.arrow.down") { save(png: false) },
+            .action(String(localized: "Save snapshot (PNG)…"), symbol: "square.and.arrow.down") { save(png: true) },
             .divider,
-            .action("Copy snapshot", symbol: "doc.on.doc") { copy() },
+            .action(String(localized: "Copy snapshot"), symbol: "doc.on.doc") { copy() },
             .divider,
-            .action("Record GIF or video…", symbol: "record.circle") { recordingClip = true },
+            .action(String(localized: "Record GIF or video…"), symbol: "record.circle") { recordingClip = true },
         ]
         return items
     }
@@ -305,7 +305,7 @@ struct SnapshotMenu: View {
         guard let frame = session.camera.latestFrameData else { return }
         let transform = session.webcamTransform
         guard let data = png ? Snapshot.png(frame, transform: transform) : Snapshot.jpeg(frame, transform: transform) else {
-            session.error = ErrorBanner(message: "Couldn't read the current camera frame.")
+            session.error = ErrorBanner(message: String(localized: "Couldn't read the current camera frame."))
             return
         }
         SaveFile.present(data: data, name: Snapshot.fileName(printer: session.instance.name, ext: png ? "png" : "jpg"),

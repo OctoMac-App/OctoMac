@@ -24,7 +24,8 @@ struct Wordmark: View {
     static let green = Palette.accent
 
     var body: some View {
-        (Text("Octo").foregroundStyle(Self.green) + Text("Mac").foregroundStyle(Palette.paper))
+        // The name, never translated.
+        (Text(verbatim: "Octo").foregroundStyle(Self.green) + Text(verbatim: "Mac").foregroundStyle(Palette.paper))
             .font(Typeface.text(size, .bold))
             .tracking(-size * 0.02)
             .fixedSize()

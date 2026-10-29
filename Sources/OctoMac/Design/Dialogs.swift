@@ -6,12 +6,30 @@ import SwiftUI
 struct ConfirmSheet<Detail: View>: View {
     let symbol: String
     var tint: Color = Palette.hot
-    let title: String
-    let message: String
-    let confirmTitle: String
+    let title: Text
+    let message: Text
+    let confirmTitle: Text
     let onConfirm: () -> Void
     @ViewBuilder var detail: Detail
     @Environment(\.dismiss) private var dismiss
+
+    init(symbol: String, tint: Color = Palette.hot, title: LocalizedStringKey, message: LocalizedStringKey, confirmTitle: LocalizedStringKey,
+         onConfirm: @escaping () -> Void, @ViewBuilder detail: () -> Detail) {
+        self.init(symbol: symbol, tint: tint, title: Text(title), message: Text(message), confirmTitle: Text(confirmTitle),
+                  onConfirm: onConfirm, detail: detail)
+    }
+
+    /// For text that's already translated, or comes from OctoPrint (a custom control's own confirmation).
+    init(symbol: String, tint: Color = Palette.hot, title: Text, message: Text, confirmTitle: Text,
+         onConfirm: @escaping () -> Void, @ViewBuilder detail: () -> Detail) {
+        self.symbol = symbol
+        self.tint = tint
+        self.title = title
+        self.message = message
+        self.confirmTitle = confirmTitle
+        self.onConfirm = onConfirm
+        self.detail = detail()
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
@@ -21,10 +39,10 @@ struct ConfirmSheet<Detail: View>: View {
                     .foregroundStyle(tint)
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(tint.opacity(0.15)))
-                Text(title).font(Typeface.title).foregroundStyle(Palette.paper)
+                title.font(Typeface.title).foregroundStyle(Palette.paper)
             }
             detail
-            Text(message)
+            message
                 .font(Typeface.body)
                 .foregroundStyle(Palette.dust)
                 .lineSpacing(3)
@@ -34,9 +52,11 @@ struct ConfirmSheet<Detail: View>: View {
                 Button("Cancel") { dismiss() }
                     .buttonStyle(.plateQuiet)
                     .keyboardShortcut(.cancelAction)
-                Button(confirmTitle) {
+                Button {
                     onConfirm()
                     dismiss()
+                } label: {
+                    confirmTitle
                 }
                 .buttonStyle(.plate(tint))
             }
@@ -48,7 +68,12 @@ struct ConfirmSheet<Detail: View>: View {
 }
 
 extension ConfirmSheet where Detail == EmptyView {
-    init(symbol: String, tint: Color = Palette.hot, title: String, message: String, confirmTitle: String, onConfirm: @escaping () -> Void) {
+    init(symbol: String, tint: Color = Palette.hot, title: LocalizedStringKey, message: LocalizedStringKey, confirmTitle: LocalizedStringKey,
+         onConfirm: @escaping () -> Void) {
+        self.init(symbol: symbol, tint: tint, title: title, message: message, confirmTitle: confirmTitle, onConfirm: onConfirm) { EmptyView() }
+    }
+
+    init(symbol: String, tint: Color = Palette.hot, title: Text, message: Text, confirmTitle: Text, onConfirm: @escaping () -> Void) {
         self.init(symbol: symbol, tint: tint, title: title, message: message, confirmTitle: confirmTitle, onConfirm: onConfirm) { EmptyView() }
     }
 }
@@ -82,15 +107,15 @@ struct FileSummaryCard: View {
 
     private var folderSummary: String {
         let count = file.children?.count ?? 0
-        return count == 1 ? "1 item" : "\(count) items"
+        return count == 1 ? String(localized: "1 item") : String(localized: "\(count) items")
     }
 }
 
 /// Asks for a name (e.g. a new folder), in the app's style.
 struct NameSheet: View {
-    let title: String
-    let placeholder: String
-    let confirmTitle: String
+    let title: LocalizedStringKey
+    let placeholder: LocalizedStringKey
+    let confirmTitle: LocalizedStringKey
     let onConfirm: (String) -> Void
     @State private var name = ""
     @Environment(\.dismiss) private var dismiss

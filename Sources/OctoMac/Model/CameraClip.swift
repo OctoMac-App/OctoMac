@@ -116,14 +116,15 @@ final class ClipRecorder {
         timer?.invalidate()
         timer = nil
         guard frames.count >= 2 else {
-            phase = .failed("The camera didn't send any pictures. Check it's working, then try again.")
+            phase = .failed(String(localized: "The camera didn't send any pictures. Check it's working, then try again."))
             return
         }
         phase = .encoding
         let frames = self.frames, settings = self.settings, transform = self.transform
         let stamp = Date.now.formatted(.iso8601.year().month().day()) + " "
             + Date.now.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).second(.twoDigits))
-        let file = "\(name) \(settings.mode == .timelapse ? "timelapse" : "clip") \(stamp)".replacingOccurrences(of: ":", with: ".")
+        let file = (settings.mode == .timelapse ? String(localized: "\(name) timelapse \(stamp)") : String(localized: "\(name) clip \(stamp)"))
+            .replacingOccurrences(of: ":", with: ".")
         let url = FileManager.default.temporaryDirectory.appending(path: "OctoMac clips", directoryHint: .isDirectory)
             .appending(path: "\(file).\(settings.format == .gif ? "gif" : "mp4")")
         self.frames = []
@@ -158,7 +159,7 @@ enum ClipEncoder {
         try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
         try? FileManager.default.removeItem(at: url)
         let images = frames.compactMap { image(from: $0, transform: transform, width: settings.size.rawValue) }
-        guard images.count >= 2 else { return .failure(Failure(errorDescription: "Couldn't read the camera's pictures.")) }
+        guard images.count >= 2 else { return .failure(Failure(errorDescription: String(localized: "Couldn't read the camera's pictures."))) }
         do {
             switch settings.format {
             case .gif: try gif(images, to: url, fps: settings.fps, loops: settings.loops)
@@ -188,14 +189,14 @@ enum ClipEncoder {
 
     private static func gif(_ images: [CGImage], to url: URL, fps: Int, loops: Bool) throws {
         guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.gif.identifier as CFString, images.count, nil) else {
-            throw Failure(errorDescription: "Couldn't create the GIF.")
+            throw Failure(errorDescription: String(localized: "Couldn't create the GIF."))
         }
         CGImageDestinationSetProperties(destination, [
             kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: loops ? 0 : 1],
         ] as CFDictionary)
         let frame = [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 1.0 / Double(fps)]] as CFDictionary
         for image in images { CGImageDestinationAddImage(destination, image, frame) }
-        guard CGImageDestinationFinalize(destination) else { throw Failure(errorDescription: "Couldn't finish the GIF.") }
+        guard CGImageDestinationFinalize(destination) else { throw Failure(errorDescription: String(localized: "Couldn't finish the GIF.")) }
     }
 
     private static func mp4(_ images: [CGImage], to url: URL, fps: Int) throws {
@@ -214,7 +215,7 @@ enum ClipEncoder {
             kCVPixelBufferHeightKey as String: h,
         ])
         writer.add(input)
-        guard writer.startWriting() else { throw writer.error ?? Failure(errorDescription: "Couldn't start the video.") }
+        guard writer.startWriting() else { throw writer.error ?? Failure(errorDescription: String(localized: "Couldn't start the video.")) }
         writer.startSession(atSourceTime: .zero)
         for (index, image) in images.enumerated() {
             while !input.isReadyForMoreMediaData { usleep(2_000) }
@@ -235,6 +236,6 @@ enum ClipEncoder {
         let done = DispatchSemaphore(value: 0)
         writer.finishWriting { done.signal() }
         done.wait()
-        if writer.status != .completed { throw writer.error ?? Failure(errorDescription: "Couldn't finish the video.") }
+        if writer.status != .completed { throw writer.error ?? Failure(errorDescription: String(localized: "Couldn't finish the video.")) }
     }
 }

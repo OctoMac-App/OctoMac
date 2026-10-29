@@ -18,16 +18,17 @@ struct BedMeshPanel: View {
     private var history: [PrinterJournal.Mesh] { Array(session.journal.meshes.dropLast().reversed()) }
 
     /// What the map shows: the latest bed, an earlier one, or how much each point has moved since then.
-    private var shown: (mesh: BedLevelVisualizer.Mesh, detail: String?, isChange: Bool)? {
+    private var shown: (mesh: BedLevelVisualizer.Mesh, detail: LocalizedStringKey?, isChange: Bool)? {
         guard let latest = session.bedMesh else { return nil }
         guard let earlier, let past = session.journal.meshes.first(where: { $0.date == earlier }) else {
-            return (latest, latest.measured.map { "Measured \($0)" }, false)
+            return (latest, latest.measured.map { measured -> LocalizedStringKey in "Measured \(measured)" }, false)
         }
         let then = past.mesh
+        let when = past.date.formatted(date: .abbreviated, time: .shortened)
         if showsChange, let change = latest.change(since: then) {
-            return (change, "Change since \(then.measured ?? "then")", true)
+            return (change, "Change since \(when)", true)
         }
-        return (then, "Measured \(then.measured ?? "earlier")", false)
+        return (then, "Measured \(when)", false)
     }
 
     var body: some View {
@@ -36,7 +37,7 @@ struct BedMeshPanel: View {
             VStack(alignment: .leading, spacing: 18) {
                 if !history.isEmpty, session.bedMesh != nil {
                     HStack(spacing: 12) {
-                        PlateMenu(selection: $earlier, options: [(nil, "Latest measurement")]
+                        PlateMenu(selection: $earlier, options: [(nil, String(localized: "Latest measurement"))]
                                   + history.map { ($0.date, $0.date.formatted(date: .abbreviated, time: .shortened)) })
                             .frame(maxWidth: 240)
                         if earlier != nil {
@@ -97,7 +98,7 @@ struct BedMeshPanel: View {
     private var controls: some View {
         HStack(spacing: 10) {
             if session.bedMesh != nil {
-                CapsulePicker(selection: $style, options: Style.allCases.map { ($0, $0.rawValue) }, compact: true)
+                CapsulePicker(selection: $style, options: [(.map, "Map"), (.surface, "3D")], compact: true)
             }
             Spacer()
             if !settings.canMeasure {
@@ -115,21 +116,21 @@ struct BedMeshPanel: View {
                 Button { session.measureBed() } label: { Label("Measure bed", systemImage: "square.grid.3x3.middle.filled") }
                     .buttonStyle(.plate)
                     .disabled(!session.canControl)
-                    .help(session.controlBlocker ?? "Homes the printer and probes the bed")
+                    .help(session.controlBlocker ?? String(localized: "Homes the printer and probes the bed"))
             }
         }
     }
 
-    private func stat(_ title: String, _ value: Double?, signed: Bool = false, help: String? = nil) -> some View {
+    private func stat(_ title: LocalizedStringKey, _ value: Double?, signed: Bool = false, help: LocalizedStringKey? = nil) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(title).font(Typeface.caption).foregroundStyle(Palette.faint)
             HStack(alignment: .firstTextBaseline, spacing: 3) {
                 Text(value.map { BedMeshColors.format($0, signed: signed) } ?? "–")
                     .font(Typeface.number(24)).foregroundStyle(Palette.paper)
-                Text("mm").font(Typeface.number(13)).foregroundStyle(Palette.faint)
+                Text(verbatim: "mm").font(Typeface.number(13)).foregroundStyle(Palette.faint)
             }
         }
-        .help(help ?? "")
+        .help(help.map { Text($0) } ?? Text(verbatim: ""))
     }
 }
 
@@ -147,7 +148,7 @@ enum BedMeshColors {
     }
 
     static func format(_ value: Double, signed: Bool) -> String {
-        let text = String(format: "%.3f", value)
+        let text = Fmt.decimal(value, 3)
         return signed && value > 0 ? "+" + text : text
     }
 
@@ -220,8 +221,8 @@ struct BedMeshMap: View {
     }
 
     private func position(row: Int, column: Int) -> String {
-        let x = mesh.x.indices.contains(column) ? "X \(Int(mesh.x[column]))" : "Column \(column + 1)"
-        let y = mesh.y.indices.contains(row) ? "Y \(Int(mesh.y[row]))" : "Row \(row + 1)"
+        let x = mesh.x.indices.contains(column) ? "X \(Int(mesh.x[column]))" : String(localized: "Column \(column + 1)")
+        let y = mesh.y.indices.contains(row) ? "Y \(Int(mesh.y[row]))" : String(localized: "Row \(row + 1)")
         return "\(x), \(y) mm"
     }
 }
@@ -291,9 +292,10 @@ struct BedMeshSurface: View {
             }
 
             // Which way round the bed is: labels just beyond the front and back edges, dimmer when on the far side.
-            for (label, y) in [("Front", -1.25), ("Back", 1.25)] {
+            for (label, y) in [(String(localized: "Front", comment: "The front edge of the print bed"), -1.25),
+                               (String(localized: "Back", comment: "The back edge of the print bed"), 1.25)] {
                 let spot = project(x: 0, y: y, height: 0)
-                let text = Text(label).font(Typeface.text(12, .demibold))
+                let text = Text(verbatim: label).font(Typeface.text(12, .demibold))
                     .foregroundStyle(spot.depth > 0 ? Palette.faint : Palette.paper)
                 context.draw(text, at: spot.point)
             }
@@ -329,8 +331,8 @@ struct BedCommandSheet: View {
 
     private let suggestions: [(name: String, gcode: String)] = [
         ("Prusa MK3S, MK2.5S", "@BEDLEVELVISUALIZER\nG28 W\nG80\nG81"),
-        ("Marlin, probe", "@BEDLEVELVISUALIZER\nG28\nG29 T"),
-        ("Marlin, saved mesh", "@BEDLEVELVISUALIZER\nM420 V"),
+        (String(localized: "Marlin, probe"), "@BEDLEVELVISUALIZER\nG28\nG29 T"),
+        (String(localized: "Marlin, saved mesh"), "@BEDLEVELVISUALIZER\nM420 V"),
     ]
 
     var body: some View {

@@ -29,6 +29,7 @@ struct PrintersProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<PrintersEntry>) -> Void) {
         let snapshot = WidgetSnapshot.load()
+        WidgetLanguage.follow(snapshot)
         // While something prints, step the progress forward every two minutes; OctoMac also refreshes the widgets
         // whenever a printer changes.
         let printing = snapshot?.printers.contains { $0.status == .printing } ?? false
@@ -45,6 +46,7 @@ struct PrintersWidget: Widget {
         StaticConfiguration(kind: "OctoMacPrinters", provider: PrintersProvider()) { entry in
             PrintersWidgetView(entry: entry)
                 .containerBackground(Theme.graphite, for: .widget)
+                .environment(\.locale, entry.snapshot?.language.map(Locale.init(identifier:)) ?? .current)
         }
         .configurationDisplayName("Printers")
         .description("Your printers' progress, time left and temperatures.")
@@ -87,7 +89,7 @@ private struct SmallView: View {
                 Text("\(Int(progress * 100))%").font(.custom("DIN Alternate", size: 40).weight(.bold)).foregroundStyle(Theme.paper)
                     .contentTransition(.numericText())
                 ProgressBar(value: progress, tint: printer.tint)
-                Text(left.map { "\(Format.duration($0)) left" } ?? printer.statusText)
+                Text(left.map { String(localized: "\(Format.duration($0)) left") } ?? printer.statusText)
                     .font(.custom("Avenir Next", size: 11).weight(.medium)).foregroundStyle(Theme.dust).lineLimit(1)
             } else {
                 Text(printer.statusText).font(.custom("Avenir Next", size: 15).weight(.semibold)).foregroundStyle(Theme.paper).lineLimit(2)
@@ -263,19 +265,25 @@ struct ControlStatus {
 
 @available(macOS 26.0, *)
 struct ControlStatusProvider: ControlValueProvider {
-    var previewValue: ControlStatus { ControlStatus(title: "Workshop MK3S", detail: "64%, 1 hr 18 min left", symbol: "printer.fill") }
+    var previewValue: ControlStatus {
+        ControlStatus(title: "Workshop MK3S", detail: String(localized: "\(0.64.formatted(.percent)), \(Format.duration(4680)) left"), symbol: "printer.fill")
+    }
 
     func currentValue() async throws -> ControlStatus {
         guard let snapshot = WidgetSnapshot.load(), let printer = snapshot.featured else {
-            return ControlStatus(title: "OctoMac", detail: "Open OctoMac", symbol: "printer")
+            return ControlStatus(title: "OctoMac", detail: String(localized: "Open OctoMac"), symbol: "printer")
         }
         let (progress, left) = printer.projected(to: .now, from: snapshot.written)
         switch printer.status {
         case .printing, .paused:
-            let percent = progress.map { "\(Int($0 * 100))%" } ?? printer.statusText
-            let time = left.map { ", \(Format.duration($0)) left" } ?? ""
-            return ControlStatus(title: printer.name, detail: (printer.status == .paused ? "Paused, " : "") + percent + time,
-                                 symbol: printer.status == .paused ? "pause.circle" : "printer.fill")
+            let percent = progress.map { $0.formatted(.percent.precision(.fractionLength(0))) } ?? printer.statusText
+            let detail = switch (printer.status == .paused, left) {
+            case (true, let left?): String(localized: "Paused, \(percent), \(Format.duration(left)) left")
+            case (true, nil): String(localized: "Paused, \(percent)")
+            case (false, let left?): String(localized: "\(percent), \(Format.duration(left)) left")
+            case (false, nil): percent
+            }
+            return ControlStatus(title: printer.name, detail: detail, symbol: printer.status == .paused ? "pause.circle" : "printer.fill")
         default:
             return ControlStatus(title: printer.name, detail: printer.statusText, symbol: "printer")
         }
@@ -287,6 +295,18 @@ struct OpenOctoMac: AppIntent {
     static let title: LocalizedStringResource = "Open OctoMac"
     static let openAppWhenRun = true
     func perform() async throws -> some IntentResult { .result() }
+}
+
+/// The widgets show OctoMac's language, not necessarily the Mac's. Text in views follows the locale in their
+/// environment straight away; text made in code follows the extension's own language, which takes effect the next
+/// time macOS starts the extension.
+enum WidgetLanguage {
+    static func follow(_ snapshot: WidgetSnapshot?) {
+        guard let language = snapshot?.language else { return }
+        if (UserDefaults.standard.array(forKey: "AppleLanguages") as? [String])?.first != language {
+            UserDefaults.standard.set([language], forKey: "AppleLanguages")
+        }
+    }
 }
 
 // MARK: - Look
@@ -321,7 +341,7 @@ extension WidgetSnapshot.Printer {
 
 enum Format {
     static func duration(_ seconds: Double) -> String {
-        if seconds < 60 { return "<1 min" }
+        if seconds < 60 { return String(localized: "<1 min") }
         return Duration.seconds(seconds).formatted(.units(allowed: [.hours, .minutes], width: .abbreviated, maximumUnitCount: 2))
     }
 

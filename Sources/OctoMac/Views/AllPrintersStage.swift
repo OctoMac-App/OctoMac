@@ -43,11 +43,11 @@ struct AllPrintersStage: View {
         let printing = sessions.filter { $0.flags.isJobActive }.count
         let ready = sessions.filter { PrinterMood($0) == .ready }.count
         var parts: [String] = []
-        if printing > 0 { parts.append("\(printing) printing") }
-        if ready > 0 { parts.append("\(ready) ready") }
+        if printing > 0 { parts.append(String(localized: "\(printing) printing")) }
+        if ready > 0 { parts.append(String(localized: "\(ready) ready")) }
         let other = sessions.count - printing - ready
-        if other > 0 { parts.append("\(other) not connected") }
-        return parts.joined(separator: ", ")
+        if other > 0 { parts.append(String(localized: "\(other) not connected")) }
+        return parts.formatted(.list(type: .and, width: .narrow))
     }
 }
 

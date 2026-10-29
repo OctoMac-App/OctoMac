@@ -14,7 +14,8 @@ struct UploadChooser: View {
             Text(files.count == 1 ? "Upload \(files[0].lastPathComponent)?" : "Upload \(files.count) files?")
                 .font(Typeface.title).foregroundStyle(Palette.paper)
                 .lineLimit(2)
-            Text("Choose one or more printers. The file\(files.count == 1 ? " goes" : "s go") to each one's OctoPrint, ready to print.")
+            Text(files.count == 1 ? "Choose one or more printers. The file goes to each one's OctoPrint, ready to print."
+                                  : "Choose one or more printers. The files go to each one's OctoPrint, ready to print.")
                 .font(Typeface.body).foregroundStyle(Palette.dust)
             VStack(spacing: 8) {
                 ForEach(store.instances) { instance in

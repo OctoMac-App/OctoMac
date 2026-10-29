@@ -48,7 +48,7 @@ public enum PrusaMMU {
         /// "Filament 2" or "2: Mango Yellow PETG", matching the plugin's own wording.
         public func label(for filament: Filament) -> String {
             let number = indexAtZero ? filament.index : filament.index + 1
-            return filament.name.isEmpty ? "Filament \(number)" : filament.name
+            return filament.name.isEmpty ? String(localized: "Filament \(number)") : filament.name
         }
 
         public func number(for filament: Filament) -> Int { indexAtZero ? filament.index : filament.index + 1 }

@@ -67,12 +67,16 @@ VStack(spacing: 20) {
             TextField("mm", value: $extrudeAmount, format: .number)
                 .plateField()
                 .frame(width: 80)
-            Text("mm").font(Typeface.body).foregroundStyle(Palette.dust)
-            Spacer()
-            Button { session.extrude(-extrudeAmount) } label: { Label("Retract", systemImage: "arrow.up") }
+            Text(verbatim: "mm").font(Typeface.body).foregroundStyle(Palette.dust)
+            Spacer(minLength: 0)
+        }
+        // On their own line, so longer words in other languages never wrap mid-word.
+        HStack(spacing: 10) {
+            Button { session.extrude(-extrudeAmount) } label: { Label("Retract", systemImage: "arrow.up").lineLimit(1).fixedSize() }
                 .buttonStyle(.plateQuiet)
-            Button { session.extrude(extrudeAmount) } label: { Label("Extrude", systemImage: "arrow.down") }
+            Button { session.extrude(extrudeAmount) } label: { Label("Extrude", systemImage: "arrow.down").lineLimit(1).fixedSize() }
                 .buttonStyle(.plate)
+            Spacer(minLength: 0)
         }
         Text("The hotend has to be hot before the printer will push filament.")
             .font(Typeface.caption).foregroundStyle(Palette.faint)
@@ -152,19 +156,21 @@ VStack(spacing: 20) {
         Binding(get: { session[keyPath: keyPath] }, set: { session[keyPath: keyPath] = $0 })
     }
 
-    private func dialRow(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, step: Double, unit: String, apply: @escaping () -> Void) -> some View {
+    private func dialRow(_ title: LocalizedStringKey, value: Binding<Double>, range: ClosedRange<Double>, step: Double, unit: String, apply: @escaping () -> Void) -> some View {
         HStack(spacing: 14) {
-            Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).frame(width: 90, alignment: .leading)
+            Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
+                .lineLimit(2).minimumScaleFactor(0.8).fixedSize(horizontal: false, vertical: true)
+                .frame(width: 118, alignment: .leading)
             Slider(value: value, in: range, step: step) { editing in if !editing { apply() } }
                 .tint(Palette.accent)
-            Text("\(Int(value.wrappedValue))\(unit)")
+            Text(unit == "%" ? (value.wrappedValue / 100).formatted(.percent.precision(.fractionLength(0))) : "\(Int(value.wrappedValue))\(unit)")
                 .font(Typeface.number(17))
                 .foregroundStyle(Palette.paper)
                 .frame(width: 54, alignment: .trailing)
         }
     }
 
-    private func quick(_ title: String, _ gcode: String, _ symbol: String) -> some View {
+    private func quick(_ title: LocalizedStringKey, _ gcode: String, _ symbol: String) -> some View {
         Button { session.sendGcode(gcode) } label: {
             HStack(spacing: 10) {
                 Image(systemName: symbol).foregroundStyle(Palette.accent).frame(width: 18)

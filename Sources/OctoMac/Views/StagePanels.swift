@@ -4,14 +4,17 @@ import UniformTypeIdentifiers
 
 /// A titled panel on the stage.
 struct StagePanel<Content: View>: View {
-    let title: String
-    var detail: String?
+    let title: LocalizedStringKey
+    /// A translated note beside the title.
+    var detail: LocalizedStringKey?
+    /// Data shown as it is beside the title, such as a printer model from OctoPrint.
+    var verbatimDetail: String?
     var fills = false
     @ViewBuilder var content: Content
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            PanelHeading(title: title, detail: detail)
+            PanelHeading(title: title, detail: detail, verbatimDetail: verbatimDetail)
             content
         }
         .padding(22)
@@ -22,7 +25,7 @@ struct StagePanel<Content: View>: View {
 
 /// Explains why controls are disabled.
 struct StageNotice: View {
-    let text: String
+    let text: LocalizedStringKey
 
     var body: some View {
         Label(text, systemImage: "info.circle")

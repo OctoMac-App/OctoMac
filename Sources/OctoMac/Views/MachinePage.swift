@@ -56,24 +56,26 @@ struct MachinePage: View {
         .onAppear(perform: syncConnection)
         .onChange(of: session.connection) { syncConnection() }
         .sheet(item: $pendingCommand) { command in
-            ConfirmSheet(symbol: symbol(for: command.action), tint: Palette.warm, title: "\(command.name)?",
-                         message: (command.confirm ?? "") + " Any print in progress will stop.",
-                         confirmTitle: command.name, onConfirm: { session.run(command) })
+            let name = OctoPrintWords.commandName(command)
+            let message = [OctoPrintWords.commandConfirmation(command), String(localized: "Any print in progress will stop.")]
+                .compactMap { $0 }.joined(separator: " ")
+            ConfirmSheet(symbol: symbol(for: command.action), tint: Palette.warm, title: Text(verbatim: "\(name)?"),
+                         message: Text(verbatim: message), confirmTitle: Text(verbatim: name), onConfirm: { session.run(command) })
         }
     }
 
     private var printerPanel: some View {
-        StagePanel(title: "Printer", detail: session.currentProfile?.model) {
+        StagePanel(title: "Printer", verbatimDetail: session.currentProfile?.model) {
             if let profile = session.currentProfile {
                 VStack(alignment: .leading, spacing: 18) {
-                    Text(profile.name).font(Typeface.title).foregroundStyle(Palette.paper)
+                    Text(verbatim: profile.name).font(Typeface.title).foregroundStyle(Palette.paper)
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 120), alignment: .topLeading)], alignment: .leading, spacing: 16) {
                         if let volume = profile.volume {
                             fact("Build volume", [volume.width, volume.depth, volume.height].map { Fmt.number($0) }.joined(separator: " × "), unit: "mm")
                         }
                         fact("Nozzle", Fmt.number(profile.extruder?.nozzleDiameter ?? 0.4), unit: "mm")
                         fact("Extruders", "\(profile.extruder?.count ?? 1)", unit: nil)
-                        fact("Heated bed", profile.heatedBed == true ? "Yes" : "No", unit: nil)
+                        fact("Heated bed", profile.heatedBed == true ? String(localized: "Yes") : String(localized: "No"), unit: nil)
                     }
                     if let firmware = session.firmware {
                         VStack(alignment: .leading, spacing: 4) {
@@ -92,17 +94,17 @@ struct MachinePage: View {
     }
 
     private var connectionPanel: some View {
-        StagePanel(title: "Serial connection", detail: session.connection?.current.state) {
+        StagePanel(title: "Serial connection", verbatimDetail: session.connection.map { OctoPrintWords.state($0.current.state) }) {
             if let options = session.connection?.options {
                 VStack(spacing: 12) {
                     pickerRow("Port") {
-                        PlateMenu(selection: $port, options: [("", "Auto")] + options.ports.map { ($0, $0) })
+                        PlateMenu(selection: $port, options: [("", String(localized: "Auto"))] + options.ports.map { ($0, $0) })
                     }
                     pickerRow("Baud rate") {
-                        PlateMenu(selection: $baudrate, options: [(0, "Auto")] + options.baudrates.map { ($0, String($0)) })
+                        PlateMenu(selection: $baudrate, options: [(0, String(localized: "Auto"))] + options.baudrates.map { ($0, String($0)) })
                     }
                     pickerRow("Profile") {
-                        PlateMenu(selection: $profile, options: [("", "Default")] + options.printerProfiles.map { ($0.id, $0.name) })
+                        PlateMenu(selection: $profile, options: [("", String(localized: "Default"))] + options.printerProfiles.map { ($0.id, $0.name) })
                     }
                     HStack {
                         Toggle("Remember these settings", isOn: $saveConnection)
@@ -157,7 +159,7 @@ struct MachinePage: View {
                 ForEach(session.systemCommands) { command in
                     HStack {
                         Image(systemName: symbol(for: command.action)).foregroundStyle(Palette.accent).frame(width: 22)
-                        Text(command.name).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                        Text(verbatim: OctoPrintWords.commandName(command)).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
                         Spacer()
                         Button("Run") {
                             if command.confirm != nil { pendingCommand = command } else { session.run(command) }
@@ -172,7 +174,7 @@ struct MachinePage: View {
         }
     }
 
-    private func fact(_ title: String, _ value: String, unit: String?) -> some View {
+    private func fact(_ title: LocalizedStringKey, _ value: String, unit: String?) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
             HStack(alignment: .firstTextBaseline, spacing: 4) {
@@ -192,7 +194,7 @@ struct MachinePage: View {
         return text
     }
 
-    private func pickerRow<P: View>(_ title: String, @ViewBuilder picker: () -> P) -> some View {
+    private func pickerRow<P: View>(_ title: LocalizedStringKey, @ViewBuilder picker: () -> P) -> some View {
         HStack {
             Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).frame(width: 90, alignment: .leading)
             picker().frame(maxWidth: 300)
