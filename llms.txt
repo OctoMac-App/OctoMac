@@ -1,0 +1,24 @@
+# OctoMac
+
+> OctoMac is a free, open source Mac app (SwiftUI, macOS 15 or newer, Apple silicon and Intel) for controlling and monitoring 3D printers that run OctoPrint. It shows several printers at once, with live temperatures, progress, cameras, a 3D G-code preview, file management, history and statistics, notifications, widgets and plugin support. It needs an OctoPrint admin account and talks to OctoPrint directly over your network; it has no servers or accounts of its own.
+
+OctoMac is not affiliated with OctoPrint. It's distributed as a notarised disk image on GitHub Releases and updates itself with Sparkle. Bug reports go to GitHub issues only, using Help → Report a Problem in the app, which leaves out personal details.
+
+## Using OctoMac
+
+- [README](https://github.com/OctoMac-App/OctoMac/blob/master/README.md): what OctoMac does, how to install it, add a printer, and which OctoPrint plugins it supports
+- [Privacy](https://github.com/OctoMac-App/OctoMac/blob/master/PRIVACY.md): what OctoMac stores on your Mac, and what it never sends anywhere
+- [Releases](https://github.com/OctoMac-App/OctoMac/releases): downloads and release notes
+- [Issues](https://github.com/OctoMac-App/OctoMac/issues): bug reports and feature requests
+
+## Working on the code
+
+- [Contributing guide](https://github.com/OctoMac-App/OctoMac/blob/master/CONTRIBUTING.md): building, testing, style and how releases work
+- [CLAUDE.md](https://github.com/OctoMac-App/OctoMac/blob/master/CLAUDE.md): a map of the code and the project's conventions, for AI coding assistants
+- [Package.swift](https://github.com/OctoMac-App/OctoMac/blob/master/Package.swift): the Swift package (OctoPrintKit library, the app, its widgets and the tests)
+- [OctoPrintKit](https://github.com/OctoMac-App/OctoMac/tree/master/Sources/OctoPrintKit): a standalone Swift client for the OctoPrint REST API, push updates, Application Keys and G-code parsing
+
+## Optional
+
+- [OctoPrint API documentation](https://docs.octoprint.org/en/main/api/index.html): the API OctoMac uses
+- [Licence (MIT)](https://github.com/OctoMac-App/OctoMac/blob/master/LICENSE)
