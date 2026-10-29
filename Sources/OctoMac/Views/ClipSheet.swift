@@ -367,6 +367,11 @@ private struct AnimatedImage: NSViewRepresentable {
         view.image = NSImage(contentsOf: url)
         view.imageScaling = .scaleProportionallyUpOrDown
         view.animates = playing
+        // Fit the space it's given; left to itself, the view asks for the GIF's full size and widens the sheet.
+        for orientation in [NSLayoutConstraint.Orientation.horizontal, .vertical] {
+            view.setContentCompressionResistancePriority(.defaultLow, for: orientation)
+            view.setContentHuggingPriority(.defaultLow, for: orientation)
+        }
         return view
     }
 
