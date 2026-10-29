@@ -130,5 +130,7 @@ private struct HelpCommands: View {
         Button("Report a Problem…") { openWindow(id: "report") }
         Button("OctoMac on GitHub") { NSWorkspace.shared.open(URL(string: "https://github.com/OctoMac-App/OctoMac")!) }
         Button("Privacy") { NSWorkspace.shared.open(URL(string: "https://github.com/OctoMac-App/OctoMac/blob/master/PRIVACY.md")!) }
+        Divider()
+        Button("Support OctoMac") { NSWorkspace.shared.open(URL(string: "https://buymeacoffee.com/rogerthomas")!) }
     }
 }
