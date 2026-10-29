@@ -279,13 +279,12 @@ struct ChartExportMenu: View {
     let data: ChartData
 
     var body: some View {
-        Menu {
-            Button("Export as PNG…") { export(.png) }
-            Button("Export as SVG…") { export(.svg) }
-        } label: {
+        AppMenu(items: [
+            .action("Export as PNG…", symbol: "photo") { export(.png) },
+            .action("Export as SVG…", symbol: "square.on.square") { export(.svg) },
+        ]) {
             QuietMenuLabel(symbol: "square.and.arrow.down")
         }
-        .quietMenu()
         .help("Export this chart")
         .disabled(data.isEmpty)
     }

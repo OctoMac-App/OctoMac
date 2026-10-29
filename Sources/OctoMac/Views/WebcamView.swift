@@ -257,29 +257,32 @@ struct SnapshotMenu: View {
                     .background(Capsule().fill(.black.opacity(0.55)))
                     .transition(.opacity)
             }
-            Menu {
-                // Printers with more than one camera: pick which one to watch.
-                let cams = session.webcams
-                if cams.count > 1 {
-                    Section("Camera") {
-                        ForEach(cams) { cam in
-                            Toggle(cam.displayName, isOn: Binding(get: { session.webcam?.name == cam.name },
-                                                                  set: { if $0 { session.chooseWebcam(cam) } }))
-                        }
-                    }
-                    Divider()
-                }
-                Button("Save snapshot (JPEG)…") { save(png: false) }
-                Button("Save snapshot (PNG)…") { save(png: true) }
-                Divider()
-                Button("Copy snapshot") { copy() }
-            } label: {
+            AppMenu(items: menuItems) {
                 QuietMenuLabel(symbol: "camera", onDark: true)
             }
-            .quietMenu()
             .help(session.webcams.count > 1 ? "Switch camera, or save or copy the current frame" : "Save or copy the current camera frame")
         }
         .animation(.easeOut(duration: 0.2), value: copied)
+    }
+
+    private var menuItems: [AppMenuItem] {
+        var items: [AppMenuItem] = []
+        // Printers with more than one camera: pick which one to watch.
+        let cams = session.webcams
+        if cams.count > 1 {
+            items.append(.heading("Camera"))
+            items += cams.map { cam in
+                .action(cam.displayName, checked: session.webcam?.name == cam.name) { session.chooseWebcam(cam) }
+            }
+            items.append(.divider)
+        }
+        items += [
+            .action("Save snapshot (JPEG)…", symbol: "square.and.arrow.down") { save(png: false) },
+            .action("Save snapshot (PNG)…", symbol: "square.and.arrow.down") { save(png: true) },
+            .divider,
+            .action("Copy snapshot", symbol: "doc.on.doc") { copy() },
+        ]
+        return items
     }
 
     private func save(png: Bool) {

@@ -480,17 +480,7 @@ struct ConnectionButton: View {
     let session: PrinterSession
 
     var body: some View {
-        Menu {
-            if session.isPrinterConnected {
-                Button("Disconnect from printer") { session.disconnectPrinter() }
-                    .disabled(session.flags.isJobActive)
-            } else {
-                Button("Connect automatically") { session.connectPrinter() }
-                ForEach(session.connection?.options.ports ?? [], id: \.self) { port in
-                    Button("Connect on \(port)") { session.connectPrinter(ConnectRequest(port: port)) }
-                }
-            }
-        } label: {
+        AppMenu(items: items) {
             HStack(spacing: 8) {
                 StatusLamp(color: session.isPrinterConnected ? Palette.ready : Palette.faint, lit: session.isPrinterConnected)
                 Text(session.isPrinterConnected ? (session.connection?.current.port.map { ($0 as NSString).lastPathComponent } ?? "Connected") : "Not connected")
@@ -502,12 +492,18 @@ struct ConnectionButton: View {
             .padding(.vertical, 8)
             .machined(radius: 17)
         }
-        .menuStyle(.button)
-        .buttonStyle(.plain)
-        .menuIndicator(.hidden)
-        .fixedSize()
         .help(session.isPrinterConnected ? "Printer connected (\(session.connection?.current.port ?? "serial"))" : "Printer not connected")
         .disabled(session.link != .online)
+    }
+
+    private var items: [AppMenuItem] {
+        if session.isPrinterConnected {
+            return [.action("Disconnect from printer", symbol: "bolt.slash", disabled: session.flags.isJobActive) { session.disconnectPrinter() }]
+        }
+        return [.action("Connect automatically", symbol: "bolt") { session.connectPrinter() }]
+            + (session.connection?.options.ports ?? []).map { port in
+                .action("Connect on \(port)", symbol: "cable.connector") { session.connectPrinter(ConnectRequest(port: port)) }
+            }
     }
 }
 

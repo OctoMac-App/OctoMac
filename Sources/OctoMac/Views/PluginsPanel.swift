@@ -133,17 +133,9 @@ private struct PluginRow: View {
                     .disabled(session.flags.isJobActive || session.updatingSince != nil || !update.updatePossible)
                     .help(session.flags.isJobActive ? "Wait until the print finishes" : "Install the update; OctoPrint restarts afterwards")
             }
-            Menu {
-                if let homepage = plugin.homepage {
-                    Button("Open Plugin Website") { NSWorkspace.shared.open(homepage) }
-                }
-                if !plugin.bundled && plugin.managable {
-                    Button("Uninstall…", role: .destructive, action: uninstall)
-                }
-            } label: {
+            AppMenu(items: menuItems, width: 220) {
                 QuietMenuLabel(symbol: "ellipsis")
             }
-            .quietMenu()
             .disabled(plugin.homepage == nil && (plugin.bundled || !plugin.managable))
             Toggle("", isOn: Binding(get: { plugin.enabled }, set: { _ in session.togglePlugin(plugin) }))
                 .toggleStyle(.switch)
@@ -154,5 +146,16 @@ private struct PluginRow: View {
                 .help(plugin.managable ? (plugin.enabled ? "Switch off" : "Switch on") : "OctoPrint needs this plugin")
         }
         .padding(.vertical, 9)
+    }
+
+    private var menuItems: [AppMenuItem] {
+        var items: [AppMenuItem] = []
+        if let homepage = plugin.homepage {
+            items.append(.action("Open plugin website", symbol: "safari") { NSWorkspace.shared.open(homepage) })
+        }
+        if !plugin.bundled && plugin.managable {
+            items.append(.action("Uninstall…", symbol: "trash", destructive: true, run: uninstall))
+        }
+        return items
     }
 }
