@@ -99,6 +99,8 @@ public actor PushClient {
     private let throttle: Int
     private var loop: Task<Void, Never>?
     private var socket: URLSessionWebSocketTask?
+    /// When OctoPrint last said anything, a pong included.
+    private var lastHeard = ContinuousClock.now
 
     /// - Parameter throttle: multiplier on OctoPrint's 500ms `current` push interval (1 = every 0.5s).
     public init(client: OctoPrintClient, throttle: Int = 1) {
@@ -162,10 +164,16 @@ public actor PushClient {
         let socket = client.session.webSocketTask(with: request)
         self.socket = socket
         socket.resume()
-        defer { socket.cancel(with: .normalClosure, reason: nil) }
+        lastHeard = .now
+        let watchdog = Task { await self.watch(socket) }
+        defer {
+            watchdog.cancel()
+            socket.cancel(with: .normalClosure, reason: nil)
+        }
 
         while !Task.isCancelled {
             let frame = try await socket.receive()
+            lastHeard = .now
             let data: Data
             switch frame {
             case .data(let value): data = value
@@ -186,6 +194,28 @@ public actor PushClient {
                     break
                 }
                 continuation.yield(.message(message))
+            }
+        }
+    }
+
+    private func heard() { lastHeard = .now }
+
+    /// A connection can die without closing, for example when the Mac moves between Wi-Fi and Ethernet: OctoPrint
+    /// thinks it's still open and nothing more arrives. OctoPrint normally sends something every second or so, so
+    /// after a quiet spell this pings it, and closes the socket (so `run` reconnects) if even that goes unanswered.
+    private func watch(_ socket: URLSessionWebSocketTask) async {
+        while !Task.isCancelled {
+            try? await Task.sleep(for: .seconds(5))
+            let quiet = ContinuousClock.now - lastHeard
+            if quiet > .seconds(40) {
+                socket.cancel(with: .goingAway, reason: nil)
+                return
+            }
+            if quiet > .seconds(20) {
+                socket.sendPing { [weak self] error in
+                    guard error == nil, let self else { return }
+                    Task { await self.heard() }
+                }
             }
         }
     }

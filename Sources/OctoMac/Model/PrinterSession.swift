@@ -514,7 +514,14 @@ final class PrinterSession {
     func refreshVersion() async { version = await attempt { try await client.version() } ?? version }
     func refreshConnection() async { connection = await attempt { try await client.connection() } ?? connection }
     func refreshSettings() async {
+        let storedBefore = bedLevel?.stored?.z
         settings = await attempt { try await client.settings() } ?? settings
+        // A measurement that finished while we weren't listening (the plugin's own page saves the mesh too).
+        if bedMeasuringSince != nil, let stored = bedLevel?.stored, !stored.isEmpty, stored.z != storedBefore {
+            bedMeasuringSince = nil
+            measuredMesh = stored
+            recordMesh(stored, measured: Self.meshDate(stored.measured) ?? .now)
+        }
         // Start the history with the mesh the plugin already has, if it says when it was measured.
         if journal.meshes.isEmpty, let stored = bedLevel?.stored, let date = Self.meshDate(stored.measured) {
             recordMesh(stored, measured: date)
@@ -1109,7 +1116,7 @@ final class PrinterSession {
         if let date = try? Date(text, strategy: Date.FormatStyle(date: .abbreviated, time: .shortened).parseStrategy) { return date }
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
-        for format in ["M/d/yyyy, h:mm:ss a", "d MMM yyyy 'at' HH:mm", "yyyy-MM-dd HH:mm:ss"] {
+        for format in ["M/d/yyyy, h:mm:ss a", "d/M/yyyy, HH:mm:ss", "d MMM yyyy 'at' HH:mm", "yyyy-MM-dd HH:mm:ss"] {
             formatter.dateFormat = format
             if let date = formatter.date(from: text) { return date }
         }

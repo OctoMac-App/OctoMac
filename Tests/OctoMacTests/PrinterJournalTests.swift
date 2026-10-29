@@ -41,6 +41,9 @@ struct PrinterJournalTests {
         #expect(PrinterSession.meshDate(ours) != nil)
         let plugin = try #require(PrinterSession.meshDate("10/28/2026, 4:09:54 PM"))
         #expect(Calendar(identifier: .gregorian).component(.day, from: plugin) == 28)
+        // The plugin's page writes the date in the browser's language, for example UK English.
+        let british = try #require(PrinterSession.meshDate("29/10/2026, 13:18:46"))
+        #expect(Calendar(identifier: .gregorian).dateComponents([.day, .month, .hour], from: british) == DateComponents(month: 10, day: 29, hour: 13))
         #expect(PrinterSession.meshDate("") == nil)
     }
 }
