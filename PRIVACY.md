@@ -20,6 +20,7 @@ All of this stays on your Mac:
 - **Your choices**, such as console filters, highlights and notification settings.
 - **G-code previews and thumbnails** are kept in memory while OctoMac is open, and are not saved.
 - **The last few seconds of each camera** are kept in memory, so you can make a clip of something that just happened. Clips you record are made on your Mac and kept in a temporary folder until you save, copy or share them, or close the clip window; nothing is uploaded.
+- **Backups of OctoPrint** stay on the Raspberry Pi, where OctoPrint makes them. When you save one to your Mac, it goes straight to the place you choose. A backup holds OctoPrint's settings, including its own users and API keys, so keep saved copies somewhere safe.
 
 ## Notifications
 

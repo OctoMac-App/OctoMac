@@ -168,6 +168,12 @@ final class PrinterSession {
     private(set) var pluginRepositoryError: String?
     /// The plugin being installed, with OctoPrint's install log.
     private(set) var pluginInstall: PluginInstall?
+    /// Backups on the Pi, from OctoPrint's Backup & Restore plugin. Nil until loaded, or if the plugin is off.
+    private(set) var backups: Backup.State?
+    /// The backup just made here, to point it out in the list.
+    private(set) var newBackup: String?
+    /// A backup being saved to this Mac, and how far it's got.
+    private(set) var backupDownload: (name: String, fraction: Double)?
     /// When OctoPrint was asked to restart. Cleared once it has gone away and come back.
     private(set) var restartingSince: Date?
     private var restartWentAway = false
@@ -433,6 +439,93 @@ final class PrinterSession {
             } catch {
                 self?.pluginInstall?.outcome = .failed(error.localizedDescription)
             }
+        }
+    }
+
+    func refreshBackups() async {
+        guard !isDemoSession else {
+            if backups == nil { backups = Backup.State(backups: DemoPlugins.backups, inProgress: false) }
+            return
+        }
+        backups = try? await client.backupState()
+    }
+
+    /// Makes a backup on the Pi. It's made in the background; the plugin says when it's done.
+    func createBackup(excluding parts: [Backup.Part]) {
+        guard backups?.inProgress != true else { return }
+        backups?.inProgress = true
+        guard !isDemoSession else {
+            Task {
+                try? await Task.sleep(for: .seconds(3))
+                let name = "octoprint-backup-\(Date.now.formatted(.iso8601.year().month().day().dateSeparator(.omitted)))-\(Date.now.formatted(.iso8601.time(includingFractionalSeconds: false).timeSeparator(.omitted))).zip"
+                backups?.backups.insert(Backup.File(name: name, date: .now, size: parts.contains(.uploads) ? 2_400_000 : 48_000_000), at: 0)
+                backups?.inProgress = false
+                newBackup = name
+            }
+            return
+        }
+        Task { [client, weak self] in
+            do {
+                try await client.createBackup(excluding: parts)
+            } catch {
+                self?.backups?.inProgress = false
+                self?.error = ErrorBanner(message: error.localizedDescription)
+            }
+        }
+    }
+
+    func deleteBackup(_ file: Backup.File) {
+        guard !isDemoSession else {
+            backups?.backups.removeAll { $0.name == file.name }
+            return
+        }
+        perform { [client, weak self] in
+            try await client.deleteBackup(file)
+            await self?.refreshBackups()
+        }
+    }
+
+    /// Saves a backup to this Mac.
+    func downloadBackup(_ file: Backup.File, to destination: URL) {
+        guard backupDownload == nil else { return }
+        backupDownload = (file.name, 0)
+        Task { [client, weak self] in
+            do {
+                if self?.isDemoSession == true {
+                    // Demo backups aren't real; save an empty zip so there's something to find.
+                    for step in 1...10 {
+                        try? await Task.sleep(for: .milliseconds(150))
+                        self?.backupDownload = (file.name, Double(step) / 10)
+                    }
+                    try Data([0x50, 0x4B, 0x05, 0x06] + [UInt8](repeating: 0, count: 18)).write(to: destination)
+                } else {
+                    try await client.downloadBackup(file, to: destination) { fraction in
+                        Task { @MainActor in
+                            if self?.backupDownload?.name == file.name { self?.backupDownload = (file.name, fraction) }
+                        }
+                    }
+                }
+                self?.backupDownload = nil
+                NSWorkspace.shared.activateFileViewerSelecting([destination])
+            } catch {
+                self?.backupDownload = nil
+                self?.error = ErrorBanner(message: String(localized: "Couldn't save the backup: \(error.localizedDescription)"))
+            }
+        }
+    }
+
+    private func handleBackup(_ data: JSONValue) {
+        switch Backup.Message(data) {
+        case .started:
+            backups?.inProgress = true
+        case .done(let name):
+            newBackup = name
+            Task { await refreshBackups() }
+        case .failed(_, let message):
+            backups?.inProgress = false
+            error = ErrorBanner(message: String(localized: "OctoPrint couldn't make the backup: \(message)"))
+        case nil:
+            break
         }
     }
 
@@ -739,6 +832,8 @@ final class PrinterSession {
             handleBedLevel(data)
         case .plugin(let id, let data) where id == OctoPrintClient.pluginManagerID:
             handlePluginManager(data)
+        case .plugin(let id, let data) where id == Backup.pluginID:
+            handleBackup(data)
         default:
             break
         }

@@ -17,7 +17,7 @@ struct PluginInstall: Equatable {
     var isRunning: Bool { outcome == nil }
 }
 
-/// A few real plugins for demo mode, and a pretend install log.
+/// A few real plugins for demo mode, a pretend install log, and some backups.
 enum DemoPlugins {
     static let repository: [RepositoryPlugin] = [
         demo("octolapse", "Octolapse", "FormerLurker", "Create stabilized timelapses of your 3D prints.", users: 41_000),
@@ -38,6 +38,13 @@ enum DemoPlugins {
                          page: URL(string: "https://plugins.octoprint.org/plugins/\(id)/"),
                          archive: URL(string: "https://example.com/\(id).zip")!,
                          compatible: compatible, abandoned: abandoned, users: users)
+    }
+
+    /// A dozen weekly backups, enough to need more than one page.
+    static let backups: [Backup.File] = (0..<12).map { week in
+        let date = Date.now.addingTimeInterval(-Double(3 + week * 7) * 86_400)
+        let stamp = date.formatted(.iso8601.year().month().day().dateSeparator(.omitted))
+        return Backup.File(name: "octoprint-backup-\(stamp)-091542.zip", date: date, size: Int64(46_812_330 - week * 412_000))
     }
 
     static func installLog(for plugin: RepositoryPlugin) -> [String] {

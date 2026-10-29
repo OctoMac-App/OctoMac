@@ -190,3 +190,26 @@ struct PluginManagerTests {
         #expect(PluginManagerMessage(["type": "partial_result", "action": "install"]) == nil)
     }
 }
+
+struct BackupTests {
+    @Test func readsBackupsNewestFirst() {
+        let state = Backup.state([
+            "backups": [
+                ["name": "octoprint-backup-20261001-200311.zip", "date": 1_790_000_000, "size": 41_207_118, "url": "/plugin/backup/download/a.zip"],
+                ["name": "octoprint-backup-20261026-091542.zip", "date": 1_792_000_000, "size": 46_812_330],
+            ],
+            "backup_in_progress": true,
+        ])
+        #expect(state.inProgress)
+        #expect(state.backups.map(\.name) == ["octoprint-backup-20261026-091542.zip", "octoprint-backup-20261001-200311.zip"])
+        #expect(state.backups.first?.size == 46_812_330)
+        #expect(Backup.state([:]).backups.isEmpty)
+    }
+
+    @Test func readsBackupMessages() {
+        #expect(Backup.Message(["type": "backup_started", "name": "b.zip"]) == .started("b.zip"))
+        #expect(Backup.Message(["type": "backup_done", "name": "b.zip"]) == .done("b.zip"))
+        #expect(Backup.Message(["type": "backup_error", "name": "b.zip", "error": "Not enough space"]) == .failed(name: "b.zip", error: "Not enough space"))
+        #expect(Backup.Message(["type": "logline", "line": "x"]) == nil)
+    }
+}
