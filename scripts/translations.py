@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 CATALOG = Path(__file__).resolve().parent.parent / "Support/Localization/Localizable.xcstrings"
-LANGUAGES = ["en-GB", "en", "cs", "da", "de", "es", "fi", "fr", "it", "nb", "nl", "pl", "pt-PT", "sv"]
+LANGUAGES = ["en-GB", "en", "cs", "cy", "da", "de", "es", "fi", "fr", "it", "nb", "nl", "pl", "pt-PT", "sv"]
 PLACEHOLDER = re.compile(r"%(?:(\d+)\$)?(lld|ld|d|@|lf|f|u)")
 LONG_DASH = re.compile("[\u2014\u2013]")
 # Names that stay the same in every language.

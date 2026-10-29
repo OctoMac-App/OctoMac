@@ -9,6 +9,7 @@ enum AppLanguage {
         ("en-GB", "English (UK)"),
         ("en", "English (US)"),
         ("cs", "Čeština"),
+        ("cy", "Cymraeg"),
         ("da", "Dansk"),
         ("de", "Deutsch"),
         ("es", "Español"),

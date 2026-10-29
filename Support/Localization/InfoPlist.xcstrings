@@ -11,6 +11,12 @@
             "value": "Binární G-code"
           }
         },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "G-code deuaidd"
+          }
+        },
         "da": {
           "stringUnit": {
             "state": "translated",
@@ -96,6 +102,12 @@
       "extractionState": "manual",
       "localizations": {
         "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "G-code"
+          }
+        },
+        "cy": {
           "stringUnit": {
             "state": "translated",
             "value": "G-code"
@@ -189,6 +201,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoMac se připojuje k serverům OctoPrint ve vaší místní síti."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoMac yn cysylltu â gweinyddion OctoPrint ar eich rhwydwaith lleol."
           }
         },
         "da": {
