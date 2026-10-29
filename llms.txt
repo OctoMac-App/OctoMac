@@ -20,5 +20,6 @@ OctoMac is not affiliated with OctoPrint. It's distributed as a notarised disk i
 
 ## Optional
 
+- [llms-full.txt](https://raw.githubusercontent.com/OctoMac-App/OctoMac/master/llms-full.txt): the README, privacy note, contributing guide and CLAUDE.md in a single file
 - [OctoPrint API documentation](https://docs.octoprint.org/en/main/api/index.html): the API OctoMac uses
 - [Licence (MIT)](https://github.com/OctoMac-App/OctoMac/blob/master/LICENSE)

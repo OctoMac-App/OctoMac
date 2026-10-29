@@ -39,6 +39,9 @@ jobs:
       - name: Build the app
         run: scripts/build-app.sh debug
 
+      - name: Check llms-full.txt is up to date
+        run: scripts/make-llms-full.sh --check
+
       - name: Check for long dashes
         run: |
           if grep -rn '—' README.md CONTRIBUTING.md PRIVACY.md CLAUDE.md llms.txt Sources scripts Tests; then

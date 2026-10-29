@@ -32,4 +32,4 @@ Each new build is a new binary to macOS, which can silently block its local netw
 - Bug reports are GitHub issues only. Help → Report a Problem builds a diagnostics file that must never include printer names, addresses, API keys, proxy sign-ins, user names or file names; `DiagnosticsPrivacyTests` enforces this.
 - OctoPrint plugins are optional: check a plugin is present before using it, and fall back gracefully when it isn't.
 - Out of scope unless the maintainer asks: power control and smart plugs, Spoolman, and accounts with limited OctoPrint permissions (OctoMac expects an admin account).
-- Keep pull requests focused, and update the README, `PRIVACY.md` or `CONTRIBUTING.md` when a change affects them.
+- Keep pull requests focused, and update the README, `PRIVACY.md` or `CONTRIBUTING.md` when a change affects them. After editing any of those or this file, run `scripts/make-llms-full.sh` to rebuild `llms-full.txt` (CI checks it's current).
