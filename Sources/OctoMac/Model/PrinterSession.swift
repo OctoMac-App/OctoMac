@@ -479,7 +479,7 @@ final class PrinterSession {
         }
         perform { [client, weak self] in
             let change = try await client.togglePlugin(plugin.key)
-            await self?.applied(change, key: plugin.key)
+            self?.applied(change, key: plugin.key)
         }
     }
 
@@ -491,7 +491,7 @@ final class PrinterSession {
         }
         perform { [client, weak self] in
             let change = try await client.uninstallPlugin(plugin.key)
-            await self?.applied(change, key: plugin.key)
+            self?.applied(change, key: plugin.key)
             await self?.refreshPlugins()
         }
     }

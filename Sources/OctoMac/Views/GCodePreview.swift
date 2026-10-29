@@ -60,11 +60,12 @@ final class GCodePreviewLoader {
             // Demo mode has no real server, so it previews a generated part instead.
             let data = demo ? Data(DemoGCode.box().utf8) : try await client.download(file)
             phase = .reading(0)
+            let report: @MainActor (Double) -> Void = { [weak self] fraction in
+                if case .reading = self?.phase { self?.phase = .reading(fraction) }
+            }
             let path = await Task.detached(priority: .userInitiated) {
                 GCodeParser.parse(data) { fraction in
-                    Task { @MainActor [weak self] in
-                        if case .reading = self?.phase { self?.phase = .reading(fraction) }
-                    }
+                    Task { @MainActor in report(fraction) }
                 }
             }.value
             Self.cache[key] = path

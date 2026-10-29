@@ -133,7 +133,7 @@ struct TemperaturePanel: View {
 /// The chart itself. Pass `hoverTime` for the interactive version; leave it nil when rendering for export.
 struct TemperatureChart: View {
     /// Grid lines at round numbers in the unit being shown (0, 50, 100°C or 50, 100, 150°F…), as Celsius positions.
-    static func temperatureTicks(upTo maxCelsius: Double) -> [Double] {
+    nonisolated static func temperatureTicks(upTo maxCelsius: Double) -> [Double] {
         let unit = TemperatureUnit.current
         let top = unit.convert(maxCelsius), bottom = unit.convert(0)
         let step: Double = unit == .celsius ? (maxCelsius <= 100 ? 20 : 50) : (top <= 250 ? 50 : 100)

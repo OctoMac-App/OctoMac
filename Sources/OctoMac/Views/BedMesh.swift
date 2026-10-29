@@ -241,6 +241,7 @@ struct BedMeshSurface: View {
 
     var body: some View {
         let limit = BedMeshColors.limit(for: mesh)
+        let turn = (yaw: yaw, pitch: pitch)
         Canvas { context, size in
             let rows = mesh.z.count, columns = mesh.z.first?.count ?? 0
             guard rows > 1, columns > 1 else { return }
@@ -251,10 +252,10 @@ struct BedMeshSurface: View {
 
             /// Bed coordinates (x and y from -1 to 1, front edge at y = -1) to the screen, plus depth (larger is further away).
             func project(x: Double, y: Double, height: Double) -> (point: CGPoint, depth: Double) {
-                let rx = x * cos(yaw) - y * sin(yaw)
-                let ry = x * sin(yaw) + y * cos(yaw)
-                let depth = ry * cos(pitch) - height * sin(pitch)
-                let up = ry * sin(pitch) + height * cos(pitch)
+                let rx = x * cos(turn.yaw) - y * sin(turn.yaw)
+                let ry = x * sin(turn.yaw) + y * cos(turn.yaw)
+                let depth = ry * cos(turn.pitch) - height * sin(turn.pitch)
+                let up = ry * sin(turn.pitch) + height * cos(turn.pitch)
                 return (CGPoint(x: size.width / 2 + rx * scale, y: size.height / 2 - up * scale), depth)
             }
             func project(_ column: Int, _ row: Int, _ z: Double) -> (point: CGPoint, depth: Double) {

@@ -113,7 +113,7 @@ struct PlateMenu<Value: Hashable>: View {
 
 /// One line in an `AppMenu`.
 enum AppMenuItem {
-    case action(String, symbol: String? = nil, checked: Bool = false, destructive: Bool = false, disabled: Bool = false, run: () -> Void)
+    case action(String, symbol: String? = nil, checked: Bool = false, destructive: Bool = false, disabled: Bool = false, run: @MainActor () -> Void)
     case heading(String)
     case divider
 }

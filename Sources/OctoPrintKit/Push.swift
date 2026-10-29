@@ -188,7 +188,7 @@ public actor PushClient {
                     }
                     if throttle > 1 { try await send(["throttle": JSONValue(throttle)]) }
                     continuation.yield(.connected(user: login.name))
-                case .reauthRequired(let reason):
+                case .reauthRequired:
                     throw OctoPrintError.unauthorized(message: String(localized: "The session ended, reconnecting."))
                 default:
                     break

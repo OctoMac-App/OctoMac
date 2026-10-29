@@ -107,7 +107,7 @@ private struct PluginRow: View {
     let session: PrinterSession
     let plugin: InstalledPlugin
     let update: SoftwareComponent?
-    let uninstall: () -> Void
+    let uninstall: @MainActor () -> Void
     let updateNow: () -> Void
 
     var body: some View {
