@@ -46,12 +46,22 @@ struct MachinePage: View {
                 }
             }
         }
-        .task {
-            async let updates: Void = session.refreshUpdates()
-            async let logs: Void = session.refreshLogs()
-            async let health: Void = session.refreshHealth()
-            async let plugins: Void = session.refreshPlugins()
-            _ = await (updates, logs, health, plugins)
+        // Loads again whenever the printer comes online: opened before OctoMac had connected (just after launch,
+        // or while it was reconnecting), the first try finds nothing. A few quick retries cover a slow Pi.
+        .task(id: "\(session.instance.id)-\(session.link == .online)") {
+            guard session.link == .online else { return }
+            for attempt in 0..<3 {
+                if attempt > 0 {
+                    try? await Task.sleep(for: .seconds(3))
+                    if Task.isCancelled { return }
+                }
+                async let updates: Void = session.refreshUpdates()
+                async let logs: Void = session.refreshLogs()
+                async let health: Void = session.refreshHealth()
+                async let plugins: Void = session.refreshPlugins()
+                _ = await (updates, logs, health, plugins)
+                if session.plugins != nil && !session.logs.isEmpty { return }
+            }
         }
         .onAppear(perform: syncConnection)
         .onChange(of: session.connection) { syncConnection() }

@@ -30,7 +30,10 @@ struct HistoryPage: View {
                 }
             }
         }
-        .task { await session.refreshTimelapses() }
+        // Again once the printer is online, in case the tab opened before OctoMac had connected.
+        .task(id: "\(session.instance.id)-\(session.link == .online)") {
+            if session.link == .online { await session.refreshTimelapses() }
+        }
     }
 }
 
