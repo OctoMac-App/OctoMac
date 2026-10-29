@@ -18,9 +18,9 @@ struct LivePlayheadTests {
         let playhead = LivePlayhead()
         playhead.load(path())
         playhead.setTarget(30, at: 100)
-        // Opening mid-print starts a printer's queue of moves (16) behind what's been sent.
+        // Opening mid-print starts a printer's queue of moves (20) behind what's been sent.
         let start = try #require(playhead.position(at: 100))
-        #expect(abs(start - 14) < 0.001)
+        #expect(abs(start - 10) < 0.001)
         // Moves on smoothly, at about the printer's pace.
         let later = try #require(playhead.position(at: 100.1))
         #expect(later > start && later < start + 0.2)
@@ -68,8 +68,8 @@ struct LivePlayheadTests {
         playhead.load(path)
         playhead.setTarget(150, at: 0)
         let start = try #require(playhead.position(at: 0))
-        // Move 150 is on line 37; sixteen lines back is line 21, whose first move is 84.
-        #expect(abs(start - 84) < 0.001)
+        // Move 150 is on line 37; twenty lines back is line 17, whose first move is 68.
+        #expect(abs(start - 68) < 0.001)
     }
 
     @Test func farJumpsMoveStraightThere() throws {

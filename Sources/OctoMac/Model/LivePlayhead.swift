@@ -5,7 +5,7 @@ import QuartzCore
 /// Where the nozzle probably is right now, moving smoothly along the toolpath.
 ///
 /// OctoPrint only says how far through the file it has *sent*, a few times a second and in bursts, and the printer
-/// works through a queue of moves behind that (Marlin and Prusa firmware hold about 16 to 20). Moves also take longer
+/// works through a queue of moves behind that (Marlin and Prusa firmware hold about 20). Moves also take longer
 /// than their feed rates suggest, because the printer has to speed up and slow down. So the playhead aims a queue's
 /// worth of moves behind what's been sent, measures the printer's real pace from how quickly the reports move through
 /// the file, averaged over several seconds, and travels steadily at that pace. Each report only nudges it gently, and
@@ -30,8 +30,9 @@ final class LivePlayhead {
         didSet { if pace == nil { measuredPace = speed } }
     }
 
-    /// How many G-code moves the printer holds queued behind what OctoPrint has sent.
-    private let queuedMoves = 16
+    /// How many G-code moves the printer holds queued behind what OctoPrint has sent: Marlin and Prusa firmware plan
+    /// 16 moves ahead and keep a few more lines waiting to be read.
+    private let queuedMoves = 20
     /// Where the playhead aims: the start of the move a queue's worth behind what's been sent, in print time.
     private var aim: Double = 0
 
