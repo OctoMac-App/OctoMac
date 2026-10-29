@@ -6,6 +6,15 @@
     <description>New versions of OctoMac. scripts/release.sh adds each release here.</description>
     <language>en</language>
     <item>
+      <title>OctoMac 0.1.13</title>
+      <pubDate>Thu, 29 Oct 2026 15:52:20 +0000</pubDate>
+      <sparkle:version>113</sparkle:version>
+      <sparkle:shortVersionString>0.1.13</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>15.0</sparkle:minimumSystemVersion>
+      <sparkle:fullReleaseNotesLink>https://github.com/OctoMac-App/OctoMac/releases/tag/v0.1.13</sparkle:fullReleaseNotesLink>
+      <enclosure url="https://github.com/OctoMac-App/OctoMac/releases/download/v0.1.13/OctoMac-0.1.13.dmg" type="application/octet-stream" sparkle:edSignature="YPw+5+l4OHmxa5aFkGNMoZ9dwZmsFYZ81U1g+nT2CLgI14ACT1t3rdyaqQQv3DE9fizfN5chm7/D5kUaq7nsBg==" length="12181941"/>
+    </item>
+    <item>
       <title>OctoMac 0.1.12</title>
       <pubDate>Thu, 29 Oct 2026 15:21:43 +0000</pubDate>
       <sparkle:version>112</sparkle:version>
