@@ -8,6 +8,7 @@ struct AddPluginsSheet: View {
     let session: PrinterSession
     @State private var search = ""
     @State private var showHidden = false
+    @State private var confirming: RepositoryPlugin?
 
     private var installed: Set<String> { Set((session.plugins ?? []).map { $0.key.lowercased() }) }
 
@@ -45,6 +46,11 @@ struct AddPluginsSheet: View {
         .frame(width: 640, height: 640)
         .background(Palette.extrusion)
         .interactiveDismissDisabled(session.pluginInstall?.isRunning == true && session.link == .online)
+        .sheet(item: $confirming) { plugin in
+            ConfirmSheet(symbol: "puzzlepiece.extension", tint: Palette.accent, title: "Install \(plugin.title)?",
+                         message: "OctoPrint downloads it from its plugin list and installs it. Plugins are made by the OctoPrint community, not by OctoMac, and most need OctoPrint to restart afterwards.",
+                         confirmTitle: "Install", onConfirm: { session.installPlugin(plugin) })
+        }
         .task { await session.refreshPluginRepository() }
         .onDisappear { session.dismissPluginInstall() }
         .animation(.easeOut(duration: 0.2), value: session.pluginInstall == nil)
@@ -153,7 +159,7 @@ struct AddPluginsSheet: View {
                         .padding(.vertical, 12)
                 }
                 ForEach(shown) { plugin in
-                    RepositoryRow(session: session, plugin: plugin, installed: installed.contains(plugin.id.lowercased()))
+                    RepositoryRow(session: session, plugin: plugin, installed: installed.contains(plugin.id.lowercased())) { confirming = plugin }
                     if plugin.id != shown.last?.id { Divider().overlay(Palette.edge) }
                 }
                 if hidden > 0 {
@@ -181,6 +187,7 @@ private struct RepositoryRow: View {
     let session: PrinterSession
     let plugin: RepositoryPlugin
     let installed: Bool
+    let install: () -> Void
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -217,7 +224,7 @@ private struct RepositoryRow: View {
                     .font(Typeface.caption).foregroundStyle(Palette.ready)
                     .frame(height: 26)
             } else {
-                Button("Install") { session.installPlugin(plugin) }
+                Button("Install…", action: install)
                     .buttonStyle(.plate)
                     .controlSize(.small)
                     .disabled(!plugin.compatible || session.pluginInstallBlocker != nil || session.flags.isJobActive)

@@ -39956,6 +39956,100 @@
         }
       }
     },
+    "Install %@?": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nainstalovat %@?"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gosod %@?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer %@?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ installieren?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install %@?"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install %@?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Instalar %@?"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asennetaanko %@?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer %@ ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installare %@?"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installere %@?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ installeren?"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstalować %@?"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar %@?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installera %@?"
+          }
+        }
+      }
+    },
     "Install %lld updates?": {
       "localizations": {
         "cs": {
@@ -40744,6 +40838,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Installerar %@…"
+          }
+        }
+      }
+    },
+    "Install…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nainstalovat…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gosod…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installieren …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asenna…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installa…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installeer…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstaluj…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installera…"
           }
         }
       }
@@ -55203,6 +55391,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint vet inte den här filens utskriftstid än, så OctoMac kan bara starta den vid en bestämd tid."
+          }
+        }
+      }
+    },
+    "OctoPrint downloads it from its plugin list and installs it. Plugins are made by the OctoPrint community, not by OctoMac, and most need OctoPrint to restart afterwards.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ho stáhne ze svého seznamu pluginů a nainstaluje. Pluginy vytváří komunita OctoPrintu, ne OctoMac, a většina z nich potřebuje po instalaci restart OctoPrintu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoPrint yn ei lwytho i lawr o'i restr ategion ac yn ei osod. Cymuned OctoPrint sy'n gwneud ategion, nid OctoMac, ac mae angen ailgychwyn OctoPrint wedyn ar y rhan fwyaf."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint henter det fra sin plugin-liste og installerer det. Plugins laves af OctoPrint-fællesskabet, ikke af OctoMac, og de fleste kræver, at OctoPrint genstartes bagefter."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint lädt es aus seiner Plugin-Liste herunter und installiert es. Plugins stammen aus der OctoPrint-Community, nicht von OctoMac, und die meisten brauchen danach einen Neustart von OctoPrint."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint downloads it from its plugin list and installs it. Plugins are made by the OctoPrint community, not by OctoMac, and most need OctoPrint to restart afterwards."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint downloads it from its plugin list and installs it. Plugins are made by the OctoPrint community, not by OctoMac, and most need OctoPrint to restart afterwards."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint lo descarga de su lista de plugins y lo instala. Los plugins los crea la comunidad de OctoPrint, no OctoMac, y la mayoría necesitan reiniciar OctoPrint después."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint lataa sen lisäosaluettelostaan ja asentaa sen. Lisäosat tekee OctoPrint-yhteisö, ei OctoMac, ja useimmat vaativat OctoPrintin uudelleenkäynnistyksen asennuksen jälkeen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint le télécharge depuis sa liste de plugins et l’installe. Les plugins sont créés par la communauté OctoPrint, pas par OctoMac, et la plupart nécessitent ensuite un redémarrage d’OctoPrint."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint lo scarica dal suo elenco di plugin e lo installa. I plugin sono realizzati dalla comunità di OctoPrint, non da OctoMac, e la maggior parte richiede poi un riavvio di OctoPrint."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint laster den ned fra plugin-listen sin og installerer den. Plugins lages av OctoPrint-fellesskapet, ikke av OctoMac, og de fleste krever at OctoPrint startes på nytt etterpå."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint downloadt hem uit de pluginlijst en installeert hem. Plugins worden gemaakt door de OctoPrint-community, niet door OctoMac, en de meeste hebben daarna een herstart van OctoPrint nodig."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint pobierze ją ze swojej listy wtyczek i zainstaluje. Wtyczki tworzy społeczność OctoPrint, a nie OctoMac, i większość z nich wymaga potem ponownego uruchomienia OctoPrint."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint transfere-o da sua lista de plugins e instala-o. Os plugins são criados pela comunidade do OctoPrint, não pelo OctoMac, e a maioria precisa de reiniciar o OctoPrint depois."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hämtar det från sin pluginlista och installerar det. Plugins görs av OctoPrint-communityn, inte av OctoMac, och de flesta kräver att OctoPrint startas om efteråt."
           }
         }
       }
