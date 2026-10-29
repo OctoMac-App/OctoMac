@@ -163,4 +163,30 @@ struct PluginManagerTests {
         #expect(plugin.pending)
         #expect(plugin.homepage?.host() == "github.com")
     }
+
+    @Test func readsRepositoryPlugins() throws {
+        let json: JSONValue = try JSONDecoder().decode(JSONValue.self, from: Data("""
+        {"id": "bedlevelvisualizer", "title": "Bed Level Visualizer", "description": "Displays 3D mesh.", "author": "jneilliii",
+         "archive": "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip",
+         "page": "https://plugins.octoprint.org/plugins/bedlevelvisualizer/", "follow_dependency_links": false,
+         "is_compatible": {"octoprint": true, "os": true, "python": false}, "attributes": ["abandoned"],
+         "stats": {"instances_month": 14709}}
+        """.utf8))
+        let plugin = try #require(RepositoryPlugin(json))
+        #expect(plugin.title == "Bed Level Visualizer")
+        #expect(plugin.archive.lastPathComponent == "master.zip")
+        #expect(!plugin.compatible)
+        #expect(plugin.abandoned)
+        #expect(plugin.users == 14709)
+        #expect(RepositoryPlugin(["id": "noarchive"]) == nil)
+    }
+
+    @Test func readsInstallProgress() {
+        #expect(PluginManagerMessage(["type": "loglines", "loglines": [["line": "Collecting x", "stream": "stdout"]]]) == .log(["Collecting x"]))
+        let done = PluginManagerMessage(["type": "result", "action": "install", "result": true, "needs_restart": true])
+        #expect(done == .result(action: "install", success: true, needsRestart: true, reason: nil, plugin: nil))
+        let failed = PluginManagerMessage(["type": "result", "action": "install", "result": false, "reason": "Pip reported a Python version mismatch"])
+        #expect(failed == .result(action: "install", success: false, needsRestart: false, reason: "Pip reported a Python version mismatch", plugin: nil))
+        #expect(PluginManagerMessage(["type": "partial_result", "action": "install"]) == nil)
+    }
 }

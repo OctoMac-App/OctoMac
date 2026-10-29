@@ -249,12 +249,14 @@ struct TemperatureChart: View {
 struct QuietMenuLabel: View {
     let symbol: String
     var onDark = false
+    /// Off for a plain button that looks the same.
+    var chevron = true
     @State private var hovering = false
 
     var body: some View {
         HStack(spacing: 3) {
             Image(systemName: symbol).font(.system(size: 12, weight: .semibold))
-            Image(systemName: "chevron.down").font(.system(size: 7, weight: .heavy))
+            if chevron { Image(systemName: "chevron.down").font(.system(size: 7, weight: .heavy)) }
         }
         .foregroundStyle(onDark ? .white.opacity(hovering ? 1 : 0.8) : (hovering ? Palette.paper : Palette.faint))
         .padding(.horizontal, 8)

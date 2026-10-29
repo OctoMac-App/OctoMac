@@ -28,7 +28,7 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Layer alerts.** Pause at a layer to drop in magnets, nuts or a new colour, or just get a notification when the print reaches it. Once the first layer is down, OctoMac sends a picture of it with Pause and Stop Print buttons, so a bad start never runs for hours.
 - **Tweak a print as it runs.** Nudge the print speed and flow right from the Overview while you watch.
 - **Notifications.** Get a Mac notification when a print finishes or fails, when the printer needs you (a filament change, a paused print, an MMU filament choice), if it stops answering, or if the Raspberry Pi is short of power. Finished, failed and paused prints, the first layer and your layer alerts come with a picture from the camera. Choose which ones you want in Settings.
-- **Know your machine.** The Machine tab shows the printer's firmware, the Raspberry Pi's power and temperature health, the bed level map with its history (compare today's bed with an earlier measurement to see what's moved), OctoPrint and plugin updates you can install with one click, your plugins (switch them on or off, or uninstall them), and OctoPrint's logs, which you can read or save. If the printer won't connect, OctoMac tells you why in plain words.
+- **Know your machine.** The Machine tab shows the printer's firmware, the Raspberry Pi's power and temperature health, the bed level map with its history (compare today's bed with an earlier measurement to see what's moved), OctoPrint and plugin updates you can install with one click, your plugins (add new ones from OctoPrint's official plugin list, switch them on or off, or uninstall them), and OctoPrint's logs, which you can read or save. If the printer won't connect, OctoMac tells you why in plain words.
 - **Full control.** Heat up with your saved presets, move the print head, extrude filament, adjust fan and speed, send G-code from the console, and manage the connection and the Raspberry Pi.
 - **A friendlier console.** Hide the chatter you don't need (temperatures, SD status, positions, wait and busy replies, MMU chatter) using OctoPrint's own filters, and highlight the lines you care about, including the printer's replies to your own commands. The console holds still while you scroll up to read, and a G-code cheat sheet slides out beside it with plain explanations of common commands.
 - **Safe by design.** Stopping a print asks you to confirm and shows what you'd lose, and there's a separate emergency stop for when something goes wrong.
@@ -121,7 +121,7 @@ OctoMac works with a standard OctoPrint install, and it gets better with a few p
 | Logging (built in) | Lists OctoPrint's log files on the Machine tab, so you can read the latest lines or save a whole log. | Supported |
 | Pi Support (built in) | Shows the Raspberry Pi model and warns when it's short of power or too hot. | Supported |
 | Software Update (built in) | Shows whether OctoPrint and your plugins are up to date, and installs updates with one click. | Supported |
-| Plugin Manager (built in) | Lists your plugins on the Machine tab, where you can switch them on or off or uninstall them. | Supported |
+| Plugin Manager (built in) | Lists your plugins on the Machine tab, where you can add plugins from OctoPrint's official list, switch them on or off or uninstall them. | Supported |
 | [Bed Level Visualizer](https://plugins.octoprint.org/plugins/bedlevelvisualizer/) | Shows your bed mesh on the Machine tab as a colour map with every probe point's height, or as a 3D surface you can turn. Measure the bed again with one click, and pick the measuring G-code from ready-made starting points. | Supported |
 | [Print Time Genius](https://plugins.octoprint.org/plugins/PrintTimeGenius/) | Uses its much more accurate print times for files and time left, and says when a time comes from it. Without it, OctoMac uses OctoPrint's own estimates. | Supported |
 | [Cancel Objects](https://plugins.octoprint.org/plugins/cancelobject/) | While printing several parts at once, shows them on a map of the bed and lets you stop one that's failed while the others carry on. | Supported |
@@ -157,7 +157,7 @@ If your printer has a Prusa Multi Material Unit and the [Prusa MMU](https://plug
 - **Rather use the printer?** Press **Choose on the printer** (or Escape) to close the question and pick on the printer itself. If the plugin allows it, you'll see **Use sliced filament** instead, which starts the print with the filament chosen in your slicer.
 - **See what's loaded.** While printing, the loaded filament's name and colour appear next to the printer's name.
 
-To set it up, install the Prusa MMU plugin from OctoPrint's Plugin Manager and add your filament names and colours in its settings. OctoMac picks them up automatically.
+To set it up, install the Prusa MMU plugin (Machine tab → Plugins → Add plugins…, or OctoPrint's Plugin Manager) and add your filament names and colours in its settings. OctoMac picks them up automatically.
 
 ## Good to know
 

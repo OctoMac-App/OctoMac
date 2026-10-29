@@ -10,6 +10,7 @@ struct PluginsPanel: View {
     @State private var uninstalling: InstalledPlugin?
     @State private var updating: [String]?
     @State private var restarting = false
+    @State private var adding = false
 
     private var shown: [InstalledPlugin] { plugins.filter { showBuiltIn || !$0.bundled } }
     private var updatable: [String: SoftwareComponent] {
@@ -20,6 +21,10 @@ struct PluginsPanel: View {
         let added = plugins.filter { !$0.bundled }.count
         StagePanel(title: "Plugins", detail: "\(added) added, \(plugins.count - added) built in") {
             VStack(alignment: .leading, spacing: 12) {
+                if session.pluginSafeMode {
+                    notice("OctoPrint started in safe mode, so every added plugin is off. This often means a plugin stopped it starting properly. Restart OctoPrint to switch them back on, or remove the plugin you added last.",
+                           symbol: "exclamationmark.triangle.fill", busy: false)
+                }
                 if session.updatingSince != nil {
                     notice("Updating. OctoPrint restarts when it's done, which can take a few minutes.", symbol: "arrow.triangle.2.circlepath", busy: true)
                 } else if session.pluginsNeedRestart {
@@ -37,7 +42,7 @@ struct PluginsPanel: View {
                 }
 
                 if shown.isEmpty {
-                    Text(showBuiltIn ? "No plugins." : "No plugins added yet. Find them in OctoPrint's Plugin Manager.")
+                    Text(showBuiltIn ? "No plugins." : "No plugins added yet.")
                         .font(Typeface.body).foregroundStyle(Palette.dust)
                 } else {
                     VStack(spacing: 0) {
@@ -55,18 +60,16 @@ struct PluginsPanel: View {
                     }
                     .buttonStyle(.plateQuiet)
                     Spacer()
-                    Button {
-                        NSWorkspace.shared.open(URL(string: "#settings_plugin_pluginmanager", relativeTo: session.instance.baseURL)?.absoluteURL
-                                                ?? session.instance.baseURL)
-                    } label: {
-                        Label("Find more plugins", systemImage: "arrow.up.right")
+                    Button { adding = true } label: {
+                        Label("Add plugins…", systemImage: "plus")
                     }
-                    .buttonStyle(.plateQuiet)
-                    .help("Opens OctoPrint's Plugin Manager, where you can browse and install plugins")
+                    .buttonStyle(.plate)
+                    .help("Browse OctoPrint's plugin list and install from it")
                 }
                 .controlSize(.small)
             }
         }
+        .sheet(isPresented: $adding) { AddPluginsSheet(session: session) }
         .sheet(item: $uninstalling) { plugin in
             ConfirmSheet(symbol: "trash", title: "Uninstall \(plugin.name)?",
                          message: "OctoPrint removes the plugin. Its settings may be kept in case you install it again. OctoPrint needs a restart afterwards.",

@@ -54,6 +54,93 @@ public struct InstalledPlugin: Sendable, Hashable, Identifiable {
     }
 }
 
+/// A plugin from OctoPrint's official plugin repository (plugins.octoprint.org), as the Plugin Manager lists it.
+public struct RepositoryPlugin: Sendable, Hashable, Identifiable {
+    public var id: String
+    public var title: String
+    public var summary: String?
+    public var author: String?
+    public var homepage: URL?
+    /// Its page on plugins.octoprint.org.
+    public var page: URL?
+    /// What the Plugin Manager installs.
+    public var archive: URL
+    /// Works with this OctoPrint, its Python and its operating system, by the plugin's own account.
+    public var compatible: Bool
+    /// Marked as abandoned by the repository: nobody looks after it any more.
+    public var abandoned: Bool
+    /// About how many OctoPrint servers used it last month.
+    public var users: Int
+    public var followDependencyLinks: Bool
+
+    public init(id: String, title: String, summary: String? = nil, author: String? = nil, homepage: URL? = nil, page: URL? = nil,
+                archive: URL, compatible: Bool = true, abandoned: Bool = false, users: Int = 0, followDependencyLinks: Bool = false) {
+        self.id = id
+        self.title = title
+        self.summary = summary
+        self.author = author
+        self.homepage = homepage
+        self.page = page
+        self.archive = archive
+        self.compatible = compatible
+        self.abandoned = abandoned
+        self.users = users
+        self.followDependencyLinks = followDependencyLinks
+    }
+
+    init?(_ json: JSONValue) {
+        guard let id = json["id"]?.stringValue, let archive = json["archive"]?.stringValue.flatMap(URL.init(string:)) else { return nil }
+        let checks = json["is_compatible"]?.objectValue?.values.compactMap(\.boolValue) ?? []
+        self.init(
+            id: id,
+            title: json["title"]?.stringValue ?? id,
+            summary: json["description"]?.stringValue,
+            author: json["author"]?.stringValue,
+            homepage: json["homepage"]?.stringValue.flatMap(URL.init(string:)),
+            page: json["page"]?.stringValue.flatMap(URL.init(string:)),
+            archive: archive,
+            compatible: !checks.contains(false),
+            abandoned: json["abandoned"]?.boolValue == true || (json["attributes"]?.arrayValue ?? []).contains { $0.stringValue == "abandoned" },
+            users: json["stats"]?["instances_month"]?.intValue ?? 0,
+            followDependencyLinks: json["follow_dependency_links"]?.boolValue ?? false
+        )
+    }
+}
+
+/// The Plugin Manager's view of things: what's installed, and whether it can install more.
+public struct PluginManagerStatus: Sendable, Hashable {
+    public var plugins: [InstalledPlugin]
+    /// OctoPrint started in safe mode, with every added plugin switched off.
+    public var safeMode: Bool
+    /// The Pi can reach the internet, so it can download plugins.
+    public var online: Bool
+    /// OctoPrint found pip, which it needs to install anything.
+    public var canInstall: Bool
+}
+
+/// What the Plugin Manager pushes while it works: lines of its install log, and the result.
+public enum PluginManagerMessage: Sendable, Equatable {
+    case log([String])
+    /// The end of an install (or another action). `reason` says why it failed.
+    case result(action: String, success: Bool, needsRestart: Bool, reason: String?, plugin: InstalledPlugin?)
+
+    public init?(_ data: JSONValue) {
+        switch data["type"]?.stringValue {
+        case "loglines":
+            let lines = (data["loglines"]?.arrayValue ?? []).compactMap { $0["line"]?.stringValue }
+            self = .log(lines)
+        case "result":
+            self = .result(action: data["action"]?.stringValue ?? "",
+                           success: data["result"]?.boolValue ?? false,
+                           needsRestart: data["needs_restart"]?.boolValue ?? false,
+                           reason: data["reason"]?.stringValue,
+                           plugin: data["plugin"].flatMap(InstalledPlugin.init))
+        default:
+            return nil
+        }
+    }
+}
+
 /// What OctoPrint said after a plugin change.
 public struct PluginChange: Sendable, Hashable {
     public var needsRestart: Bool
@@ -61,19 +148,51 @@ public struct PluginChange: Sendable, Hashable {
 }
 
 extension OctoPrintClient {
-    static let pluginManagerID = "pluginmanager"
+    public static let pluginManagerID = "pluginmanager"
 
     /// Every installed plugin. OctoPrint 1.6 and later have a dedicated endpoint; older versions answer the plugin's
     /// simple API.
     public func installedPlugins() async throws -> [InstalledPlugin] {
+        try await pluginManagerStatus().plugins
+    }
+
+    /// The installed plugins, plus whether OctoPrint is in safe mode and able to install more.
+    public func pluginManagerStatus() async throws -> PluginManagerStatus {
         let json: JSONValue
         do {
             json = try await get("plugin/\(Self.pluginManagerID)/plugins")
         } catch OctoPrintError.http(status: 404, _) {
             json = try await pluginGet(Self.pluginManagerID)
         }
-        return (json["plugins"]?.arrayValue ?? []).compactMap(InstalledPlugin.init)
+        let plugins = (json["plugins"]?.arrayValue ?? []).compactMap(InstalledPlugin.init)
             .sorted { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        return PluginManagerStatus(plugins: plugins,
+                                   safeMode: json["safe_mode"]?.boolValue ?? false,
+                                   online: json["online"]?.boolValue ?? true,
+                                   canInstall: json["pip"]?["available"]?.boolValue ?? true)
+    }
+
+    /// OctoPrint's official plugin repository, most used first. Empty when OctoPrint can't reach it.
+    public func pluginRepository(refresh: Bool = false) async throws -> [RepositoryPlugin] {
+        let query = refresh ? [URLQueryItem(name: "refresh", value: "true")] : []
+        let json: JSONValue
+        do {
+            json = try await get("plugin/\(Self.pluginManagerID)/repository", query: query)
+        } catch OctoPrintError.http(status: 404, _) {
+            json = try await pluginGet(Self.pluginManagerID, query: query)
+        }
+        return (json["repository"]?["plugins"]?.arrayValue ?? []).compactMap(RepositoryPlugin.init)
+            .sorted { $0.users != $1.users ? $0.users > $1.users : $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
+    }
+
+    /// Starts installing a plugin from the repository. OctoPrint works in the background and pushes its progress as
+    /// `PluginManagerMessage`s.
+    public func installPlugin(_ plugin: RepositoryPlugin) async throws {
+        _ = try await pluginCommand(Self.pluginManagerID, "install", parameters: [
+            "url": .string(plugin.archive.absoluteString),
+            "dependency_links": .bool(plugin.followDependencyLinks),
+            "from_repo": .bool(true),
+        ])
     }
 
     /// Switches a plugin on or off.

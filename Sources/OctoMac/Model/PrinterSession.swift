@@ -159,6 +159,15 @@ final class PrinterSession {
     private(set) var plugins: [InstalledPlugin]?
     /// A plugin was switched on, off or uninstalled, and OctoPrint needs a restart to finish.
     private(set) var pluginsNeedRestart = false
+    /// OctoPrint started in safe mode, so every added plugin is off until it restarts normally.
+    private(set) var pluginSafeMode = false
+    /// Why OctoPrint can't install plugins right now, if it can't.
+    private(set) var pluginInstallBlocker: String?
+    /// OctoPrint's official plugin list, once fetched.
+    private(set) var pluginRepository: [RepositoryPlugin]?
+    private(set) var pluginRepositoryError: String?
+    /// The plugin being installed, with OctoPrint's install log.
+    private(set) var pluginInstall: PluginInstall?
     /// When an update was started; OctoPrint restarts once it's done.
     private(set) var updatingSince: Date?
     private(set) var logs: [LogFile] = []
@@ -383,10 +392,79 @@ final class PrinterSession {
 
     func refreshPlugins() async {
         guard !isDemoSession else { return }
-        if let list = try? await client.installedPlugins() {
-            plugins = list
-            pluginsNeedRestart = list.contains(where: \.pending)
+        if let status = try? await client.pluginManagerStatus() {
+            plugins = status.plugins
+            pluginsNeedRestart = status.plugins.contains(where: \.pending)
+            pluginSafeMode = status.safeMode
+            pluginInstallBlocker = !status.canInstall
+                ? String(localized: "OctoPrint can't install plugins on this system, because it couldn't find pip.")
+                : !status.online ? String(localized: "OctoPrint can't reach the internet, so it can't download plugins.") : nil
         }
+    }
+
+    func refreshPluginRepository(force: Bool = false) async {
+        guard !isDemoSession else {
+            pluginRepository = DemoPlugins.repository
+            return
+        }
+        pluginRepositoryError = nil
+        do {
+            pluginRepository = try await client.pluginRepository(refresh: force)
+        } catch {
+            pluginRepositoryError = error.localizedDescription
+        }
+    }
+
+    /// Installs a plugin from OctoPrint's plugin list. Progress arrives over the push connection.
+    func installPlugin(_ plugin: RepositoryPlugin) {
+        guard pluginInstall?.isRunning != true, !flags.isJobActive else { return }
+        pluginInstall = PluginInstall(plugin: plugin)
+        guard !isDemoSession else {
+            Task { await demoInstall(plugin) }
+            return
+        }
+        Task { [client, weak self] in
+            do {
+                try await client.installPlugin(plugin)
+            } catch {
+                self?.pluginInstall?.outcome = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// Clears a finished install, back to the plugin list.
+    func dismissPluginInstall() {
+        if pluginInstall?.isRunning == false { pluginInstall = nil }
+    }
+
+    private func handlePluginManager(_ data: JSONValue) {
+        switch PluginManagerMessage(data) {
+        case .log(let lines):
+            guard pluginInstall?.isRunning == true else { return }
+            pluginInstall?.log.append(contentsOf: lines.filter { !$0.isEmpty })
+            if let count = pluginInstall?.log.count, count > 1000 { pluginInstall?.log.removeFirst(count - 1000) }
+        case .result(let action, let success, let needsRestart, let reason, _) where action == "install":
+            if pluginInstall?.isRunning == true {
+                pluginInstall?.outcome = success ? .installed(needsRestart: needsRestart)
+                    : .failed(reason ?? String(localized: "OctoPrint didn't say why. The log above may help."))
+            }
+            if success && needsRestart { pluginsNeedRestart = true }
+            Task { await refreshPlugins() }
+        default:
+            break
+        }
+    }
+
+    private func demoInstall(_ plugin: RepositoryPlugin) async {
+        for line in DemoPlugins.installLog(for: plugin) {
+            try? await Task.sleep(for: .milliseconds(350))
+            pluginInstall?.log.append(line)
+        }
+        pluginInstall?.outcome = .installed(needsRestart: true)
+        plugins?.append(InstalledPlugin(key: plugin.id, name: plugin.title, author: plugin.author, summary: plugin.summary,
+                                        homepage: plugin.homepage, pending: true))
+        plugins?.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+        pluginsNeedRestart = true
     }
 
     func togglePlugin(_ plugin: InstalledPlugin) {
@@ -645,6 +723,8 @@ final class PrinterSession {
             }
         case .plugin(let id, let data) where id == BedLevelVisualizer.pluginID:
             handleBedLevel(data)
+        case .plugin(let id, let data) where id == OctoPrintClient.pluginManagerID:
+            handlePluginManager(data)
         default:
             break
         }

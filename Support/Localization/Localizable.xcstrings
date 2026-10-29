@@ -5111,6 +5111,328 @@
         }
       }
     },
+    "%lld more are hidden because they don't work with this OctoPrint or are no longer looked after.": {
+      "localizations": {
+        "cs": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld další jsou skryté, protože nefungují s tímto OctoPrintem nebo se už neudržují."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld dalšího je skryto, protože nefungují s tímto OctoPrintem nebo se už neudržují."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld další je skrytý, protože nefunguje s tímto OctoPrintem nebo se už neudržuje."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld dalších je skryto, protože nefungují s tímto OctoPrintem nebo se už neudržují."
+                }
+              }
+            }
+          }
+        },
+        "cy": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mae %lld arall wedi'u cuddio am nad ydyn nhw'n gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mae %lld arall wedi'u cuddio am nad ydyn nhw'n gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mae %lld arall wedi'i guddio am nad yw'n gweithio gyda'r OctoPrint hwn neu nad oes neb yn ei gynnal mwyach."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mae %lld arall wedi'u cuddio am nad ydyn nhw'n gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mae %lld arall wedi'u cuddio am nad ydyn nhw'n gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mae %lld arall wedi'u cuddio am nad ydyn nhw'n gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              }
+            }
+          }
+        },
+        "da": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld mere er skjult, fordi det ikke virker med denne OctoPrint eller ikke længere vedligeholdes."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld mere er skjult, fordi de ikke virker med denne OctoPrint eller ikke længere vedligeholdes."
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld weiteres ist ausgeblendet, weil es nicht mit diesem OctoPrint funktioniert oder nicht mehr gepflegt wird."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld weitere sind ausgeblendet, weil sie nicht mit diesem OctoPrint funktionieren oder nicht mehr gepflegt werden."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more is hidden because it doesn't work with this OctoPrint or is no longer looked after."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more are hidden because they don't work with this OctoPrint or are no longer looked after."
+                }
+              }
+            }
+          }
+        },
+        "en-GB": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more is hidden because it doesn't work with this OctoPrint or is no longer looked after."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more are hidden because they don't work with this OctoPrint or are no longer looked after."
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Hay %lld más oculto porque no funciona con este OctoPrint o ya no se mantiene."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Hay %lld más ocultos porque no funcionan con este OctoPrint o ya no se mantienen."
+                }
+              }
+            }
+          }
+        },
+        "fi": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld muu on piilotettu, koska se ei toimi tämän OctoPrintin kanssa tai sitä ei enää ylläpidetä."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld muuta on piilotettu, koska ne eivät toimi tämän OctoPrintin kanssa tai niitä ei enää ylläpidetä."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld autre est masqué, car il ne fonctionne pas avec cet OctoPrint ou n’est plus maintenu."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld autres sont masqués, car ils ne fonctionnent pas avec cet OctoPrint ou ne sont plus maintenus."
+                }
+              }
+            }
+          }
+        },
+        "it": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld altro è nascosto perché non funziona con questo OctoPrint o non è più mantenuto."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Altri %lld sono nascosti perché non funzionano con questo OctoPrint o non sono più mantenuti."
+                }
+              }
+            }
+          }
+        },
+        "nb": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld til er skjult fordi den ikke virker med denne OctoPrint eller ikke vedlikeholdes lenger."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld til er skjult fordi de ikke virker med denne OctoPrint eller ikke vedlikeholdes lenger."
+                }
+              }
+            }
+          }
+        },
+        "nl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Nog %lld is verborgen omdat die niet werkt met deze OctoPrint of niet meer wordt onderhouden."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Nog %lld zijn verborgen omdat ze niet werken met deze OctoPrint of niet meer worden onderhouden."
+                }
+              }
+            }
+          }
+        },
+        "pl": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Ukryto jeszcze %lld wtyczki, bo nie działają z tym OctoPrint albo nie są już rozwijane."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Ukryto jeszcze %lld wtyczek, bo nie działają z tym OctoPrint albo nie są już rozwijane."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Ukryto jeszcze %lld wtyczkę, bo nie działa z tym OctoPrint albo nie jest już rozwijana."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Ukryto jeszcze %lld wtyczki, bo nie działają z tym OctoPrint albo nie są już rozwijane."
+                }
+              }
+            }
+          }
+        },
+        "pt-PT": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mais %lld está oculto porque não funciona com este OctoPrint ou já não é mantido."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Mais %lld estão ocultos porque não funcionam com este OctoPrint ou já não são mantidos."
+                }
+              }
+            }
+          }
+        },
+        "sv": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld till är dolt eftersom det inte fungerar med den här OctoPrint eller inte underhålls längre."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld till är dolda eftersom de inte fungerar med den här OctoPrint eller inte underhålls längre."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld not connected": {
       "localizations": {
         "cs": {
@@ -12153,6 +12475,194 @@
         }
       }
     },
+    "Add plugins": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přidat pluginy"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ychwanegu ategion"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføj plugins"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plugins hinzufügen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add plugins"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add plugins"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir plugins"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisää lisäosia"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter des plugins"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi plugin"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legg til utvidelser"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plug-ins toevoegen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dodaj wtyczki"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar plugins"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lägg till plugin"
+          }
+        }
+      }
+    },
+    "Add plugins…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přidat pluginy…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ychwanegu ategion…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilføj plugins…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plugins hinzufügen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add plugins…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add plugins…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir plugins…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisää lisäosia…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajouter des plugins…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aggiungi plugin…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legg til utvidelser …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plug-ins toevoegen…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dodaj wtyczki…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adicionar plugins…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lägg till plugin…"
+          }
+        }
+      }
+    },
     "Add printer": {
       "localizations": {
         "cs": {
@@ -14880,6 +15390,100 @@
         }
       }
     },
+    "Back to the list": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zpět na seznam"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn ôl i'r rhestr"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilbage til listen"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück zur Liste"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the list"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the list"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a la lista"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takaisin luetteloon"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenir à la liste"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Torna all'elenco"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilbake til listen"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terug naar de lijst"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wróć do listy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voltar à lista"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tillbaka till listan"
+          }
+        }
+      }
+    },
     "Back to the open file": {
       "localizations": {
         "cs": {
@@ -16569,6 +17173,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ta tillbaka kameran"
+          }
+        }
+      }
+    },
+    "Browse OctoPrint's plugin list and install from it": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Procházet seznam pluginů OctoPrintu a instalovat z něj"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pori rhestr ategion OctoPrint a gosod ohoni"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gennemse OctoPrints pluginliste, og installer derfra"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Plugin-Liste von OctoPrint durchsuchen und daraus installieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse OctoPrint's plugin list and install from it"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Browse OctoPrint's plugin list and install from it"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explorar la lista de plugins de OctoPrint e instalar desde ella"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selaa OctoPrintin lisäosaluetteloa ja asenna siitä"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parcourir la liste des plugins d’OctoPrint et en installer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sfoglia l'elenco dei plugin di OctoPrint e installa da lì"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bla gjennom OctoPrints utvidelsesliste og installer derfra"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blader door de plug-inlijst van OctoPrint en installeer daaruit"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Przeglądaj listę wtyczek OctoPrint i instaluj z niej"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explorar a lista de plugins do OctoPrint e instalar a partir dela"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bläddra i OctoPrints pluginlista och installera därifrån"
           }
         }
       }
@@ -22873,6 +23571,100 @@
         }
       }
     },
+    "Couldn't install %@": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nepodařilo se nainstalovat %@"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Methu gosod %@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke installere %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ konnte nicht installiert werden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't install %@"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't install %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha podido instalar %@"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: asennus epäonnistui"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible d’installer %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile installare %@"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke installere %@"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kan %@ niet installeren"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się zainstalować %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível instalar %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunde inte installera %@"
+          }
+        }
+      }
+    },
     "Couldn't load this file. %@": {
       "localizations": {
         "cs": {
@@ -25221,6 +26013,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ignorera"
+          }
+        }
+      }
+    },
+    "Doesn't work with this OctoPrint": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nefunguje s tímto OctoPrintem"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ddim yn gweithio gyda'r OctoPrint hwn"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Virker ikke med denne OctoPrint"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Funktioniert nicht mit diesem OctoPrint"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doesn't work with this OctoPrint"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doesn't work with this OctoPrint"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No funciona con este OctoPrint"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei toimi tämän OctoPrintin kanssa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne fonctionne pas avec cet OctoPrint"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non funziona con questo OctoPrint"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Virker ikke med denne OctoPrint"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Werkt niet met deze OctoPrint"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie działa z tym OctoPrint"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não funciona com este OctoPrint"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fungerar inte med den här OctoPrint"
           }
         }
       }
@@ -29740,6 +30626,100 @@
         }
       }
     },
+    "Fetching the plugin list…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Načítá se seznam pluginů…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn nôl y rhestr ategion…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henter pluginlisten…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plugin-Liste wird geladen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fetching the plugin list…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fetching the plugin list…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Obteniendo la lista de plugins…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haetaan lisäosaluetteloa…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Récupération de la liste des plugins…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recupero dell'elenco dei plugin…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Henter utvidelseslisten …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plug-inlijst ophalen…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pobieranie listy wtyczek…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A obter a lista de plugins…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hämtar pluginlistan…"
+          }
+        }
+      }
+    },
     "Filament": {
       "localizations": {
         "cs": {
@@ -30676,100 +31656,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Hitta en fil"
-          }
-        }
-      }
-    },
-    "Find more plugins": {
-      "localizations": {
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Najít další pluginy"
-          }
-        },
-        "cy": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dod o hyd i ragor o ategion"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Find flere plugins"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weitere Plugins finden"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Find more plugins"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Find more plugins"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Buscar más plugins"
-          }
-        },
-        "fi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Etsi lisää lisäosia"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trouver d’autres plugins"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Trova altri plugin"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Finn flere utvidelser"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zoek meer plug-ins"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Znajdź więcej wtyczek"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Procurar mais plugins"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hitta fler plugin"
           }
         }
       }
@@ -32556,6 +33442,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Från OctoPrint"
+          }
+        }
+      }
+    },
+    "From OctoPrint's official plugin list. Plugins are made by the OctoPrint community, not by OctoMac.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Z oficiálního seznamu pluginů OctoPrintu. Pluginy vytváří komunita OctoPrintu, ne OctoMac."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O restr ategion swyddogol OctoPrint. Cymuned OctoPrint sy'n gwneud yr ategion, nid OctoMac."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fra OctoPrints officielle pluginliste. Plugins laves af OctoPrint-fællesskabet, ikke af OctoMac."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aus der offiziellen Plugin-Liste von OctoPrint. Plugins stammen von der OctoPrint-Community, nicht von OctoMac."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From OctoPrint's official plugin list. Plugins are made by the OctoPrint community, not by OctoMac."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From OctoPrint's official plugin list. Plugins are made by the OctoPrint community, not by OctoMac."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De la lista oficial de plugins de OctoPrint. Los plugins los crea la comunidad de OctoPrint, no OctoMac."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrintin virallisesta lisäosaluettelosta. Lisäosat tekee OctoPrint-yhteisö, ei OctoMac."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Issus de la liste officielle des plugins d’OctoPrint. Les plugins sont créés par la communauté OctoPrint, pas par OctoMac."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dall'elenco ufficiale dei plugin di OctoPrint. I plugin sono creati dalla comunità di OctoPrint, non da OctoMac."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fra OctoPrints offisielle utvidelsesliste. Utvidelsene er laget av OctoPrint-fellesskapet, ikke av OctoMac."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uit de officiële plug-inlijst van OctoPrint. Plug-ins worden gemaakt door de OctoPrint-community, niet door OctoMac."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Z oficjalnej listy wtyczek OctoPrint. Wtyczki tworzy społeczność OctoPrint, nie OctoMac."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Da lista oficial de plugins do OctoPrint. Os plugins são feitos pela comunidade do OctoPrint, não pelo OctoMac."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Från OctoPrints officiella pluginlista. Pluginen görs av OctoPrint-communityn, inte av OctoMac."
           }
         }
       }
@@ -35096,6 +36076,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Dölj lathunden"
+          }
+        }
+      }
+    },
+    "Hide them": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skrýt je"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eu cuddio"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skjul dem"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausblenden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide them"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hide them"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ocultarlos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kätke ne"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les masquer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nascondili"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skjul dem"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verberg ze"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ukryj je"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ocultá-los"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dölj dem"
           }
         }
       }
@@ -38600,6 +39674,100 @@
         }
       }
     },
+    "Install": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nainstalovat"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gosod"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asenna"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installa"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installer"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installeer"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstaluj"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installera"
+          }
+        }
+      }
+    },
     "Install %lld updates?": {
       "localizations": {
         "cs": {
@@ -39110,6 +40278,288 @@
         }
       }
     },
+    "Installed": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nainstalováno"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wedi'i osod"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installeret"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installiert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asennettu"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installato"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installert"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geïnstalleerd"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstalowana"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalado"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installerat"
+          }
+        }
+      }
+    },
+    "Installed %@": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nainstalováno: %@"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wedi gosod %@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ er installeret"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ installiert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed %@"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ instalado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ asennettu"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ installé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ installato"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installerte %@"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ geïnstalleerd"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zainstalowano %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ instalado"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installerade %@"
+          }
+        }
+      }
+    },
+    "Installing %@…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instaluje se %@…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn gosod %@…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installerer %@…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wird installiert …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installing %@…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installing %@…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalando %@…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asennetaan %@…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installation de %@…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installazione di %@…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installerer %@ …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ installeren…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalowanie %@…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A instalar %@…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installerar %@…"
+          }
+        }
+      }
+    },
     "Interrupt heating": {
       "localizations": {
         "cs": {
@@ -39483,6 +40933,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Det matchar inte längre det du litade på. Det är väntat om du har skapat ett nytt certifikat, annars bör du kontrollera innan du litar på det."
+          }
+        }
+      }
+    },
+    "It's ready to use.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je připravený k použití."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae'n barod i'w ddefnyddio."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Det er klar til brug."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es ist einsatzbereit."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's ready to use."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's ready to use."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya está listo para usar."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se on valmis käyttöön."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il est prêt à l’emploi."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "È pronto all'uso."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den er klar til bruk."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hij is klaar voor gebruik."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jest gotowa do użycia."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Está pronto a usar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Det är klart att använda."
           }
         }
       }
@@ -48829,96 +50373,284 @@
         }
       }
     },
-    "No plugins added yet. Find them in OctoPrint's Plugin Manager.": {
+    "No longer looked after": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zatím nebyly přidány žádné pluginy. Najdete je ve Správci pluginů OctoPrintu."
+            "value": "Už se neudržuje"
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dim ategion wedi'u hychwanegu eto. Dewch o hyd iddyn nhw yn Rheolwr Ategion OctoPrint."
+            "value": "Neb yn ei gynnal mwyach"
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ingen plugins tilføjet endnu. Find dem i OctoPrints Plugin Manager."
+            "value": "Vedligeholdes ikke længere"
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Noch keine Plugins hinzugefügt. Du findest sie im Plugin Manager von OctoPrint."
+            "value": "Wird nicht mehr gepflegt"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "No plugins added yet. Find them in OctoPrint's Plugin Manager."
+            "value": "No longer looked after"
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "No plugins added yet. Find them in OctoPrint's Plugin Manager."
+            "value": "No longer looked after"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aún no has añadido plugins. Búscalos en el Plugin Manager de OctoPrint."
+            "value": "Ya no se mantiene"
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lisäosia ei ole vielä lisätty. Löydät niitä OctoPrintin Plugin Managerista."
+            "value": "Ei enää ylläpidetä"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aucun plugin ajouté pour l’instant. Vous les trouverez dans le gestionnaire de plugins d’OctoPrint."
+            "value": "N’est plus maintenu"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ancora nessun plugin aggiunto. Puoi trovarli nel Plugin Manager di OctoPrint."
+            "value": "Non più mantenuto"
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ingen utvidelser lagt til ennå. Du finner dem i Plugin Manager i OctoPrint."
+            "value": "Vedlikeholdes ikke lenger"
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nog geen plug-ins toegevoegd. Je vindt ze in de Plugin Manager van OctoPrint."
+            "value": "Wordt niet meer onderhouden"
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nie dodano jeszcze wtyczek. Znajdziesz je w Menedżerze wtyczek OctoPrint."
+            "value": "Nie jest już rozwijana"
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ainda não foram adicionados plugins. Encontre-os no Plugin Manager do OctoPrint."
+            "value": "Já não é mantido"
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inga plugin har lagts till än. Du hittar dem i OctoPrints Plugin Manager."
+            "value": "Underhålls inte längre"
+          }
+        }
+      }
+    },
+    "No plugins added yet.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zatím nejsou přidány žádné pluginy."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dim ategion wedi'u hychwanegu eto."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen plugins tilføjet endnu."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Noch keine Plugins hinzugefügt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plugins added yet."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plugins added yet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no has añadido plugins."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisäosia ei ole vielä lisätty."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun plugin ajouté pour l’instant."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun plugin aggiunto per ora."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen utvidelser lagt til ennå."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nog geen plug-ins toegevoegd."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie dodano jeszcze żadnych wtyczek."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ainda não foram adicionados plugins."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga plugin har lagts till än."
+          }
+        }
+      }
+    },
+    "No plugins match your search.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vašemu hledání neodpovídají žádné pluginy."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Does dim ategion yn cyfateb i'ch chwiliad."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen plugins matcher din søgning."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Plugins passen zu deiner Suche."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plugins match your search."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No plugins match your search."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ningún plugin coincide con tu búsqueda."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hakuasi vastaavia lisäosia ei ole."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun plugin ne correspond à votre recherche."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun plugin corrisponde alla ricerca."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen utvidelser samsvarer med søket."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen plug-ins gevonden voor je zoekopdracht."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Żadna wtyczka nie pasuje do wyszukiwania."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum plugin corresponde à pesquisa."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inga plugin matchar sökningen."
           }
         }
       }
@@ -52723,6 +54455,288 @@
         }
       }
     },
+    "OctoPrint can't install plugins on this system, because it couldn't find pip.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nemůže v tomto systému instalovat pluginy, protože nenašel pip."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dydy OctoPrint ddim yn gallu gosod ategion ar y system hon, am nad oedd yn gallu dod o hyd i pip."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan ikke installere plugins på dette system, fordi det ikke kunne finde pip."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kann auf diesem System keine Plugins installieren, weil es pip nicht gefunden hat."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint can't install plugins on this system, because it couldn't find pip."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint can't install plugins on this system, because it couldn't find pip."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no puede instalar plugins en este sistema porque no ha encontrado pip."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei voi asentaa lisäosia tähän järjestelmään, koska se ei löytänyt pipiä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ne peut pas installer de plugins sur ce système, car il n’a pas trouvé pip."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non può installare plugin su questo sistema perché non ha trovato pip."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan ikke installere utvidelser på dette systemet, fordi den ikke fant pip."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan op dit systeem geen plug-ins installeren, omdat pip niet gevonden is."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie może instalować wtyczek w tym systemie, bo nie znalazł pip."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não pode instalar plugins neste sistema, porque não encontrou o pip."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan inte installera plugin på det här systemet eftersom det inte hittade pip."
+          }
+        }
+      }
+    },
+    "OctoPrint can't reach the internet, so it can't download plugins.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se nemůže připojit k internetu, takže nemůže stahovat pluginy."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dydy OctoPrint ddim yn gallu cyrraedd y rhyngrwyd, felly dydy e ddim yn gallu llwytho ategion i lawr."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan ikke nå internettet og kan derfor ikke hente plugins."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint erreicht das Internet nicht und kann daher keine Plugins herunterladen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint can't reach the internet, so it can't download plugins."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint can't reach the internet, so it can't download plugins."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no tiene acceso a internet, así que no puede descargar plugins."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei saa yhteyttä internetiin, joten se ei voi ladata lisäosia."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’a pas accès à Internet, il ne peut donc pas télécharger de plugins."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non riesce a raggiungere internet, quindi non può scaricare plugin."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint når ikke internett, så den kan ikke laste ned utvidelser."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan het internet niet bereiken en kan dus geen plug-ins downloaden."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie ma dostępu do internetu, więc nie może pobierać wtyczek."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não consegue aceder à internet, por isso não pode descarregar plugins."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint når inte internet och kan därför inte hämta plugin."
+          }
+        }
+      }
+    },
+    "OctoPrint couldn't fetch the plugin list. Check the Raspberry Pi can reach the internet.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nemohl načíst seznam pluginů. Zkontrolujte, že se Raspberry Pi může připojit k internetu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doedd OctoPrint ddim yn gallu nôl y rhestr ategion. Gwiriwch fod y Raspberry Pi yn gallu cyrraedd y rhyngrwyd."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunne ikke hente pluginlisten. Tjek, at Raspberry Pi'en kan nå internettet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint konnte die Plugin-Liste nicht laden. Prüfe, ob der Raspberry Pi das Internet erreicht."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't fetch the plugin list. Check the Raspberry Pi can reach the internet."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't fetch the plugin list. Check the Raspberry Pi can reach the internet."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no ha podido obtener la lista de plugins. Comprueba que la Raspberry Pi tenga acceso a internet."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei voinut hakea lisäosaluetteloa. Tarkista, että Raspberry Pi saa yhteyden internetiin."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’a pas pu récupérer la liste des plugins. Vérifiez que le Raspberry Pi a accès à Internet."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non è riuscito a recuperare l'elenco dei plugin. Controlla che il Raspberry Pi possa raggiungere internet."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunne ikke hente utvidelseslisten. Sjekk at Raspberry Pi-en når internett."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kon de plug-inlijst niet ophalen. Controleer of de Raspberry Pi het internet kan bereiken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie mógł pobrać listy wtyczek. Sprawdź, czy Raspberry Pi ma dostęp do internetu."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não conseguiu obter a lista de plugins. Verifique se o Raspberry Pi consegue aceder à internet."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunde inte hämta pluginlistan. Kontrollera att Raspberry Pi når internet."
+          }
+        }
+      }
+    },
     "OctoPrint couldn't find the printer on any USB port. Check the printer is switched on and its USB cable is plugged in, then connect.": {
       "localizations": {
         "cs": {
@@ -52813,6 +54827,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint hittade inte skrivaren på någon USB-port. Kontrollera att skrivaren är påslagen och att USB-kabeln är ansluten, och anslut sedan."
+          }
+        }
+      }
+    },
+    "OctoPrint didn't say why. The log above may help.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint neuvedl důvod. Může pomoct protokol výše."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wnaeth OctoPrint ddim dweud pam. Efallai y bydd y log uchod yn helpu."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint sagde ikke hvorfor. Loggen ovenfor kan måske hjælpe."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hat keinen Grund genannt. Das Protokoll oben hilft vielleicht weiter."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint didn't say why. The log above may help."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint didn't say why. The log above may help."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no ha dicho por qué. El registro de arriba puede ayudarte."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei kertonut syytä. Yllä oleva loki voi auttaa."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’a pas donné de raison. Le journal ci-dessus peut vous aider."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non ha detto perché. Il registro qui sopra potrebbe aiutare."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint oppga ingen grunn. Loggen over kan hjelpe."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint gaf geen reden. Het logboek hierboven kan helpen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie podał przyczyny. Może pomóc dziennik powyżej."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não indicou o motivo. O registo acima pode ajudar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint angav ingen orsak. Loggen ovan kan hjälpa."
           }
         }
       }
@@ -54129,6 +56237,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint hoppar över den här delen under resten av utskriften. De andra delarna fortsätter, och det går inte att ångra."
+          }
+        }
+      }
+    },
+    "OctoPrint started in safe mode, so every added plugin is off. This often means a plugin stopped it starting properly. Restart OctoPrint to switch them back on, or remove the plugin you added last.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se spustil v nouzovém režimu, takže všechny přidané pluginy jsou vypnuté. Často to znamená, že mu některý plugin zabránil ve správném spuštění. Restartujte OctoPrint, aby se znovu zapnuly, nebo odeberte plugin, který jste přidali naposledy."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dechreuodd OctoPrint yn y modd diogel, felly mae pob ategyn a ychwanegwyd i ffwrdd. Mae hyn yn aml yn golygu bod ategyn wedi'i atal rhag dechrau'n iawn. Ailgychwynnwch OctoPrint i'w troi nhw ymlaen eto, neu tynnwch yr ategyn a ychwanegoch chi ddiwethaf."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint startede i fejlsikret tilstand, så alle tilføjede plugins er slået fra. Det betyder ofte, at et plugin forhindrede det i at starte ordentligt. Genstart OctoPrint for at slå dem til igen, eller fjern det plugin, du tilføjede sidst."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint wurde im abgesicherten Modus gestartet, daher sind alle hinzugefügten Plugins aus. Das bedeutet oft, dass ein Plugin den richtigen Start verhindert hat. Starte OctoPrint neu, um sie wieder einzuschalten, oder entferne das zuletzt hinzugefügte Plugin."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint started in safe mode, so every added plugin is off. This often means a plugin stopped it starting properly. Restart OctoPrint to switch them back on, or remove the plugin you added last."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint started in safe mode, so every added plugin is off. This often means a plugin stopped it starting properly. Restart OctoPrint to switch them back on, or remove the plugin you added last."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se ha iniciado en modo seguro, así que todos los plugins añadidos están desactivados. Esto suele significar que un plugin le impidió arrancar bien. Reinicia OctoPrint para volver a activarlos o elimina el último plugin que añadiste."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint käynnistyi vikasietotilassa, joten kaikki lisätyt lisäosat ovat pois päältä. Tämä tarkoittaa usein, että jokin lisäosa esti sitä käynnistymästä kunnolla. Laita ne takaisin päälle käynnistämällä OctoPrint uudelleen, tai poista viimeksi lisäämäsi lisäosa."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint a démarré en mode sans échec, donc tous les plugins ajoutés sont désactivés. Cela signifie souvent qu’un plugin l’a empêché de démarrer correctement. Redémarrez OctoPrint pour les réactiver, ou supprimez le dernier plugin ajouté."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint si è avviato in modalità provvisoria, quindi tutti i plugin aggiunti sono disattivati. Spesso significa che un plugin ne ha impedito il corretto avvio. Riavvia OctoPrint per riattivarli, oppure rimuovi l'ultimo plugin che hai aggiunto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint startet i sikker modus, så alle utvidelser du har lagt til, er av. Det betyr ofte at en utvidelse hindret OctoPrint i å starte som den skal. Start OctoPrint på nytt for å slå dem på igjen, eller fjern utvidelsen du la til sist."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint is gestart in veilige modus, dus alle toegevoegde plug-ins staan uit. Dit betekent vaak dat een plug-in het goed opstarten verhinderde. Herstart OctoPrint om ze weer aan te zetten, of verwijder de plug-in die je het laatst hebt toegevoegd."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint uruchomił się w trybie awaryjnym, więc wszystkie dodane wtyczki są wyłączone. Często oznacza to, że któraś wtyczka nie pozwoliła mu poprawnie się uruchomić. Uruchom ponownie OctoPrint, aby je znów włączyć, albo usuń ostatnio dodaną wtyczkę."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint arrancou no modo de segurança, por isso todos os plugins adicionados estão desativados. Isto costuma significar que um plugin impediu o arranque correto. Reinicie o OctoPrint para os voltar a ativar, ou remova o último plugin que adicionou."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint startade i felsäkert läge, så alla tillagda plugin är avstängda. Det betyder ofta att ett plugin hindrade det från att starta ordentligt. Starta om OctoPrint för att slå på dem igen, eller ta bort det plugin du lade till sist."
           }
         }
       }
@@ -56483,6 +58685,100 @@
         }
       }
     },
+    "Open OctoPrint's Plugin Manager": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otevřít správce pluginů OctoPrintu"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agor Rheolwr Ategion OctoPrint"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åbn OctoPrints Plugin Manager"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plugin-Manager von OctoPrint öffnen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open OctoPrint's Plugin Manager"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open OctoPrint's Plugin Manager"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir el gestor de plugins de OctoPrint"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avaa OctoPrintin Plugin Manager"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir le gestionnaire de plugins d’OctoPrint"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri il Plugin Manager di OctoPrint"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åpne Plugin Manager i OctoPrint"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open de Plugin Manager van OctoPrint"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otwórz Plugin Manager w OctoPrint"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir o Plugin Manager do OctoPrint"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öppna Plugin Manager i OctoPrint"
+          }
+        }
+      }
+    },
     "Open System Settings": {
       "localizations": {
         "cs": {
@@ -56953,6 +59249,100 @@
         }
       }
     },
+    "Open the plugin's page": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otevřít stránku pluginu"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agor tudalen yr ategyn"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åbn pluginnets side"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seite des Plugins öffnen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the plugin's page"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open the plugin's page"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir la página del plugin"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avaa lisäosan sivu"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir la page du plugin"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri la pagina del plugin"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Åpne siden til utvidelsen"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open de pagina van de plug-in"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Otwórz stronę wtyczki"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir a página do plugin"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öppna pluginets sida"
+          }
+        }
+      }
+    },
     "Open this file, ready to print again": {
       "localizations": {
         "cs": {
@@ -57137,100 +59527,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Öppnar seriell anslutning"
-          }
-        }
-      }
-    },
-    "Opens OctoPrint's Plugin Manager, where you can browse and install plugins": {
-      "localizations": {
-        "cs": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Otevře Správce pluginů OctoPrintu, kde můžete procházet a instalovat pluginy"
-          }
-        },
-        "cy": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Yn agor Rheolwr Ategion OctoPrint, lle gallwch chi bori a gosod ategion"
-          }
-        },
-        "da": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Åbner OctoPrints Plugin Manager, hvor du kan gennemse og installere plugins"
-          }
-        },
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Öffnet den Plugin Manager von OctoPrint, in dem du Plugins suchen und installieren kannst"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opens OctoPrint's Plugin Manager, where you can browse and install plugins"
-          }
-        },
-        "en-GB": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opens OctoPrint's Plugin Manager, where you can browse and install plugins"
-          }
-        },
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abre el Plugin Manager de OctoPrint, donde puedes explorar e instalar plugins"
-          }
-        },
-        "fi": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Avaa OctoPrintin Plugin Managerin, jossa voit selata ja asentaa lisäosia"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouvre le gestionnaire de plugins d’OctoPrint, où vous pouvez parcourir et installer des plugins"
-          }
-        },
-        "it": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apre il Plugin Manager di OctoPrint, dove puoi sfogliare e installare plugin"
-          }
-        },
-        "nb": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Åpner Plugin Manager i OctoPrint, der du kan bla gjennom og installere utvidelser"
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Opent de Plugin Manager van OctoPrint, waar je plug-ins kunt bekijken en installeren"
-          }
-        },
-        "pl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Otwiera Menedżera wtyczek OctoPrint, gdzie możesz przeglądać i instalować wtyczki"
-          }
-        },
-        "pt-PT": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abre o Plugin Manager do OctoPrint, onde pode procurar e instalar plugins"
-          }
-        },
-        "sv": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Öppnar OctoPrints Plugin Manager, där du kan bläddra bland och installera plugin"
           }
         }
       }
@@ -72861,6 +75157,100 @@
         }
       }
     },
+    "Restart OctoPrint to start using it.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartujte OctoPrint, abyste ho mohli začít používat."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailgychwynnwch OctoPrint i ddechrau ei ddefnyddio."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genstart OctoPrint for at begynde at bruge det."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starte OctoPrint neu, um es zu verwenden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart OctoPrint to start using it."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart OctoPrint to start using it."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reinicia OctoPrint para empezar a usarlo."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ota se käyttöön käynnistämällä OctoPrint uudelleen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarrez OctoPrint pour commencer à l’utiliser."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riavvia OctoPrint per iniziare a usarlo."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start OctoPrint på nytt for å ta den i bruk."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herstart OctoPrint om hem te gaan gebruiken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uruchom ponownie OctoPrint, aby zacząć jej używać."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reinicie o OctoPrint para começar a usá-lo."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starta om OctoPrint för att börja använda det."
+          }
+        }
+      }
+    },
     "Restart OctoPrint?": {
       "localizations": {
         "cs": {
@@ -76524,6 +78914,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sök, till exempel ”fläkt” eller M600"
+          }
+        }
+      }
+    },
+    "Search, for example \"timelapse\" or \"camera\"": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hledat, například „timelapse“ nebo „kamera“"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chwilio, er enghraifft \"timelapse\" neu \"camera\""
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Søg, f.eks. »timelapse« eller »kamera«"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suche, z. B. „Zeitraffer“ oder „Kamera“"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search, for example \"timelapse\" or \"camera\""
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Search, for example \"timelapse\" or \"camera\""
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar, por ejemplo «timelapse» o «cámara»"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hae, esimerkiksi ”timelapse” tai ”kamera”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rechercher, par exemple « timelapse » ou « caméra »"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerca, ad esempio \"timelapse\" o \"camera\""
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Søk, for eksempel «timelapse» eller «kamera»"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zoek, bijvoorbeeld “timelapse” of “camera”"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Szukaj, na przykład „timelapse” lub „kamera”"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pesquisar, por exemplo «timelapse» ou «câmara»"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sök, till exempel ”timelapse” eller ”kamera”"
           }
         }
       }
@@ -80946,6 +83430,100 @@
         }
       }
     },
+    "Show them": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zobrazit je"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eu dangos"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vis dem"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einblenden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show them"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show them"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrarlos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Näytä ne"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les afficher"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrali"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vis dem"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toon ze"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokaż je"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrá-los"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visa dem"
+          }
+        }
+      }
+    },
     "Show versions": {
       "localizations": {
         "cs": {
@@ -81036,6 +83614,328 @@
           "stringUnit": {
             "state": "translated",
             "value": "Visa versioner"
+          }
+        }
+      }
+    },
+    "Showing %lld plugins that don't work with this OctoPrint or are no longer looked after.": {
+      "localizations": {
+        "cs": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zobrazují se %lld pluginy, které nefungují s tímto OctoPrintem nebo se už neudržují."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zobrazuje se %lld pluginu, které nefungují s tímto OctoPrintem nebo se už neudržují."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zobrazuje se %lld plugin, který nefunguje s tímto OctoPrintem nebo se už neudržuje."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zobrazuje se %lld pluginů, které nefungují s tímto OctoPrintem nebo se už neudržují."
+                }
+              }
+            }
+          }
+        },
+        "cy": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Yn dangos %lld ategyn sydd ddim yn gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Yn dangos %lld ategyn sydd ddim yn gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Yn dangos %lld ategyn sydd ddim yn gweithio gyda'r OctoPrint hwn neu nad oes neb yn ei gynnal mwyach."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Yn dangos %lld ategyn sydd ddim yn gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Yn dangos %lld ategyn sydd ddim yn gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Yn dangos %lld ategyn sydd ddim yn gweithio gyda'r OctoPrint hwn neu nad oes neb yn eu cynnal mwyach."
+                }
+              }
+            }
+          }
+        },
+        "da": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Viser %lld plugin, der ikke virker med denne OctoPrint eller ikke længere vedligeholdes."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Viser %lld plugins, der ikke virker med denne OctoPrint eller ikke længere vedligeholdes."
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Plugin wird angezeigt, das nicht mit diesem OctoPrint funktioniert oder nicht mehr gepflegt wird."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Plugins werden angezeigt, die nicht mit diesem OctoPrint funktionieren oder nicht mehr gepflegt werden."
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Showing %lld plugin that doesn't work with this OctoPrint or is no longer looked after."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Showing %lld plugins that don't work with this OctoPrint or are no longer looked after."
+                }
+              }
+            }
+          }
+        },
+        "en-GB": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Showing %lld plugin that doesn't work with this OctoPrint or is no longer looked after."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Showing %lld plugins that don't work with this OctoPrint or are no longer looked after."
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Se muestra %lld plugin que no funciona con este OctoPrint o ya no se mantiene."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Se muestran %lld plugins que no funcionan con este OctoPrint o ya no se mantienen."
+                }
+              }
+            }
+          }
+        },
+        "fi": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Näytetään %lld lisäosa, joka ei toimi tämän OctoPrintin kanssa tai jota ei enää ylläpidetä."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Näytetään %lld lisäosaa, jotka eivät toimi tämän OctoPrintin kanssa tai joita ei enää ylläpidetä."
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plugin affiché qui ne fonctionne pas avec cet OctoPrint ou n’est plus maintenu."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plugins affichés qui ne fonctionnent pas avec cet OctoPrint ou ne sont plus maintenus."
+                }
+              }
+            }
+          }
+        },
+        "it": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Viene mostrato %lld plugin che non funziona con questo OctoPrint o non è più mantenuto."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Vengono mostrati %lld plugin che non funzionano con questo OctoPrint o non sono più mantenuti."
+                }
+              }
+            }
+          }
+        },
+        "nb": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Viser %lld utvidelse som ikke virker med denne OctoPrint eller ikke vedlikeholdes lenger."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Viser %lld utvidelser som ikke virker med denne OctoPrint eller ikke vedlikeholdes lenger."
+                }
+              }
+            }
+          }
+        },
+        "nl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plug-in getoond die niet werkt met deze OctoPrint of niet meer wordt onderhouden."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld plug-ins getoond die niet werken met deze OctoPrint of niet meer worden onderhouden."
+                }
+              }
+            }
+          }
+        },
+        "pl": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pokazano %lld wtyczki, które nie działają z tym OctoPrint albo nie są już rozwijane."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pokazano %lld wtyczek, które nie działają z tym OctoPrint albo nie są już rozwijane."
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pokazano %lld wtyczkę, która nie działa z tym OctoPrint albo nie jest już rozwijana."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pokazano %lld wtyczki, które nie działają z tym OctoPrint albo nie są już rozwijane."
+                }
+              }
+            }
+          }
+        },
+        "pt-PT": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "A mostrar %lld plugin que não funciona com este OctoPrint ou já não é mantido."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "A mostrar %lld plugins que não funcionam com este OctoPrint ou já não são mantidos."
+                }
+              }
+            }
+          }
+        },
+        "sv": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Visar %lld plugin som inte fungerar med den här OctoPrint eller inte underhålls längre."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Visar %lld plugin som inte fungerar med den här OctoPrint eller inte underhålls längre."
+                }
+              }
+            }
           }
         }
       }
@@ -89223,6 +92123,100 @@
         }
       }
     },
+    "The plugin list is empty.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seznam pluginů je prázdný."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae'r rhestr ategion yn wag."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pluginlisten er tom."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Plugin-Liste ist leer."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The plugin list is empty."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The plugin list is empty."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La lista de plugins está vacía."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisäosaluettelo on tyhjä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La liste des plugins est vide."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'elenco dei plugin è vuoto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utvidelseslisten er tom."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De plug-inlijst is leeg."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lista wtyczek jest pusta."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A lista de plugins está vazia."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pluginlistan är tom."
+          }
+        }
+      }
+    },
     "The print": {
       "localizations": {
         "cs": {
@@ -91291,6 +94285,100 @@
         }
       }
     },
+    "This can take a few minutes on a Raspberry Pi.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na Raspberry Pi to může trvat několik minut."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gall hyn gymryd ychydig funudau ar Raspberry Pi."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Det kan tage et par minutter på en Raspberry Pi."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das kann auf einem Raspberry Pi ein paar Minuten dauern."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This can take a few minutes on a Raspberry Pi."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This can take a few minutes on a Raspberry Pi."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puede tardar unos minutos en una Raspberry Pi."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tämä voi kestää muutaman minuutin Raspberry Pi -laitteella."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cela peut prendre quelques minutes sur un Raspberry Pi."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Su un Raspberry Pi può richiedere qualche minuto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dette kan ta noen minutter på en Raspberry Pi."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dit kan op een Raspberry Pi een paar minuten duren."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Na Raspberry Pi może to potrwać kilka minut."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Isto pode demorar alguns minutos num Raspberry Pi."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Det kan ta några minuter på en Raspberry Pi."
+          }
+        }
+      }
+    },
     "This file doesn't contain any printing moves.": {
       "localizations": {
         "cs": {
@@ -92885,6 +95973,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Om du vill avsluta en utskrift på ett snyggt sätt i stället använder du Stoppa, som låter OctoPrint köra sin avbrytningsrutin."
+          }
+        }
+      }
+    },
+    "To install a plugin from a web address or a file": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro instalaci pluginu z webové adresy nebo ze souboru"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I osod ategyn o gyfeiriad gwe neu ffeil"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For at installere et plugin fra en webadresse eller en fil"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Um ein Plugin über eine Webadresse oder aus einer Datei zu installieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To install a plugin from a web address or a file"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To install a plugin from a web address or a file"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para instalar un plugin desde una dirección web o un archivo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisäosan asentamiseen verkko-osoitteesta tai tiedostosta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour installer un plugin depuis une adresse web ou un fichier"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per installare un plugin da un indirizzo web o da un file"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For å installere en utvidelse fra en nettadresse eller en fil"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Om een plug-in te installeren vanaf een webadres of een bestand"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aby zainstalować wtyczkę z adresu internetowego lub pliku"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para instalar um plugin a partir de um endereço web ou de um ficheiro"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "För att installera ett plugin från en webbadress eller en fil"
           }
         }
       }
@@ -96919,6 +100101,328 @@
         }
       }
     },
+    "Used on %lld printers last month": {
+      "localizations": {
+        "cs": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Minulý měsíc použit na %lld tiskárnách"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Minulý měsíc použit na %lld tiskárny"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Minulý měsíc použit na %lld tiskárně"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Minulý měsíc použit na %lld tiskárnách"
+                }
+              }
+            }
+          }
+        },
+        "cy": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Defnyddiwyd ar %lld argraffydd fis diwethaf"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Defnyddiwyd ar %lld argraffydd fis diwethaf"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Defnyddiwyd ar %lld argraffydd fis diwethaf"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Defnyddiwyd ar %lld argraffydd fis diwethaf"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Defnyddiwyd ar %lld argraffydd fis diwethaf"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Defnyddiwyd ar %lld argraffydd fis diwethaf"
+                }
+              }
+            }
+          }
+        },
+        "da": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Brugt på %lld printer sidste måned"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Brugt på %lld printere sidste måned"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Letzten Monat auf %lld Drucker genutzt"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Letzten Monat auf %lld Druckern genutzt"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Used on %lld printer last month"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Used on %lld printers last month"
+                }
+              }
+            }
+          }
+        },
+        "en-GB": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Used on %lld printer last month"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Used on %lld printers last month"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Usado en %lld impresora el mes pasado"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Usado en %lld impresoras el mes pasado"
+                }
+              }
+            }
+          }
+        },
+        "fi": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Käytössä %lld tulostimessa viime kuussa"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Käytössä %lld tulostimessa viime kuussa"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Utilisé sur %lld imprimante le mois dernier"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Utilisé sur %lld imprimantes le mois dernier"
+                }
+              }
+            }
+          }
+        },
+        "it": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Usato su %lld stampante il mese scorso"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Usato su %lld stampanti il mese scorso"
+                }
+              }
+            }
+          }
+        },
+        "nb": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Brukt på %lld skriver forrige måned"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Brukt på %lld skrivere forrige måned"
+                }
+              }
+            }
+          }
+        },
+        "nl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Vorige maand gebruikt op %lld printer"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Vorige maand gebruikt op %lld printers"
+                }
+              }
+            }
+          }
+        },
+        "pl": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Używana na %lld drukarkach w zeszłym miesiącu"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Używana na %lld drukarkach w zeszłym miesiącu"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Używana na %lld drukarce w zeszłym miesiącu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Używana na %lld drukarki w zeszłym miesiącu"
+                }
+              }
+            }
+          }
+        },
+        "pt-PT": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Usado em %lld impressora no último mês"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Usado em %lld impressoras no último mês"
+                }
+              }
+            }
+          }
+        },
+        "sv": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Användes på %lld skrivare förra månaden"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Användes på %lld skrivare förra månaden"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "User name": {
       "localizations": {
         "cs": {
@@ -99646,6 +103150,100 @@
         }
       }
     },
+    "You can install plugins once the print has finished.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pluginy můžete instalovat, až tisk skončí."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gallwch chi osod ategion unwaith y bydd yr argraffiad wedi gorffen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kan installere plugins, når printet er færdigt."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kannst Plugins installieren, sobald der Druck fertig ist."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can install plugins once the print has finished."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can install plugins once the print has finished."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podrás instalar plugins cuando termine la impresión."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voit asentaa lisäosia, kun tulostus on valmis."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous pourrez installer des plugins une fois l’impression terminée."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Potrai installare plugin quando la stampa sarà finita."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kan installere utvidelser når utskriften er ferdig."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je kunt plug-ins installeren zodra de print klaar is."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wtyczki możesz instalować, gdy wydruk się skończy."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pode instalar plugins quando a impressão terminar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du kan installera plugin när utskriften är klar."
+          }
+        }
+      }
+    },
     "You're about to reboot the Raspberry Pi.": {
       "localizations": {
         "cs": {
@@ -100864,6 +104462,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "i kamerans storlek"
+          }
+        }
+      }
+    },
+    "by %@": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "od %@"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "gan %@"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "af %@"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "von %@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "by %@"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "by %@"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "de %@"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "tekijä: %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "par %@"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "di %@"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "av %@"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "door %@"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "autor: %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "por %@"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "av %@"
           }
         }
       }
