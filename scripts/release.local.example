@@ -1,0 +1,10 @@
+# Local signing settings for scripts/release.sh and scripts/build-app.sh.
+# Copy this file to scripts/release.local and fill in your own details. Git ignores release.local, so they're
+# never committed. Without it, builds are signed ad-hoc and only run on your own Mac.
+
+# Your Developer ID signing identity, exactly as `security find-identity -v -p codesigning` lists it.
+SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID1234)"
+
+# The notarytool keychain profile for notarising (`--notarize`), created once with:
+#   xcrun notarytool store-credentials "your-profile-name" --apple-id you@example.com --team-id TEAMID1234
+NOTARY_PROFILE="your-profile-name"

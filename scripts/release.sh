@@ -8,7 +8,8 @@
 #   scripts/release.sh --bump patch --notarize --publish --notes notes.md
 #                                      # ...and publish: tag, GitHub release, appcast entry for Sparkle
 #
-# Signing details never live in the repository. Put them in scripts/release.local (ignored by git):
+# Signing details never live in the repository. Put them in scripts/release.local (ignored by git; copy
+# scripts/release.local.example to start):
 #   SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)"
 #   NOTARY_PROFILE="your-notarytool-profile"
 # or pass them as environment variables. Without them the app is signed ad-hoc, which runs on your own Mac only.
