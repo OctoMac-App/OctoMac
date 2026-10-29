@@ -7,6 +7,8 @@
 
 OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one place, with a design built for watching and running prints rather than a web page squeezed into a window. Keep an eye on every printer at a glance, start a print in a couple of clicks, and watch it build up in 3D as it goes.
 
+**[octomac-app.github.io/OctoMac](https://octomac-app.github.io/OctoMac/)**
+
 ![OctoMac showing a print in progress](docs/screenshots/overview.png)
 
 ## What it does
@@ -19,9 +21,10 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **History, statistics and timelapses.** The History tab shows how many prints finished, the hours and filament they took, and a month-by-month chart for one printer or all of them. It lists what you've printed lately and whether it finished, and plays, saves or deletes OctoPrint's timelapse videos.
 - **Your own buttons.** Custom controls set up in OctoPrint appear on the Move tab, including ones that ask for a value first.
 - **G-code preview.** See exactly what will be printed, layer by layer or as a 3D model you can spin around.
-- **Watch prints live.** While printing, the 3D preview follows along, with a little animated nozzle laying down the current layer.
+- **Watch prints live.** While printing, the 3D preview follows along, with a little nozzle gliding along the toolpath at the printer's own pace. If you're watching the layer being printed, the view moves up with the nozzle.
+- **Layer alerts.** Pause at a layer to drop in magnets, nuts or a new colour, or just get a notification when the print reaches it. Once the first layer is down, OctoMac sends a picture of it with Pause and Stop Print buttons, so a bad start never runs for hours.
 - **Tweak a print as it runs.** Nudge the print speed and flow right from the Overview while you watch.
-- **Notifications.** Get a Mac notification when a print finishes or fails, when the printer needs you (a filament change, a paused print, an MMU filament choice), if it stops answering, or if the Raspberry Pi is short of power. Finished, failed and paused prints come with a picture from the camera. Choose which ones you want in Settings.
+- **Notifications.** Get a Mac notification when a print finishes or fails, when the printer needs you (a filament change, a paused print, an MMU filament choice), if it stops answering, or if the Raspberry Pi is short of power. Finished, failed and paused prints, the first layer and your layer alerts come with a picture from the camera. Choose which ones you want in Settings.
 - **Know your machine.** The Machine tab shows the printer's firmware, the Raspberry Pi's power and temperature health, OctoPrint and plugin updates you can install with one click, your plugins (switch them on or off, or uninstall them), and OctoPrint's logs, which you can read or save. If the printer won't connect, OctoMac tells you why in plain words.
 - **Full control.** Heat up with your saved presets, move the print head, extrude filament, adjust fan and speed, send G-code from the console, and manage the connection and the Raspberry Pi.
 - **A friendlier console.** Hide the chatter you don't need (temperatures, SD status, positions, wait and busy replies, MMU chatter) using OctoPrint's own filters, and highlight the lines you care about, including the printer's replies to your own commands. The console holds still while you scroll up to read, and a G-code cheat sheet slides out beside it with plain explanations of common commands.
@@ -33,6 +36,8 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 - **Celsius or Fahrenheit.** Celsius by default; switch in Settings.
 
 ![The 3D G-code preview following a live print](docs/screenshots/live-preview.png)
+
+![Layer alerts: pause or get a notification at a layer](docs/screenshots/layer-alerts.png)
 
 ![All printers, side by side](docs/screenshots/all-printers.png)
 
@@ -53,6 +58,16 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 ### Download
 
 Grab the latest **OctoMac.dmg** from the [Releases page](https://github.com/OctoMac-App/OctoMac/releases), open it, and drag OctoMac into your Applications folder. It runs on both Apple silicon and Intel Macs. OctoMac checks for new versions once a day and asks before installing one; you can turn that off in **Settings → General**.
+
+### Or use Homebrew
+
+```sh
+brew tap octomac-app/tap
+brew trust octomac-app/tap
+brew install --cask octomac
+```
+
+`brew trust` lets Homebrew load the OctoMac tap; Homebrew 7 and later ask for it for any tap outside their own. OctoMac still updates itself, so there's no need for `brew upgrade`.
 
 ### Or build it yourself
 
@@ -101,11 +116,12 @@ OctoMac works with a standard OctoPrint install, and it gets better with a few p
 | Classic Webcam (built in) | Shows your camera stream, including your flip and rotate settings. | Supported |
 | Logging (built in) | Lists OctoPrint's log files on the Machine tab, so you can read the latest lines or save a whole log. | Supported |
 | Pi Support (built in) | Shows the Raspberry Pi model and warns when it's short of power or too hot. | Supported |
-| Software Update (built in) | Shows whether OctoPrint and your plugins are up to date. | Supported |
+| Software Update (built in) | Shows whether OctoPrint and your plugins are up to date, and installs updates with one click. | Supported |
+| Plugin Manager (built in) | Lists your plugins on the Machine tab, where you can switch them on or off or uninstall them. | Supported |
 | [Bed Level Visualizer](https://plugins.octoprint.org/plugins/bedlevelvisualizer/) | Shows your bed mesh on the Machine tab as a colour map with every probe point's height, or as a 3D surface you can turn. Measure the bed again with one click, and pick the measuring G-code from ready-made starting points. | Supported |
 | [Print Time Genius](https://plugins.octoprint.org/plugins/PrintTimeGenius/) | Uses its much more accurate print times for files and time left, and says when a time comes from it. Without it, OctoMac uses OctoPrint's own estimates. | Supported |
 | [Cancel Objects](https://plugins.octoprint.org/plugins/cancelobject/) | While printing several parts at once, shows them on a map of the bed and lets you stop one that's failed while the others carry on. | Supported |
-| [DisplayLayerProgress](https://plugins.octoprint.org/plugins/DisplayLayerProgress/) | Shows the real layer number while printing (for example "Layer 92 of 146, about 58s each"). | Supported |
+| [DisplayLayerProgress](https://plugins.octoprint.org/plugins/DisplayLayerProgress/) | Shows the real layer number while printing (for example "Layer 92 of 146, about 58s each"), and makes layer alerts and the first-layer check possible. | Supported |
 | [Prusa MMU](https://plugins.octoprint.org/plugins/prusammu/) | When a print starts on a printer with a Prusa Multi Material Unit, asks which filament to use, showing your filament names and colours and a countdown. You can answer from any screen, or press the slot's number. The loaded filament also shows next to the printer's name. | Supported |
 
 Don't have a plugin installed? No problem. OctoMac simply skips that feature. For example, without Slicer Thumbnails your files show a tidy icon instead of a picture.

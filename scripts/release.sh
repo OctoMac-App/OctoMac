@@ -6,7 +6,8 @@
 #   scripts/release.sh --notarize      # also notarise and staple (needs a notarytool keychain profile)
 #   scripts/release.sh --bump patch    # bump ./VERSION first (major, minor or patch)
 #   scripts/release.sh --bump patch --notarize --publish --notes notes.md
-#                                      # ...and publish: tag, GitHub release, appcast entry for Sparkle
+#                                      # ...and publish: tag, GitHub release, appcast entry for Sparkle,
+#                                      # and the Homebrew cask in OctoMac-App/homebrew-tap
 #
 # Signing details never live in the repository. Put them in scripts/release.local (ignored by git; copy
 # scripts/release.local.example to start):
@@ -138,4 +139,17 @@ gh release create "$TAG" "$DMG" --repo OctoMac-App/OctoMac --title "OctoMac $VER
 git add appcast.xml
 git commit -q -m "Appcast: OctoMac $VERSION"
 git push -q origin HEAD
+
+# Point the Homebrew cask at the new release.
+echo "==> Updating the Homebrew cask"
+TAP="$(mktemp -d)"
+if git clone -q git@github.com:OctoMac-App/homebrew-tap.git "$TAP"; then
+  SHA="$(shasum -a 256 "$DMG" | cut -d' ' -f1)"
+  sed -i '' -e "s/^  version \".*\"/  version \"$VERSION\"/" -e "s/^  sha256 \".*\"/  sha256 \"$SHA\"/" "$TAP/Casks/octomac.rb"
+  git -C "$TAP" commit -q -am "OctoMac $VERSION" && git -C "$TAP" push -q || echo "Couldn't update the Homebrew cask; update it by hand." >&2
+else
+  echo "Couldn't reach the Homebrew tap; update its cask by hand." >&2
+fi
+rm -rf "$TAP"
+
 echo "==> Published $TAG"

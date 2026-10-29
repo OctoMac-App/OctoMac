@@ -6,9 +6,11 @@ OctoMac is not affiliated with OctoPrint. It's distributed as a notarised disk i
 
 ## Using OctoMac
 
+- [Website](https://octomac-app.github.io/OctoMac/): what OctoMac does, with screenshots and downloads
 - [README](https://github.com/OctoMac-App/OctoMac/blob/master/README.md): what OctoMac does, how to install it, add a printer, and which OctoPrint plugins it supports
 - [Privacy](https://github.com/OctoMac-App/OctoMac/blob/master/PRIVACY.md): what OctoMac stores on your Mac, and what it never sends anywhere
 - [Releases](https://github.com/OctoMac-App/OctoMac/releases): downloads and release notes
+- [Homebrew tap](https://github.com/OctoMac-App/homebrew-tap): `brew tap octomac-app/tap`, `brew trust octomac-app/tap`, `brew install --cask octomac`
 - [Issues](https://github.com/OctoMac-App/OctoMac/issues): bug reports and feature requests
 
 ## Working on the code
