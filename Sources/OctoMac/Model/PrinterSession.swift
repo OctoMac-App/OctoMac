@@ -168,6 +168,9 @@ final class PrinterSession {
     private(set) var pluginRepositoryError: String?
     /// The plugin being installed, with OctoPrint's install log.
     private(set) var pluginInstall: PluginInstall?
+    /// When OctoPrint was asked to restart. Cleared once it has gone away and come back.
+    private(set) var restartingSince: Date?
+    private var restartWentAway = false
     /// When an update was started; OctoPrint restarts once it's done.
     private(set) var updatingSince: Date?
     private(set) var logs: [LogFile] = []
@@ -240,6 +243,7 @@ final class PrinterSession {
         case .needsAPIKey: String(localized: "Needs API key")
         case .connecting: String(localized: "Connecting…")
         case .offline(let reason): reason.map { String(localized: "Offline: \($0)") } ?? String(localized: "Offline")
+        case _ where restartingSince != nil: String(localized: "Restarting OctoPrint…")
         case .online:
             if isPrinterConnecting { String(localized: "Connecting to printer…") }
             else if !isPrinterConnected { printerFault ? String(localized: "Printer stopped answering") : String(localized: "Printer not connected") }
@@ -678,11 +682,21 @@ final class PrinterSession {
             }
             untrustedCertificate = nil
             self.user = user
+            let backFromRestart = restartingSince != nil && restartWentAway
             Task {
                 await refreshAll()
+                // Plugins switched on or installed before a restart are live now.
+                if plugins != nil || pluginInstall != nil { await refreshPlugins() }
+                if backFromRestart { finishRestart() }
+                // The result of an install may have been sent while we were away; the plugin list tells.
+                if let install = pluginInstall, install.isRunning,
+                   let plugin = plugins?.first(where: { $0.key.lowercased() == install.plugin.id.lowercased() }) {
+                    pluginInstall?.outcome = .installed(needsRestart: plugin.pending)
+                }
                 if mmu != nil { try? await client.refreshMMUState() }
             }
         case .disconnected(let reason, let code):
+            if restartingSince != nil { restartWentAway = true }
             if link != .needsAPIKey { link = .offline(reason) }
             offlineBecauseNoInternet = code == URLError.notConnectedToInternet.rawValue
             untrustedCertificate = trust.untrusted
@@ -1288,7 +1302,59 @@ final class PrinterSession {
         }
     }
 
-    func run(_ command: SystemCommand) { perform { [client] in try await client.execute(command) } }
+    func run(_ command: SystemCommand) {
+        if command.source == "core" && command.action == "restart" {
+            restartOctoPrint(command)
+            return
+        }
+        perform { [client] in try await client.execute(command) }
+    }
+
+    /// Restarts OctoPrint and keeps track until it's back, so the app can say what's happening.
+    private func restartOctoPrint(_ command: SystemCommand) {
+        let started = Date.now
+        restartingSince = started
+        restartWentAway = false
+        guard !isDemoSession else {
+            Task { await demoRestart() }
+            return
+        }
+        Task { [client, weak self] in
+            do {
+                try await client.execute(command)
+            } catch {
+                // OctoPrint can drop the connection before it answers; only a refusal while it's still up counts.
+                guard let self, self.restartingSince == started, !self.restartWentAway else { return }
+                self.restartingSince = nil
+                self.error = ErrorBanner(message: error.localizedDescription)
+                return
+            }
+            try? await Task.sleep(for: .seconds(180))
+            guard let self, self.restartingSince == started else { return }
+            self.restartingSince = nil
+            self.error = ErrorBanner(message: String(localized: "OctoPrint hasn't come back after restarting. Check the Raspberry Pi is switched on."))
+        }
+    }
+
+    /// OctoPrint is back after a restart.
+    private func finishRestart() {
+        restartingSince = nil
+        restartWentAway = false
+        if case .installed(needsRestart: true) = pluginInstall?.outcome { pluginInstall?.restarted = true }
+    }
+
+    private func demoRestart() async {
+        try? await Task.sleep(for: .seconds(1.5))
+        link = .offline(nil)
+        try? await Task.sleep(for: .seconds(3))
+        link = .online
+        for index in (plugins ?? []).indices where plugins![index].pending {
+            plugins![index].pending = false
+            plugins![index].enabled = true
+        }
+        pluginsNeedRestart = false
+        finishRestart()
+    }
 }
 
 // MARK: - Demo data (`--demo`)

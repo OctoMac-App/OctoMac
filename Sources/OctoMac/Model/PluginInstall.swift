@@ -11,6 +11,8 @@ struct PluginInstall: Equatable {
     var plugin: RepositoryPlugin
     var log: [String] = []
     var outcome: Outcome?
+    /// OctoPrint has restarted since, so the plugin is running.
+    var restarted = false
 
     var isRunning: Bool { outcome == nil }
 }

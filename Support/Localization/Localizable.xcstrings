@@ -1317,6 +1317,100 @@
         }
       }
     },
+    "%@ is ready": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ je připraven"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae %@ yn barod"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ er klar"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist bereit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is ready"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is ready"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ está listo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ on valmis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ est prêt"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è pronto"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ er klar"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is klaar"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ jest gotowa"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ está pronto"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ är klart"
+          }
+        }
+      }
+    },
     "%@ is waiting to start %@": {
       "localizations": {
         "cs": {
@@ -2159,6 +2253,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "%1$@ startar %2$@ kl. %3$@"
+          }
+        }
+      }
+    },
+    "%@ starts once OctoPrint is back. This usually takes a minute.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ se spustí, jakmile bude OctoPrint zpět. Obvykle to trvá minutu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bydd %@ yn dechrau pan fydd OctoPrint yn ôl. Mae hyn fel arfer yn cymryd munud."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ starter, når OctoPrint er tilbage. Det tager normalt et minut."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ startet, sobald OctoPrint wieder da ist. Das dauert meist eine Minute."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ starts once OctoPrint is back. This usually takes a minute."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ starts once OctoPrint is back. This usually takes a minute."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ se iniciará cuando OctoPrint vuelva. Suele tardar un minuto."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ käynnistyy, kun OctoPrint on taas käytettävissä. Tämä kestää yleensä minuutin."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ démarrera dès le retour d’OctoPrint. Cela prend généralement une minute."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ si avvierà quando OctoPrint sarà di nuovo attivo. Di solito ci vuole un minuto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ starter når OctoPrint er tilbake. Dette tar vanligvis et minutt."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ start zodra OctoPrint terug is. Dit duurt meestal een minuut."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ uruchomi się, gdy OctoPrint wróci. Zwykle trwa to minutę."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ arranca quando o OctoPrint voltar. Normalmente demora um minuto."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ startar när OctoPrint är tillbaka. Det brukar ta en minut."
           }
         }
       }
@@ -55207,6 +55395,194 @@
         }
       }
     },
+    "OctoPrint has restarted and the plugin is running.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se restartoval a plugin běží."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoPrint wedi ailgychwyn ac mae'r ategyn yn rhedeg."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint er genstartet, og pluginnet kører."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint wurde neu gestartet und das Plugin läuft."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint has restarted and the plugin is running."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint has restarted and the plugin is running."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se ha reiniciado y el plugin está funcionando."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint on käynnistynyt uudelleen ja lisäosa on käytössä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint a redémarré et le plugin fonctionne."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint si è riavviato e il plugin è in funzione."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint har startet på nytt, og utvidelsen kjører."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint is opnieuw opgestart en de plug-in draait."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint uruchomił się ponownie i wtyczka działa."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint reiniciou e o plugin está a funcionar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint har startat om och pluginet körs."
+          }
+        }
+      }
+    },
+    "OctoPrint hasn't come back after restarting. Check the Raspberry Pi is switched on.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se po restartu nevrátil. Zkontrolujte, že je Raspberry Pi zapnuté."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dydy OctoPrint ddim wedi dod yn ôl ar ôl ailgychwyn. Gwiriwch fod y Raspberry Pi ymlaen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint er ikke kommet tilbage efter genstarten. Tjek, at din Raspberry Pi er tændt."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ist nach dem Neustart nicht wieder erreichbar. Prüfe, ob der Raspberry Pi eingeschaltet ist."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hasn't come back after restarting. Check the Raspberry Pi is switched on."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hasn't come back after restarting. Check the Raspberry Pi is switched on."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no ha vuelto después de reiniciarse. Comprueba que la Raspberry Pi está encendida."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei ole palannut uudelleenkäynnistyksen jälkeen. Tarkista, että Raspberry Pi on päällä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’est pas revenu après le redémarrage. Vérifiez que le Raspberry Pi est allumé."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non è tornato attivo dopo il riavvio. Controlla che il Raspberry Pi sia acceso."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint har ikke kommet tilbake etter omstarten. Sjekk at Raspberry Pi er slått på."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint is na het herstarten niet teruggekomen. Controleer of de Raspberry Pi aanstaat."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie wrócił po ponownym uruchomieniu. Sprawdź, czy Raspberry Pi jest włączone."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não voltou depois de reiniciar. Verifique se o Raspberry Pi está ligado."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint har inte kommit tillbaka efter omstarten. Kontrollera att Raspberry Pi är påslagen."
+          }
+        }
+      }
+    },
     "OctoPrint is opening the serial port and waiting for the printer to reply. This usually takes a few seconds.": {
       "localizations": {
         "cs": {
@@ -55673,6 +56049,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint stoppar utskriften, men skrivaren väntar på sina värmare och svarar inte förrän det är klart."
+          }
+        }
+      }
+    },
+    "OctoPrint needs a restart to start using it. OctoMac loses touch with the printer for a minute while it starts again.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aby ho OctoPrint mohl začít používat, potřebuje restart. OctoMac na minutu ztratí spojení s tiskárnou, než se znovu spustí."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae angen ailgychwyn OctoPrint i ddechrau ei ddefnyddio. Mae OctoMac yn colli cysylltiad â'r argraffydd am funud tra mae'n ailgychwyn."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint skal genstartes for at begynde at bruge det. OctoMac mister kontakten til printeren i et minut, mens den starter igen."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint muss neu gestartet werden, um es zu verwenden. OctoMac verliert für eine Minute den Kontakt zum Drucker, während es neu startet."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint needs a restart to start using it. OctoMac loses touch with the printer for a minute while it starts again."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint needs a restart to start using it. OctoMac loses touch with the printer for a minute while it starts again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint necesita reiniciarse para empezar a usarlo. OctoMac pierde el contacto con la impresora durante un minuto mientras vuelve a arrancar."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint täytyy käynnistää uudelleen, jotta lisäosa otetaan käyttöön. OctoMac menettää yhteyden tulostimeen minuutiksi, kun OctoPrint käynnistyy uudelleen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint doit redémarrer pour commencer à l’utiliser. OctoMac perd le contact avec l’imprimante pendant une minute, le temps qu’il redémarre."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint deve riavviarsi per iniziare a usarlo. OctoMac perde il contatto con la stampante per un minuto mentre si riavvia."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint må startes på nytt for å ta den i bruk. OctoMac mister kontakten med skriveren i et minutt mens den starter igjen."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint moet herstarten om hem te gaan gebruiken. OctoMac verliest een minuut het contact met de printer terwijl OctoPrint opnieuw opstart."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aby zacząć jej używać, trzeba ponownie uruchomić OctoPrint. OctoMac straci kontakt z drukarką na minutę, gdy OctoPrint będzie się uruchamiać."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint tem de reiniciar para começar a usá-lo. O OctoMac perde o contacto com a impressora durante um minuto enquanto volta a arrancar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint behöver startas om för att börja använda det. OctoMac tappar kontakten med skrivaren en minut medan OctoPrint startar igen."
           }
         }
       }
@@ -75533,6 +76003,100 @@
         }
       }
     },
+    "Restart later": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartovat později"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailgychwyn wedyn"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genstart senere"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Später neu starten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart later"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart later"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciar más tarde"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käynnistä myöhemmin"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarrer plus tard"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riavvia più tardi"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start på nytt senere"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later herstarten"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uruchom ponownie później"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciar mais tarde"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starta om senare"
+          }
+        }
+      }
+    },
     "Restart now": {
       "localizations": {
         "cs": {
@@ -75623,6 +76187,288 @@
           "stringUnit": {
             "state": "translated",
             "value": "Starta om nu"
+          }
+        }
+      }
+    },
+    "Restarting OctoPrint. OctoMac reconnects when it's back, usually within a minute.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartuje se OctoPrint. OctoMac se znovu připojí, jakmile bude zpět, obvykle do minuty."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn ailgychwyn OctoPrint. Mae OctoMac yn ailgysylltu pan fydd yn ôl, fel arfer o fewn munud."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genstarter OctoPrint. OctoMac forbinder igen, når det er tilbage, normalt inden for et minut."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint wird neu gestartet. OctoMac verbindet sich wieder, sobald es zurück ist, meist innerhalb einer Minute."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting OctoPrint. OctoMac reconnects when it's back, usually within a minute."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting OctoPrint. OctoMac reconnects when it's back, usually within a minute."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciando OctoPrint. OctoMac se volverá a conectar cuando vuelva, normalmente en menos de un minuto."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint käynnistyy uudelleen. OctoMac yhdistää uudelleen, kun se palaa, yleensä minuutin sisällä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarrage d’OctoPrint. OctoMac se reconnecte dès son retour, généralement en moins d’une minute."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riavvio di OctoPrint. OctoMac si riconnette quando torna attivo, di solito entro un minuto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starter OctoPrint på nytt. OctoMac kobler til igjen når den er tilbake, vanligvis innen et minutt."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint wordt herstart. OctoMac maakt opnieuw verbinding zodra het terug is, meestal binnen een minuut."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ponowne uruchamianie OctoPrint. OctoMac połączy się ponownie, gdy wróci, zwykle w ciągu minuty."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reiniciar o OctoPrint. O OctoMac volta a ligar-se quando ele voltar, normalmente dentro de um minuto."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Startar om OctoPrint. OctoMac ansluter igen när det är tillbaka, oftast inom en minut."
+          }
+        }
+      }
+    },
+    "Restarting OctoPrint…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartuje se OctoPrint…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn ailgychwyn OctoPrint…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genstarter OctoPrint…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint wird neu gestartet …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting OctoPrint…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting OctoPrint…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciando OctoPrint…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käynnistetään OctoPrint uudelleen…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarrage d’OctoPrint…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riavvio di OctoPrint…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starter OctoPrint på nytt …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint herstarten…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ponowne uruchamianie OctoPrint…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reiniciar o OctoPrint…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Startar om OctoPrint…"
+          }
+        }
+      }
+    },
+    "Restarting…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restartuje se…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn ailgychwyn…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genstarter…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird neu gestartet …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restarting…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reiniciando…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Käynnistetään uudelleen…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarrage…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riavvio…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starter på nytt …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Herstarten…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ponowne uruchamianie…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A reiniciar…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Startar om…"
           }
         }
       }
@@ -100983,6 +101829,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Vänta"
+          }
+        }
+      }
+    },
+    "Wait for the install to finish": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Počkat, až instalace skončí"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arhoswch i'r gosod orffen"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vent, til installationen er færdig"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warten, bis die Installation fertig ist"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wait for the install to finish"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wait for the install to finish"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esperar a que termine la instalación"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odota, kunnes asennus valmistuu"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attendre la fin de l’installation"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attendi la fine dell’installazione"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vent til installeringen er ferdig"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wacht tot de installatie klaar is"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Poczekaj, aż instalacja się skończy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esperar até a instalação terminar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vänta tills installationen är klar"
           }
         }
       }

@@ -161,11 +161,18 @@ struct MachinePage: View {
                         Image(systemName: symbol(for: command.action)).foregroundStyle(Palette.accent).frame(width: 22)
                         Text(verbatim: OctoPrintWords.commandName(command)).font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
                         Spacer()
-                        Button("Run") {
-                            if command.confirm != nil { pendingCommand = command } else { session.run(command) }
+                        if session.restartingSince != nil && command.source == "core" && command.action == "restart" {
+                            HStack(spacing: 6) {
+                                ProgressView().controlSize(.small).tint(Palette.accent)
+                                Text("Restarting…").font(Typeface.caption).foregroundStyle(Palette.dust)
+                            }
+                        } else {
+                            Button("Run") {
+                                if command.confirm != nil { pendingCommand = command } else { session.run(command) }
+                            }
+                            .buttonStyle(.plateQuiet)
+                            .controlSize(.small)
                         }
-                        .buttonStyle(.plateQuiet)
-                        .controlSize(.small)
                     }
                     .padding(12)
                     .machined(radius: 12, fill: Palette.graphite)

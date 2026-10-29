@@ -25,7 +25,9 @@ struct PluginsPanel: View {
                     notice("OctoPrint started in safe mode, so every added plugin is off. This often means a plugin stopped it starting properly. Restart OctoPrint to switch them back on, or remove the plugin you added last.",
                            symbol: "exclamationmark.triangle.fill", busy: false)
                 }
-                if session.updatingSince != nil {
+                if session.restartingSince != nil {
+                    notice("Restarting OctoPrint. OctoMac reconnects when it's back, usually within a minute.", symbol: "arrow.clockwise", busy: true)
+                } else if session.updatingSince != nil {
                     notice("Updating. OctoPrint restarts when it's done, which can take a few minutes.", symbol: "arrow.triangle.2.circlepath", busy: true)
                 } else if session.pluginsNeedRestart {
                     HStack(spacing: 10) {

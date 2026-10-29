@@ -39,7 +39,21 @@ struct AddPluginsSheet: View {
                 browser
             }
 
-            HStack(spacing: 10) {
+            buttons.controlSize(.small)
+        }
+        .padding(26)
+        .frame(width: 640, height: 640)
+        .background(Palette.extrusion)
+        .interactiveDismissDisabled(session.pluginInstall?.isRunning == true && session.link == .online)
+        .task { await session.refreshPluginRepository() }
+        .onDisappear { session.dismissPluginInstall() }
+        .animation(.easeOut(duration: 0.2), value: session.pluginInstall == nil)
+    }
+
+    private var buttons: some View {
+        let stage = session.pluginInstall.map { InstallStage(session: session, install: $0) }
+        return HStack(spacing: 10) {
+            if stage == nil {
                 Button {
                     NSWorkspace.shared.open(URL(string: "#settings_plugin_pluginmanager", relativeTo: session.instance.baseURL)?.absoluteURL
                                             ?? session.instance.baseURL)
@@ -48,22 +62,37 @@ struct AddPluginsSheet: View {
                 }
                 .buttonStyle(.plateQuiet)
                 .help("To install a plugin from a web address or a file")
-                Spacer()
-                if session.pluginInstall?.isRunning == false {
-                    Button("Back to the list") { session.dismissPluginInstall() }.buttonStyle(.plateQuiet)
-                }
-                Button("Done") { dismiss() }
-                    .buttonStyle(.plate)
-                    .keyboardShortcut(.defaultAction)
             }
-            .controlSize(.small)
+            Spacer()
+            switch stage {
+            case .needsRestart? where session.restartCommand != nil:
+                // The next step is a restart, so that's the main button; the rest can wait.
+                Button("Restart later") { dismiss() }.buttonStyle(.plateQuiet)
+                Button { if let command = session.restartCommand { session.run(command) } } label: {
+                    Label("Restart OctoPrint", systemImage: "arrow.clockwise")
+                }
+                .buttonStyle(.plate(Palette.warm))
+                .keyboardShortcut(.defaultAction)
+                .disabled(session.flags.isJobActive)
+                .help(session.flags.isJobActive ? "Wait until the print finishes" : "Restart OctoPrint now")
+            case .failed?, .installed?, .needsRestart?, .ready?:
+                Button("Back to the list") { session.dismissPluginInstall() }.buttonStyle(.plateQuiet)
+                done
+            case .installing?:
+                // Stay until OctoPrint says how it went, so a failure is never missed (unless OctoPrint has gone away).
+                done
+                    .disabled(session.link == .online)
+                    .help("Wait for the install to finish")
+            default:
+                done
+            }
         }
-        .padding(26)
-        .frame(width: 640, height: 640)
-        .background(Palette.extrusion)
-        .task { await session.refreshPluginRepository() }
-        .onDisappear { session.dismissPluginInstall() }
-        .animation(.easeOut(duration: 0.2), value: session.pluginInstall == nil)
+    }
+
+    private var done: some View {
+        Button("Done") { dismiss() }
+            .buttonStyle(.plate)
+            .keyboardShortcut(.defaultAction)
     }
 
     @ViewBuilder private var browser: some View {
@@ -198,36 +227,49 @@ private struct RepositoryRow: View {
     }
 }
 
-/// OctoPrint's install log as it arrives, then how it went.
+/// Where an install has got to, including the restart many plugins need afterwards.
+enum InstallStage: Equatable {
+    case installing, failed(String), installed, needsRestart, restarting, ready
+
+    @MainActor init(session: PrinterSession, install: PluginInstall) {
+        switch install.outcome {
+        case nil: self = .installing
+        case .failed(let reason): self = .failed(reason)
+        case .installed(needsRestart: false): self = .installed
+        case .installed(needsRestart: true):
+            self = install.restarted ? .ready : session.restartingSince != nil ? .restarting : .needsRestart
+        }
+    }
+}
+
+/// OctoPrint's install log as it arrives, then how it went, and the restart.
 private struct InstallProgress: View {
     let session: PrinterSession
     let install: PluginInstall
-    @State private var restarting = false
 
     var body: some View {
+        let stage = InstallStage(session: session, install: install)
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top, spacing: 12) {
                 Group {
-                    switch install.outcome {
-                    case nil: ProgressView().controlSize(.small).tint(Palette.accent)
-                    case .installed: Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.ready)
+                    switch stage {
+                    case .installing, .restarting: ProgressView().controlSize(.small).tint(Palette.accent)
                     case .failed: Image(systemName: "xmark.octagon.fill").foregroundStyle(Palette.hot)
+                    case .needsRestart: Image(systemName: "arrow.clockwise.circle.fill").foregroundStyle(Palette.warm)
+                    case .installed, .ready: Image(systemName: "checkmark.circle.fill").foregroundStyle(Palette.ready)
                     }
                 }
                 .font(.system(size: 20))
                 .frame(width: 24, height: 24)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(heading).font(Typeface.subhead).foregroundStyle(Palette.paper)
-                    detail
+                    Text(heading(stage)).font(Typeface.subhead).foregroundStyle(Palette.paper)
+                    detail(stage)
+                        .font(Typeface.body).foregroundStyle(Palette.dust)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
-                if case .installed(needsRestart: true) = install.outcome, session.restartCommand != nil {
-                    Button("Restart OctoPrint…") { restarting = true }
-                        .buttonStyle(.plate(Palette.warm))
-                        .controlSize(.small)
-                        .disabled(session.flags.isJobActive)
-                }
             }
+            .animation(.snappy, value: stage)
 
             ScrollViewReader { proxy in
                 ScrollView {
@@ -250,35 +292,35 @@ private struct InstallProgress: View {
             .frame(maxHeight: .infinity)
             .machined(radius: 14, fill: Palette.graphite)
         }
-        .sheet(isPresented: $restarting) {
-            if let command = session.restartCommand {
-                ConfirmSheet(symbol: "arrow.clockwise", tint: Palette.warm, title: "Restart OctoPrint?",
-                             message: "OctoMac loses touch with the printer for a minute while OctoPrint starts again.",
-                             confirmTitle: "Restart", onConfirm: { session.run(command) })
-            }
-        }
     }
 
-    private var heading: String {
+    private func heading(_ stage: InstallStage) -> String {
         let name = install.plugin.title
-        return switch install.outcome {
-        case nil: String(localized: "Installing \(name)…")
-        case .installed: String(localized: "Installed \(name)")
+        return switch stage {
+        case .installing: String(localized: "Installing \(name)…")
         case .failed: String(localized: "Couldn't install \(name)")
+        case .installed, .needsRestart: String(localized: "Installed \(name)")
+        case .restarting: String(localized: "Restarting OctoPrint…")
+        case .ready: String(localized: "\(name) is ready")
         }
     }
 
-    @ViewBuilder private var detail: some View {
-        switch install.outcome {
-        case nil:
-            Text("This can take a few minutes on a Raspberry Pi.").font(Typeface.body).foregroundStyle(Palette.dust)
-        case .installed(let needsRestart):
-            Text(needsRestart ? "Restart OctoPrint to start using it." : "It's ready to use.")
-                .font(Typeface.body).foregroundStyle(Palette.dust)
+    private func detail(_ stage: InstallStage) -> Text {
+        switch stage {
+        case .installing:
+            Text("This can take a few minutes on a Raspberry Pi.")
         case .failed(let reason):
-            Text(verbatim: reason).font(Typeface.body).foregroundStyle(Palette.dust)
-                .fixedSize(horizontal: false, vertical: true)
-                .textSelection(.enabled)
+            Text(verbatim: reason)
+        case .installed:
+            Text("It's ready to use.")
+        case .needsRestart:
+            session.restartCommand == nil
+                ? Text("Restart OctoPrint to start using it.")
+                : Text("OctoPrint needs a restart to start using it. OctoMac loses touch with the printer for a minute while it starts again.")
+        case .restarting:
+            Text("\(install.plugin.title) starts once OctoPrint is back. This usually takes a minute.")
+        case .ready:
+            Text("OctoPrint has restarted and the plugin is running.")
         }
     }
 }
