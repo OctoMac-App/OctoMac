@@ -14,8 +14,24 @@ struct MachinePage: View {
     @AppStorage("machine.section") private var section = Section.printer
 
     /// The tab is split three ways, so each part is short enough to take in at a glance.
-    enum Section: String, CaseIterable {
+    enum Section: String, CaseIterable, Identifiable {
         case printer, octoPrint, pi
+
+        var id: String { rawValue }
+        var title: LocalizedStringKey {
+            switch self {
+            case .printer: "Printer"
+            case .octoPrint: "OctoPrint"
+            case .pi: "Raspberry Pi"
+            }
+        }
+        var symbol: String {
+            switch self {
+            case .printer: "cube"
+            case .octoPrint: "server.rack"
+            case .pi: "cpu"
+            }
+        }
     }
 
     /// Sections with something that needs you: red for a problem now, amber for something to look at.
@@ -39,9 +55,8 @@ struct MachinePage: View {
         GeometryReader { geo in
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    CapsulePicker(selection: $section, options: [
-                        (.printer, "Printer"), (.octoPrint, "OctoPrint"), (.pi, "Raspberry Pi"),
-                    ], badges: badges)
+                    SectionTabs(selection: $section, badges: badges)
+                        .frame(maxWidth: .infinity)
                     switch section {
                     case .printer:
                         columns(wide: geo.size.width >= 940) {
@@ -286,3 +301,44 @@ struct MachinePage: View {
 
 /// Drag-and-drop payloads for moving files between folders. Tagged with the printer, so dropping on another
 /// printer's file list does nothing.
+
+/// The Machine tab's three parts, as a wide bar of equal tabs with icons, so they read as places to go rather than
+/// a setting. A dot marks a part that needs you.
+private struct SectionTabs: View {
+    @Binding var selection: MachinePage.Section
+    let badges: [MachinePage.Section: Color]
+    @Namespace private var carriage
+
+    var body: some View {
+        HStack(spacing: 2) {
+            ForEach(MachinePage.Section.allCases) { section in
+                let selected = section == selection
+                Button {
+                    withAnimation(.snappy(duration: 0.25)) { selection = section }
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: section.symbol).font(.system(size: 13, weight: .semibold))
+                        Text(section.title).font(Typeface.text(14, .demibold)).lineLimit(1).fixedSize()
+                        if let badge = badges[section] {
+                            Circle().fill(badge).frame(width: 7, height: 7)
+                                .overlay(Circle().strokeBorder(Palette.graphite.opacity(selected ? 0.5 : 0), lineWidth: 1))
+                        }
+                    }
+                    .foregroundStyle(selected ? Palette.graphite : Palette.dust)
+                    .frame(minWidth: 150)
+                    .padding(.horizontal, 18)
+                    .padding(.vertical, 9)
+                    .background {
+                        if selected { Capsule().fill(Palette.accent).matchedGeometryEffect(id: "carriage", in: carriage) }
+                    }
+                    .contentShape(Capsule())
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .padding(4)
+        .background(Capsule().fill(Palette.extrusion))
+        .overlay(Capsule().strokeBorder(.white.opacity(0.05), lineWidth: 1))
+        .fixedSize()
+    }
+}
