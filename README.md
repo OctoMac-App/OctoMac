@@ -41,6 +41,8 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 ![The 3D G-code preview following a live print](docs/screenshots/live-preview.png)
 
+![Recording a clip from the camera](docs/screenshots/clip.png)
+
 ![Layer alerts: pause or get a notification at a layer](docs/screenshots/layer-alerts.png)
 
 ![All printers, side by side](docs/screenshots/all-printers.png)
@@ -50,6 +52,8 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 ![The console with the G-code cheat sheet open](docs/screenshots/console.png)
 
 ![The Machine tab, with the bed level map and Raspberry Pi health](docs/screenshots/machine.png)
+
+![Adding plugins from OctoPrint's official list](docs/screenshots/add-plugins.png)
 
 ## Getting started
 
