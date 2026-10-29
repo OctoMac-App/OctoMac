@@ -1162,7 +1162,9 @@ struct PrinterOfflineBanner: View {
                 }
             }
             Spacer()
-            Button("Show console") { tab = .console }.buttonStyle(.plateQuiet)
+            if tab != .console {
+                Button("Show console") { tab = .console }.buttonStyle(.plateQuiet)
+            }
             if session.isPrinterConnecting {
                 ProgressView().controlSize(.small).tint(Palette.accent)
             } else {

@@ -51,7 +51,16 @@ struct PrinterStage: View {
                     case .move: MovePage(session: session)
                     case .files: FilesPage(session: session, filament: filament) { tab = .overview }
                     case .history: HistoryPage(session: session, filament: filament) { tab = .overview }
-                    case .console: ConsolePage(session: session)
+                    case .console:
+                        // Keep the way to reconnect in view while you read why the printer went quiet.
+                        VStack(spacing: 18) {
+                            if session.link == .online && !session.isPrinterConnected {
+                                PrinterOfflineBanner(session: session, tab: $tab)
+                                    .transition(.move(edge: .top).combined(with: .opacity))
+                            }
+                            ConsolePage(session: session)
+                        }
+                        .animation(.snappy, value: session.isPrinterConnected)
                     case .machine: MachinePage(session: session, filament: filament)
                     }
                 }
