@@ -5,9 +5,10 @@ import QuartzCore
 /// Where the nozzle probably is right now, moving smoothly along the toolpath.
 ///
 /// OctoPrint only says how far through the file it has *sent*, a few times a second and in bursts, and the printer
-/// works through a small buffer behind that. So instead of jumping to each report, the playhead travels along the
-/// moves in real time at their own feed rates (times the print speed), and each report only nudges its pace:
-/// a little faster when it's falling behind, slower when it gets too close to what's been sent.
+/// works through a small buffer behind that. Moves also take longer than their feed rates suggest, because the
+/// printer has to speed up and slow down. So the playhead measures the printer's real pace from how quickly the
+/// reports move through the file, averaged over several seconds, and travels steadily at that pace. Each report only
+/// nudges it gently towards a point a little behind what's been sent, and it never passes what's been sent.
 @MainActor
 final class LivePlayhead {
     /// Seconds into the print at which each move starts, at its programmed speed.
@@ -21,11 +22,19 @@ final class LivePlayhead {
     private var time: Double = 0
     private var lastFrame: TimeInterval?
 
-    /// The print speed factor (M220), 1 = 100%.
-    var speed: Double = 1
+    /// The print speed factor (M220), 1 = 100%. Only a starting guess: the measured pace takes over.
+    var speed: Double = 1 {
+        didSet { if pace == nil { measuredPace = speed } }
+    }
 
-    /// How far behind what OctoPrint has sent the printer usually is: its buffer of queued moves.
-    private let lead: Double = 1.5
+    /// How far behind what OctoPrint has sent the playhead aims to be: roughly the printer's buffer of queued moves,
+    /// in seconds of programmed print time.
+    private let lead: Double = 2
+
+    /// Seconds of programmed print time the printer gets through per real second, averaged.
+    private var measuredPace: Double = 1
+    private var pace: Double? { lastReport == nil ? nil : measuredPace }
+    private var lastReport: (time: TimeInterval, printTime: Double)?
 
     func load(_ path: GCodeToolpath) {
         starts = []
@@ -46,18 +55,28 @@ final class LivePlayhead {
 
     /// A new report from OctoPrint. Small differences are smoothed out; a big one (opening the preview mid-print,
     /// or a jump backwards) moves straight there.
-    func setTarget(_ index: Int?) {
+    func setTarget(_ index: Int?, at now: TimeInterval = CACurrentMediaTime()) {
         guard let index, !starts.isEmpty else {
             target = nil
             lastFrame = nil
+            lastReport = nil
             return
         }
         let clamped = min(max(index, 0), starts.count - 1)
-        let goal = max(0, starts[clamped] - lead)
+        let printTime = starts[clamped]
+        let goal = max(0, printTime - lead)
         if target == nil || abs(goal - time) > 45 {
             time = goal
             lastFrame = nil
+            lastReport = nil
+            measuredPace = speed
+        } else if let last = lastReport, now - last.time > 0.3 {
+            // How far the reports moved through the print, per real second, smoothed over the last several reports
+            // so bursts of sending even out.
+            let sample = (printTime - last.printTime) / (now - last.time)
+            if sample >= 0 { measuredPace += (min(4, sample) - measuredPace) * 0.15 }
         }
+        if lastReport == nil || now - lastReport!.time > 0.3 { lastReport = (now, printTime) }
         target = clamped
     }
 
@@ -66,11 +85,12 @@ final class LivePlayhead {
         guard let target, !starts.isEmpty else { return nil }
         let step = min(0.1, max(0, now - (lastFrame ?? now)))
         lastFrame = now
-        let error = max(0, starts[target] - lead) - time
-        // On pace when on target, up to four times faster when behind, and easing to a stop by the time it reaches
-        // what OctoPrint has sent, which the printer can't have passed.
-        let rate = speed * min(4, max(0, 1 + error / lead))
-        time = min(total, time + step * rate)
+        let sent = starts[target]
+        let error = max(0, sent - lead) - time
+        // Steady at the measured pace, gently faster when behind and slower when ahead; never past what's been sent,
+        // which the printer can't have passed.
+        let rate = max(0.05, measuredPace) * min(1.6, max(0.6, 1 + error / 8))
+        time = min(total, sent, time + step * rate)
 
         var low = 0, high = starts.count - 1
         while low < high {
