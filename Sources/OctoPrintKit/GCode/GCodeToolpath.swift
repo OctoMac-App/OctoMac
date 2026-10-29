@@ -56,6 +56,8 @@ public struct GCodeToolpath: Sendable {
         public var feature: Feature
         /// Byte offset of the G-code line that made this move.
         public var offset: Int32
+        /// How long the move takes at its programmed feed rate, in seconds (acceleration ignored).
+        public var duration: Float = 0
     }
 
     public struct Layer: Sendable {

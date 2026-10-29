@@ -15,6 +15,8 @@ struct GCode3DView: NSViewRepresentable {
     /// While printing: the move the printer is on. Everything after it is drawn as a faint "not printed yet" ghost,
     /// and a nozzle glides along the toolpath to it.
     var liveSegment: Int? = nil
+    /// The print speed factor (1 = 100%), so the nozzle keeps pace with the printer.
+    var printSpeed: Double = 1
     let hidden: Set<GCodeToolpath.Feature>
     let nozzleWidth: Float
     /// Changing this resets the camera.
@@ -42,6 +44,7 @@ struct GCode3DView: NSViewRepresentable {
 
     private func apply(to renderer: GCodeRenderer, view: MTKView) {
         renderer.maxLayer = maxLayer
+        renderer.printSpeed = printSpeed
         renderer.setLive(target: liveSegment, view: view)
         renderer.hiddenMask = hidden.reduce(0) { $0 | (1 << UInt32($1.rawValue)) }
         renderer.halfWidth = nozzleWidth / 2
@@ -160,12 +163,13 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     /// Height of each move's layer.
     private var segmentZ: [Float] = []
 
-    // Live printing: the nozzle eases from where it was to the latest reported move.
+    // Live printing: the nozzle travels along the toolpath in real time (see `LivePlayhead`).
     private var liveTarget: Int?
-    private var displayed: Double = 0
-    private var animationFrom: Double = 0
-    private var animationStart: TimeInterval = 0
-    private let animationDuration: TimeInterval = 0.6
+    private let playhead = LivePlayhead()
+    var printSpeed: Double {
+        get { playhead.speed }
+        set { playhead.speed = newValue }
+    }
 
     var maxLayer = 0
     var hiddenMask: UInt32 = 0
@@ -231,6 +235,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
     func load(_ path: GCodeToolpath, bed: CGRect) {
         self.bed = bed
         self.path = path
+        playhead.load(path)
         var floats: [Float] = []
         floats.reserveCapacity(path.segments.count * 8)
         instancesBefore = [Int32](repeating: 0, count: path.segments.count)
@@ -266,24 +271,18 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         resetCamera()
     }
 
-    /// Points the nozzle at a new move. Small steps forward animate; big jumps (or going backwards) snap.
+    /// The move OctoPrint has sent up to; the nozzle travels towards it at the printer's pace.
     func setLive(target: Int?, view: MTKView) {
         let wasLive = liveTarget != nil
         guard let target, !path.segments.isEmpty else {
             liveTarget = nil
+            playhead.setTarget(nil)
             if wasLive { view.isPaused = true; view.enableSetNeedsDisplay = true }
             return
         }
         let clamped = min(target, path.segments.count - 1)
         guard clamped != liveTarget else { return }
-        let jump = Double(clamped) - displayed
-        if !wasLive || jump < -2 || jump > 4000 {
-            displayed = Double(clamped)
-            animationFrom = displayed
-        } else {
-            animationFrom = displayed
-        }
-        animationStart = CACurrentMediaTime()
+        playhead.setTarget(clamped)
         liveTarget = clamped
         if !wasLive {
             // While live, draw continuously so the nozzle glides.
@@ -347,9 +346,7 @@ final class GCodeRenderer: NSObject, MTKViewDelegate {
         // Live position: ease along the toolpath towards the latest reported move.
         var cutoff: Float = -1, printedLayer: Float = -1
         var nozzle: SIMD3<Float>?
-        if let liveTarget {
-            let t = min(1, (CACurrentMediaTime() - animationStart) / animationDuration)
-            displayed = animationFrom + (Double(liveTarget) - animationFrom) * t
+        if liveTarget != nil, let displayed = playhead.position() {
             let index = max(0, min(path.segments.count - 1, Int(displayed)))
             let fraction = Float(displayed - Double(index))
             let s = path.segments[index]

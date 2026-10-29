@@ -35,6 +35,8 @@ public enum GCodeParser {
     private struct State {
         var path = GCodeToolpath()
         var x: Double = 0, y: Double = 0, z: Double = 0, e: Double = 0
+        /// Current feed rate in mm/min (G-code's F is modal).
+        var feedRate: Double = 1500
         var relativeXYZ = false
         var relativeE = false
         var feature: GCodeToolpath.Feature = .other
@@ -61,7 +63,7 @@ public enum GCodeParser {
             while i < end, b[i] >= 0x30, b[i] <= 0x39 { code = code * 10 + Int(b[i] - 0x30); i += 1 }
 
             // Parameters up to an inline comment.
-            var px: Double?, py: Double?, pz: Double?, pe: Double?, pi: Double?, pj: Double?
+            var px: Double?, py: Double?, pz: Double?, pe: Double?, pi: Double?, pj: Double?, pf: Double?
             while i < end && b[i] != 0x3B {
                 let c = b[i] | 0x20
                 i += 1
@@ -76,11 +78,13 @@ public enum GCodeParser {
                 case 0x65: pe = value // e
                 case 0x69: pi = value // i
                 case 0x6A: pj = value // j
+                case 0x66: pf = value // f
                 default: break
                 }
             }
 
             if letter == 0x67 { // G
+                if let pf, pf > 0, code <= 3 { feedRate = pf }
                 switch code {
                 case 0, 1: move(px, py, pz, pe, offset: start)
                 case 2, 3: arc(clockwise: code == 2, px, py, pz, pe, pi, pj, offset: start)
@@ -198,8 +202,10 @@ public enum GCodeParser {
             } else if layerZ == nil {
                 return // travel before anything is printed
             }
+            let length = hypot(b.0 - a.0, b.1 - a.1)
             path.segments.append(.init(x0: Float(a.0), y0: Float(a.1), x1: Float(b.0), y1: Float(b.1),
-                                       feature: extruding ? feature : .travel, offset: Int32(clamping: offset)))
+                                       feature: extruding ? feature : .travel, offset: Int32(clamping: offset),
+                                       duration: Float(length / (feedRate / 60))))
         }
 
         mutating func finishLayer() {
