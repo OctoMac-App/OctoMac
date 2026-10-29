@@ -65,15 +65,22 @@ private struct RecentPrintRow: View {
     let filament: Color
     let openFile: () -> Void
     @State private var hovering = false
+    @State private var editingNote = false
 
     var body: some View {
         let name = SlicedName(file.displayName)
         let last = file.prints?.last
+        let note = session.note(for: file.path)
         HStack(spacing: 14) {
             FileThumbnail(file: file, client: session.client, tint: filament, radius: 8)
                 .frame(width: 52, height: 52)
             VStack(alignment: .leading, spacing: 3) {
-                Text(name.title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                HStack(spacing: 8) {
+                    Text(name.title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                    if let rating = note?.rating {
+                        StarRating(rating: .constant(rating), size: 9, editable: false).fixedSize()
+                    }
+                }
                 HStack(spacing: 10) {
                     if let success = last?.success {
                         Label(success ? "Finished" : "Didn't finish", systemImage: success ? "checkmark.circle.fill" : "xmark.circle.fill")
@@ -86,8 +93,22 @@ private struct RecentPrintRow: View {
                 }
                 .font(Typeface.caption).foregroundStyle(Palette.faint)
                 .lineLimit(1)
+                if let text = note?.text, !text.isEmpty {
+                    Text(text).font(Typeface.caption).foregroundStyle(Palette.dust).lineLimit(1)
+                }
             }
             Spacer(minLength: 8)
+            Button { editingNote = true } label: {
+                Image(systemName: note == nil ? "star" : "note.text")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(note == nil ? Palette.faint : Palette.dust)
+                    .opacity(hovering || note != nil ? 1 : 0)
+            }
+            .buttonStyle(.plain)
+            .help("Rate this print, or add a note for next time")
+            .popover(isPresented: $editingNote, arrowEdge: .bottom) {
+                NoteEditor(session: session, path: file.path, title: name.title)
+            }
             if let prints = file.prints {
                 Text("\(prints.success ?? 0) of \((prints.success ?? 0) + (prints.failure ?? 0)) finished")
                     .font(Typeface.number(12)).foregroundStyle(Palette.faint)

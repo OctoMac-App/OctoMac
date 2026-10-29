@@ -36,6 +36,9 @@ struct FilesPage: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            if !session.journal.queue.isEmpty {
+                QueuePanel(session: session, filament: filament)
+            }
             HStack(spacing: 12) {
                 breadcrumbs
                 Spacer()
@@ -78,6 +81,8 @@ struct FilesPage: View {
                                     },
                                     preview: { openWindow(id: "gcode-preview", value: GCodePreviewRequest(instanceID: session.instance.id, origin: file.origin.rawValue, path: file.path)) },
                                     send: { sending = file },
+                                    queue: { session.addToQueue(file) },
+                                    queued: session.journal.queue.contains { $0.path == file.path },
                                     delete: { pendingDelete = file })
                                 // Drag a file or folder onto a folder (or a folder name in the path above) to move it there.
                                 .draggable(FileDrag.payload(for: file, instance: session.instance.id)) {
@@ -239,8 +244,8 @@ private enum FileColumns {
     static let time: CGFloat = 100
     static let filament: CGFloat = 90
     static let size: CGFloat = 90
-    static let actions: CGFloat = 270
-    static let compactActions: CGFloat = 210
+    static let actions: CGFloat = 312
+    static let compactActions: CGFloat = 252
 }
 
 /// Folders first, then files, each in Finder-style alphabetical order ("part 2" before "part 10").
@@ -285,6 +290,8 @@ struct FileRow: View {
     let openFile: () -> Void
     let preview: () -> Void
     let send: () -> Void
+    let queue: () -> Void
+    var queued = false
     let delete: () -> Void
     @State private var hovering = false
     @State private var previewing = false
@@ -339,6 +346,9 @@ struct FileRow: View {
                             .help("Show file info")
                     }
                     if file.isMachineCode {
+                        Button(action: queue) { Image(systemName: queued ? "text.badge.checkmark" : "text.badge.plus") }
+                            .buttonStyle(.plateQuiet)
+                            .help(queued ? "In the queue; add it again to print another" : "Add to the queue")
                         Button(action: send) { Image(systemName: "paperplane") }
                             .buttonStyle(.plateQuiet)
                             .help("Send to another printer")
@@ -371,6 +381,7 @@ struct FileRow: View {
                 if file.isMachineCode {
                     Button("Preview G-code", action: preview)
                     Button("Open", action: openFile).disabled(!canPrint)
+                    Button("Add to Queue", action: queue)
                     Button("Send to Another Printer…", action: send)
                 }
             }

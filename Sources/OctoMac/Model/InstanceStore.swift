@@ -19,8 +19,13 @@ final class InstanceStore {
     init() {
         // Pause and Stop Print buttons on notifications.
         Notifier.shared.onAction = { [weak self] id, action in
-            guard let session = self?.sessions[id], session.flags.isJobActive else { return }
-            if action == NotificationActions.pause { session.jobCommand(.pause) } else { session.stopPrint() }
+            guard let session = self?.sessions[id] else { return }
+            switch action {
+            case NotificationActions.startNext: session.startNextInQueue()
+            case NotificationActions.pause where session.flags.isJobActive: session.jobCommand(.pause)
+            case NotificationActions.stop where session.flags.isJobActive: session.stopPrint()
+            default: break
+            }
         }
         if isDemo {
             loadDemo()
@@ -103,6 +108,7 @@ final class InstanceStore {
         instances.removeAll { $0.id == id }
         CredentialStore.remove(id)
         PrintLog.remove(for: id)
+        PrinterJournal.remove(for: id)
         save()
     }
 

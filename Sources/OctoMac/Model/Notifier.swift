@@ -4,7 +4,7 @@ import UserNotifications
 
 /// The kinds of thing OctoMac can tell you about, each with its own switch in Settings.
 enum NotificationKind: String, CaseIterable, Identifiable {
-    case printDone, printFailed, firstLayer, layerReached, needsAttention, printerProblem, piWarning
+    case printDone, printFailed, firstLayer, layerReached, scheduled, needsAttention, printerProblem, piWarning
 
     var id: String { rawValue }
 
@@ -14,6 +14,7 @@ enum NotificationKind: String, CaseIterable, Identifiable {
         case .printFailed: "Print failed or stopped"
         case .firstLayer: "First layer done"
         case .layerReached: "Layer alerts"
+        case .scheduled: "Scheduled and queued prints"
         case .needsAttention: "Printer needs you"
         case .printerProblem: "Printer stopped answering"
         case .piWarning: "Raspberry Pi warnings"
@@ -26,6 +27,7 @@ enum NotificationKind: String, CaseIterable, Identifiable {
         case .printFailed: "When a print fails, or is stopped from the printer."
         case .firstLayer: "A camera picture once the first layer is down, so you can catch a bad start early."
         case .layerReached: "When a print reaches a layer you chose to be told about or pause at."
+        case .scheduled: "When a scheduled print starts, and when the next print in the queue is ready to go."
         case .needsAttention: "Filament changes, a paused print, or a filament choice for the Prusa MMU."
         case .printerProblem: "When the printer reports an error or drops its connection mid-print."
         case .piWarning: "Low power or overheating on the Raspberry Pi, which can spoil prints."
@@ -37,7 +39,7 @@ enum NotificationKind: String, CaseIterable, Identifiable {
     /// Whether this kind of notification comes with a picture from the printer's camera.
     var showsCamera: Bool {
         switch self {
-        case .printDone, .printFailed, .firstLayer, .layerReached, .needsAttention: true
+        case .printDone, .printFailed, .firstLayer, .layerReached, .scheduled, .needsAttention: true
         case .printerProblem, .piWarning: false
         }
     }
@@ -55,15 +57,25 @@ enum NotificationKind: String, CaseIterable, Identifiable {
 enum NotificationActions: String {
     /// Pause and Stop Print, for checking on a print in progress.
     case printControls
+    /// Start the next print in the queue, once you've cleared the bed.
+    case queueNext
 
     static let pause = "pause"
     static let stop = "stop"
+    static let startNext = "startNext"
 
     var category: UNNotificationCategory {
-        UNNotificationCategory(identifier: rawValue, actions: [
-            UNNotificationAction(identifier: Self.pause, title: "Pause", options: []),
-            UNNotificationAction(identifier: Self.stop, title: "Stop Print", options: [.destructive]),
-        ], intentIdentifiers: [])
+        switch self {
+        case .printControls:
+            UNNotificationCategory(identifier: rawValue, actions: [
+                UNNotificationAction(identifier: Self.pause, title: "Pause", options: []),
+                UNNotificationAction(identifier: Self.stop, title: "Stop Print", options: [.destructive]),
+            ], intentIdentifiers: [])
+        case .queueNext:
+            UNNotificationCategory(identifier: rawValue, actions: [
+                UNNotificationAction(identifier: Self.startNext, title: "Bed's Clear, Start Next", options: []),
+            ], intentIdentifiers: [])
+        }
     }
 }
 
@@ -89,7 +101,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     func start() {
         guard let center else { return }
         center.delegate = self
-        center.setNotificationCategories([NotificationActions.printControls.category])
+        center.setNotificationCategories([NotificationActions.printControls.category, NotificationActions.queueNext.category])
         Task {
             if await center.notificationSettings().authorizationStatus == .notDetermined {
                 _ = await requestPermission()
@@ -164,7 +176,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let printer = response.notification.request.content.userInfo["printer"] as? String
         let action = response.actionIdentifier
-        if action == NotificationActions.pause || action == NotificationActions.stop {
+        if action == NotificationActions.pause || action == NotificationActions.stop || action == NotificationActions.startNext {
             await MainActor.run {
                 if let id = printer.flatMap(UUID.init(uuidString:)) { Notifier.shared.onAction?(id, action) }
             }

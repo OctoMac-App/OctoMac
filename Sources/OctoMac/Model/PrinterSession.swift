@@ -133,6 +133,9 @@ final class PrinterSession {
     private(set) var mmuPrusaVersion: String?
     /// Demo sessions have no server to talk to.
     private var isDemoSession = false
+    /// The scheduled start, queue, notes and bed mesh history (see `PrinterJournal`).
+    private(set) var journal = PrinterJournal()
+    @ObservationIgnored private var scheduleTimer: Timer?
     /// Uploads in progress (and briefly after they finish), shown in the upload panel.
     private(set) var uploads: [UploadItem] = []
 
@@ -186,6 +189,7 @@ final class PrinterSession {
         push = PushClient(client: client, throttle: instance.pushThrottle)
         link = (apiKey?.isEmpty ?? true) ? .needsAPIKey : .connecting
         printLog = PrintLog.records(for: instance.id)
+        journal = PrinterJournal.load(for: instance.id)
     }
 
     // MARK: Derived
@@ -327,6 +331,7 @@ final class PrinterSession {
     // MARK: Lifecycle
 
     func start() {
+        armSchedule()
         guard pushTask == nil, link != .needsAPIKey else { return }
         let push = self.push
         pushTask = Task { [weak self] in
@@ -339,6 +344,8 @@ final class PrinterSession {
     }
 
     func stop() {
+        scheduleTimer?.invalidate()
+        scheduleTimer = nil
         // A popped-out camera for a printer that's going away (removed, or demo mode switched) closes too.
         if PictureInPicture.shared.sessionID == instance.id { PictureInPicture.shared.close() }
         camera.stop()
@@ -508,6 +515,10 @@ final class PrinterSession {
     func refreshConnection() async { connection = await attempt { try await client.connection() } ?? connection }
     func refreshSettings() async {
         settings = await attempt { try await client.settings() } ?? settings
+        // Start the history with the mesh the plugin already has, if it says when it was measured.
+        if journal.meshes.isEmpty, let stored = bedLevel?.stored, let date = Self.meshDate(stored.measured) {
+            recordMesh(stored, measured: date)
+        }
         if let url = webcamStreamURL {
             camera.start(url: url, client: client)
         } else {
@@ -689,6 +700,7 @@ final class PrinterSession {
             let measured = Date.now.formatted(date: .abbreviated, time: .shortened)
             mesh.measured = measured
             measuredMesh = mesh
+            recordMesh(mesh, measured: .now)
             // Like the plugin's own page: keep the latest mesh in its settings, so it's there next time.
             if bedLevel?.saveMesh ?? true {
                 perform { [client] in try await client.storeBedMesh(mesh, measured: measured) }
@@ -806,6 +818,11 @@ final class PrinterSession {
     private func handle(_ event: ServerEvent) {
         notifyAbout(event)
         if event.type == "PrintDone" || event.type == "PrintFailed" { log(event) }
+        if event.type == "PrintDone", let next = journal.queue.first {
+            let more = journal.queue.count > 1 ? " (and \(journal.queue.count - 1) more)" : ""
+            Notifier.shared.post(.scheduled, printer: instance, title: "Next up: \(next.name)\(more)",
+                                 body: "Clear the bed, then start the next print.", picture: cameraPicture(), actions: .queueNext)
+        }
         if let kind = ChartEvent.Kind(eventType: event.type) {
             chartEvents.append(ChartEvent(time: .now, kind: kind))
             let cutoff = Date.now.addingTimeInterval(-Self.temperatureWindow)
@@ -987,6 +1004,117 @@ final class PrinterSession {
     }
 
     func disconnectPrinter() { perform { [client] in try await client.disconnect() } }
+
+    // MARK: Journal: schedule, queue, notes, bed meshes
+
+    private func updateJournal(_ change: (inout PrinterJournal) -> Void) {
+        change(&journal)
+        if !isDemoSession { journal.save(for: instance.id) }
+    }
+
+    /// Prints `file` at `start`. OctoMac has to be open then; it checks the printer is ready before starting.
+    func schedule(_ file: FileEntry, start: Date, finish: Date) {
+        updateJournal {
+            $0.scheduled = .init(path: file.path, origin: file.origin.rawValue, name: SlicedName(file.displayName).title,
+                                 start: start, finish: finish)
+        }
+        armSchedule()
+    }
+
+    func cancelSchedule() {
+        updateJournal { $0.scheduled = nil }
+        armSchedule()
+    }
+
+    /// Sets a timer for the scheduled start. A start missed by more than a few minutes (OctoMac was closed) is
+    /// dropped rather than started late.
+    private func armSchedule() {
+        scheduleTimer?.invalidate()
+        scheduleTimer = nil
+        guard let scheduled = journal.scheduled else { return }
+        if scheduled.start < Date.now.addingTimeInterval(-300) {
+            notify(.scheduled, "Scheduled print missed",
+                   "\(scheduled.name) was due to start at \(scheduled.start.formatted(date: .omitted, time: .shortened)), but OctoMac wasn't open.")
+            updateJournal { $0.scheduled = nil }
+            return
+        }
+        let timer = Timer(fire: max(scheduled.start, .now), interval: 0, repeats: false) { [weak self] _ in
+            MainActor.assumeIsolated { self?.runSchedule() }
+        }
+        RunLoop.main.add(timer, forMode: .common)
+        scheduleTimer = timer
+    }
+
+    private func runSchedule() {
+        guard let scheduled = journal.scheduled else { return }
+        updateJournal { $0.scheduled = nil }
+        guard !isDemoSession else { return }
+        if let blocker = controlBlocker {
+            notify(.scheduled, "Scheduled print didn't start", "\(scheduled.name): \(blocker)")
+            return
+        }
+        let origin = FileOrigin(rawValue: scheduled.origin) ?? .local
+        perform { [client] in try await client.select(scheduled.path, origin: origin, print: true) }
+        notify(.scheduled, "Scheduled print started", "\(scheduled.name) should be done around \(scheduled.finish.formatted(date: .omitted, time: .shortened)).")
+    }
+
+    func addToQueue(_ file: FileEntry) {
+        updateJournal { $0.queue.append(.init(path: file.path, origin: file.origin.rawValue, name: SlicedName(file.displayName).title)) }
+    }
+
+    func removeFromQueue(_ id: UUID) {
+        updateJournal { $0.queue.removeAll { $0.id == id } }
+    }
+
+    /// Moves a queued file up (-1) or down (+1).
+    func moveInQueue(_ id: UUID, by offset: Int) {
+        updateJournal { journal in
+            guard let index = journal.queue.firstIndex(where: { $0.id == id }) else { return }
+            let target = min(max(index + offset, 0), journal.queue.count - 1)
+            journal.queue.swapAt(index, target)
+        }
+    }
+
+    /// Starts the first file in the queue. Only call this once you know the bed is clear.
+    func startNextInQueue() {
+        guard let next = journal.queue.first else { return }
+        if let blocker = controlBlocker {
+            error = ErrorBanner(message: blocker)
+            return
+        }
+        updateJournal { $0.queue.removeFirst() }
+        let origin = FileOrigin(rawValue: next.origin) ?? .local
+        perform { [client] in try await client.select(next.path, origin: origin, print: true) }
+    }
+
+    func note(for path: String) -> PrinterJournal.Note? { journal.notes[path] }
+
+    func setNote(_ note: PrinterJournal.Note, for path: String) {
+        updateJournal { $0.notes[path] = note.isEmpty ? nil : note }
+    }
+
+    /// The date on a stored mesh: OctoMac writes "28 Oct 2026 at 16:09"; the plugin's own page writes
+    /// "10/28/2026, 4:09:54 PM".
+    static func meshDate(_ text: String?) -> Date? {
+        guard let text, !text.isEmpty else { return nil }
+        if let date = try? Date(text, strategy: Date.FormatStyle(date: .abbreviated, time: .shortened).parseStrategy) { return date }
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        for format in ["M/d/yyyy, h:mm:ss a", "d MMM yyyy 'at' HH:mm", "yyyy-MM-dd HH:mm:ss"] {
+            formatter.dateFormat = format
+            if let date = formatter.date(from: text) { return date }
+        }
+        return nil
+    }
+
+    /// Keeps a newly measured bed for comparing later.
+    private func recordMesh(_ mesh: BedLevelVisualizer.Mesh, measured: Date) {
+        guard !mesh.isEmpty, journal.meshes.last?.z != mesh.z else { return }
+        updateJournal {
+            $0.meshes.append(.init(date: measured, z: mesh.z, x: mesh.x, y: mesh.y))
+            if $0.meshes.count > PrinterJournal.meshLimit { $0.meshes.removeFirst($0.meshes.count - PrinterJournal.meshLimit) }
+        }
+    }
 
     func select(_ file: FileEntry, print: Bool) {
         if let blocker = controlBlocker {
@@ -1232,6 +1360,33 @@ extension PrinterSession {
             ["name": "ABS", "extruder": 255, "bed": 100],
         ]],
         ]
+        loadDemoJournal(printing: printing)
+    }
+
+    /// A queue, a couple of notes and earlier bed meshes, so every part of the demo has something in it.
+    private func loadDemoJournal(printing: Bool) {
+        var journal = PrinterJournal()
+        journal.notes["spool_holder_v4_PETG.gcode"] = .init(rating: 5, text: "Brim helped. 245\u{00B0} hotend, no stringing.")
+        journal.notes["3dbenchy.gcode"] = .init(rating: 3, text: "Slight ringing on the hull; try 90% speed.")
+        if !printing {
+            journal.queue = [
+                .init(path: "cable_chain_link.gcode", origin: "local", name: "cable chain link"),
+                .init(path: "workshop/pegboard_hooks_x8.gcode", origin: "local", name: "pegboard hooks x8"),
+            ]
+        }
+        // Earlier measurements of the demo bed, which has slowly tilted since.
+        if let mesh = bedLevel?.stored {
+            for (weeksAgo, drift) in [(6, -0.06), (3, -0.03)] {
+                let z = mesh.z.enumerated().map { row, values in
+                    values.enumerated().map { column, value in
+                        value.map { $0 + drift * (Double(column) / Double(max(1, values.count - 1)) - 0.5) + 0.004 * Double(row % 2) }
+                    }
+                }
+                journal.meshes.append(.init(date: Date.now.addingTimeInterval(-Double(weeksAgo) * 7 * 86400), z: z, x: mesh.x, y: mesh.y))
+            }
+            journal.meshes.append(.init(date: Date.now.addingTimeInterval(-2 * 86400), z: mesh.z, x: mesh.x, y: mesh.y))
+        }
+        self.journal = journal
     }
 
     private func loadDemoHealth(printing: Bool, toolchanger: Bool) {

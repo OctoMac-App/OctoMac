@@ -8,13 +8,45 @@ struct BedMeshPanel: View {
     let settings: BedLevelVisualizer.Settings
     @State private var style = Style.map
     @State private var editingCommand = false
+    /// An earlier measurement to look at, or nil for the latest.
+    @State private var earlier: Date?
+    @State private var showsChange = true
 
     enum Style: String, CaseIterable { case map = "Map", surface = "3D" }
 
+    /// Earlier measurements, newest first (the latest is the panel's usual view).
+    private var history: [PrinterJournal.Mesh] { Array(session.journal.meshes.dropLast().reversed()) }
+
+    /// What the map shows: the latest bed, an earlier one, or how much each point has moved since then.
+    private var shown: (mesh: BedLevelVisualizer.Mesh, detail: String?, isChange: Bool)? {
+        guard let latest = session.bedMesh else { return nil }
+        guard let earlier, let past = session.journal.meshes.first(where: { $0.date == earlier }) else {
+            return (latest, latest.measured.map { "Measured \($0)" }, false)
+        }
+        let then = past.mesh
+        if showsChange, let change = latest.change(since: then) {
+            return (change, "Change since \(then.measured ?? "then")", true)
+        }
+        return (then, "Measured \(then.measured ?? "earlier")", false)
+    }
+
     var body: some View {
-        StagePanel(title: "Bed level", detail: session.bedMesh?.measured.map { "Measured \($0)" }) {
+        let shown = shown
+        StagePanel(title: "Bed level", detail: shown?.detail) {
             VStack(alignment: .leading, spacing: 18) {
-                if let mesh = session.bedMesh {
+                if !history.isEmpty, session.bedMesh != nil {
+                    HStack(spacing: 12) {
+                        PlateMenu(selection: $earlier, options: [(nil, "Latest measurement")]
+                                  + history.map { ($0.date, $0.date.formatted(date: .abbreviated, time: .shortened)) })
+                            .frame(maxWidth: 240)
+                        if earlier != nil {
+                            CapsulePicker(selection: $showsChange, options: [(true, "Change since"), (false, "As it was")], compact: true)
+                        }
+                        Spacer()
+                    }
+                }
+                if let shown {
+                    let mesh = shown.mesh
                     HStack(alignment: .top, spacing: 24) {
                         Group {
                             switch style {
@@ -32,9 +64,16 @@ struct BedMeshPanel: View {
                         }
 
                         VStack(alignment: .leading, spacing: 16) {
-                            stat("Spread", mesh.spread, help: "Highest point minus lowest point. Under 0.2 mm is good for most printers.")
-                            stat("Highest", mesh.maximum, signed: true)
-                            stat("Lowest", mesh.minimum, signed: true)
+                            if shown.isChange {
+                                stat("Rose by up to", mesh.maximum, signed: true,
+                                     help: "How far each point has moved since the earlier measurement. Above zero is higher now.")
+                                stat("Dropped by up to", mesh.minimum, signed: true)
+                                stat("Spread now", session.bedMesh?.spread, help: "Highest point minus lowest point on the latest measurement.")
+                            } else {
+                                stat("Spread", mesh.spread, help: "Highest point minus lowest point. Under 0.2 mm is good for most printers.")
+                                stat("Highest", mesh.maximum, signed: true)
+                                stat("Lowest", mesh.minimum, signed: true)
+                            }
                             BedMeshLegend(limit: BedMeshColors.limit(for: mesh))
                         }
                         .frame(width: 150, alignment: .leading)

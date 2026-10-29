@@ -525,6 +525,8 @@ struct OpenedFilePanel: View {
     let filament: Color
     let chooseAnother: () -> Void
     @State private var previewing = false
+    @State private var scheduling = false
+    @State private var startingNext = false
 
     var body: some View {
         let name = SlicedName(file.displayName)
@@ -555,11 +557,28 @@ struct OpenedFilePanel: View {
                 Text(blocker).font(Typeface.caption).foregroundStyle(Palette.warm).lineLimit(2)
             }
             // Full labels when they fit; shorter ones in tight spaces (never wrapped).
-            ViewThatFits(in: .horizontal) {
-                actions(print: "Print", preview: "Preview", another: "Choose another file")
-                actions(print: "Print", preview: "Preview", another: "Other file")
-                actions(print: "Print", preview: nil, another: nil)
+            if let scheduled = session.journal.scheduled {
+                ScheduledBanner(session: session, scheduled: scheduled)
+            } else {
+                ViewThatFits(in: .horizontal) {
+                    actions(print: "Print", preview: "Preview", another: "Choose another file")
+                    actions(print: "Print", preview: "Preview", another: "Other file")
+                    actions(print: "Print", preview: nil, another: nil)
+                }
             }
+            if let next = session.journal.queue.first {
+                HStack(spacing: 10) {
+                    Image(systemName: "list.number").foregroundStyle(Palette.accent)
+                    Text(session.journal.queue.count == 1 ? "Queued: \(next.name)" : "Queued: \(next.name) and \(session.journal.queue.count - 1) more")
+                        .font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                    Spacer(minLength: 8)
+                    Button("Start next") { startingNext = true }
+                        .buttonStyle(.plateQuiet)
+                        .controlSize(.small)
+                        .disabled(!session.canControl)
+                }
+            }
+            NoteSummary(session: session, path: file.path, title: SlicedName(file.displayName).title)
 
             Divider().overlay(Palette.edge.opacity(0.6))
 
@@ -589,6 +608,12 @@ struct OpenedFilePanel: View {
         .padding(20)
         .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .clipped()
+        .sheet(isPresented: $scheduling) { ScheduleSheet(session: session, file: file, filament: filament) }
+        .sheet(isPresented: $startingNext) {
+            ConfirmSheet(symbol: "list.number", title: "Start \(session.journal.queue.first?.name ?? "the next print")?",
+                         message: "Make sure the bed is clear first. The printer starts straight away.",
+                         confirmTitle: "Start print", onConfirm: { session.startNextInQueue() })
+        }
     }
 
     private func actions(print: String, preview: String?, another: String?) -> some View {
@@ -598,6 +623,11 @@ struct OpenedFilePanel: View {
             }
             .buttonStyle(.plate(filament))
             .disabled(!session.canControl)
+            Button { scheduling = true } label: {
+                Image(systemName: "clock")
+            }
+            .buttonStyle(.plateQuiet)
+            .help("Plan when to print: finish by a time that suits you")
             Button(action: openPreview) {
                 if let preview {
                     Label(preview, systemImage: "square.stack.3d.up").font(Typeface.text(14, .demibold)).lineLimit(1)
