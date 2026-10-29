@@ -5,15 +5,18 @@ import QuartzCore
 /// Where the nozzle probably is right now, moving smoothly along the toolpath.
 ///
 /// OctoPrint only says how far through the file it has *sent*, a few times a second and in bursts, and the printer
-/// works through a small buffer behind that. Moves also take longer than their feed rates suggest, because the
-/// printer has to speed up and slow down. So the playhead measures the printer's real pace from how quickly the
-/// reports move through the file, averaged over several seconds, and travels steadily at that pace. Each report only
-/// nudges it gently towards a point a little behind what's been sent, and it never passes what's been sent.
+/// works through a queue of moves behind that (Marlin and Prusa firmware hold about 16 to 20). Moves also take longer
+/// than their feed rates suggest, because the printer has to speed up and slow down. So the playhead aims a queue's
+/// worth of moves behind what's been sent, measures the printer's real pace from how quickly the reports move through
+/// the file, averaged over several seconds, and travels steadily at that pace. Each report only nudges it gently, and
+/// it never passes what's been sent.
 @MainActor
 final class LivePlayhead {
     /// Seconds into the print at which each move starts, at its programmed speed.
     private var starts: [Double] = []
     private var durations: [Double] = []
+    /// The G-code line each move came from (arcs make several moves from one line).
+    private var lines: [Int32] = []
     private var total: Double = 0
 
     /// The move OctoPrint has sent up to.
@@ -27,9 +30,10 @@ final class LivePlayhead {
         didSet { if pace == nil { measuredPace = speed } }
     }
 
-    /// How far behind what OctoPrint has sent the playhead aims to be: roughly the printer's buffer of queued moves,
-    /// in seconds of programmed print time.
-    private let lead: Double = 2
+    /// How many G-code moves the printer holds queued behind what OctoPrint has sent.
+    private let queuedMoves = 16
+    /// Where the playhead aims: the start of the move a queue's worth behind what's been sent, in print time.
+    private var aim: Double = 0
 
     /// Seconds of programmed print time the printer gets through per real second, averaged.
     private var measuredPace: Double = 1
@@ -41,6 +45,7 @@ final class LivePlayhead {
         durations = []
         starts.reserveCapacity(path.segments.count)
         durations.reserveCapacity(path.segments.count)
+        lines = path.segments.map(\.offset)
         var clock = 0.0
         for segment in path.segments {
             starts.append(clock)
@@ -64,8 +69,9 @@ final class LivePlayhead {
         }
         let clamped = min(max(index, 0), starts.count - 1)
         let printTime = starts[clamped]
-        let goal = max(0, printTime - lead)
-        if target == nil || abs(goal - time) > 45 {
+        let goal = starts[queued(behind: clamped)]
+        aim = goal
+        if target == nil || abs(goal - time) > 120 {
             time = goal
             lastFrame = nil
             lastReport = nil
@@ -80,13 +86,25 @@ final class LivePlayhead {
         target = clamped
     }
 
+    /// The first move of the G-code line `queuedMoves` lines before `index`.
+    private func queued(behind index: Int) -> Int {
+        var i = index
+        var passed = 0
+        while i > 0 && passed < queuedMoves {
+            i -= 1
+            if lines[i] != lines[i + 1] { passed += 1 }
+        }
+        while i > 0 && lines[i - 1] == lines[i] { i -= 1 }
+        return i
+    }
+
     /// The playhead as a fractional move index (move 12, 40% along), advanced to `now`.
     func position(at now: TimeInterval = CACurrentMediaTime()) -> Double? {
         guard let target, !starts.isEmpty else { return nil }
         let step = min(0.1, max(0, now - (lastFrame ?? now)))
         lastFrame = now
         let sent = starts[target]
-        let error = max(0, sent - lead) - time
+        let error = aim - time
         // Steady at the measured pace, gently faster when behind and slower when ahead; never past what's been sent,
         // which the printer can't have passed.
         let rate = max(0.05, measuredPace) * min(1.6, max(0.6, 1 + error / 8))
