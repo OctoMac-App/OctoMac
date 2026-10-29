@@ -55,6 +55,8 @@ OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one plac
 
 ![Adding plugins from OctoPrint's official list](docs/screenshots/add-plugins.png)
 
+![Backups of OctoPrint on the Machine tab](docs/screenshots/backups.png)
+
 ## Getting started
 
 ### What you need
