@@ -11,41 +11,70 @@ struct MachinePage: View {
     @State private var profile = ""
     @State private var saveConnection = false
     @State private var pendingCommand: SystemCommand?
+    @AppStorage("machine.section") private var section = Section.printer
+
+    /// The tab is split three ways, so each part is short enough to take in at a glance.
+    enum Section: String, CaseIterable {
+        case printer, octoPrint, pi
+    }
+
+    /// Sections with something that needs you: red for a problem now, amber for something to look at.
+    private var badges: [Section: Color] {
+        var badges: [Section: Color] = [:]
+        if session.link == .online && !session.isPrinterConnected && !session.isPrinterConnecting {
+            badges[.printer] = session.printerFault ? Palette.hot : Palette.warm
+        }
+        if session.pluginSafeMode {
+            badges[.octoPrint] = Palette.hot
+        } else if session.pluginsNeedRestart || session.restartingSince != nil || (session.updates ?? []).contains(where: \.updateAvailable) {
+            badges[.octoPrint] = Palette.warm
+        }
+        if let throttle = session.throttle, throttle.currentIssue || throttle.pastIssue {
+            badges[.pi] = throttle.currentIssue ? Palette.hot : Palette.warm
+        }
+        return badges
+    }
 
     var body: some View {
         GeometryReader { geo in
             ScrollView {
-                VStack(spacing: 20) {
-                    if geo.size.width >= 940 {
-                        HStack(alignment: .top, spacing: 20) {
-                            VStack(spacing: 20) {
-                                printerPanel
-                                if let bed = session.bedLevel { BedMeshPanel(session: session, settings: bed) }
-                                connectionPanel
-                                LogsPanel(session: session)
-                            }
-                            VStack(spacing: 20) {
-                                serverPanel
-                                if let pi = session.pi { PiHealthPanel(session: session, pi: pi) }
-                                if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
-                                if let plugins = session.plugins { PluginsPanel(session: session, plugins: plugins) }
-                                if let backups = session.backups { BackupsPanel(session: session, state: backups) }
-                                powerPanel
-                            }
+                VStack(alignment: .leading, spacing: 20) {
+                    CapsulePicker(selection: $section, options: [
+                        (.printer, "Printer"), (.octoPrint, "OctoPrint"), (.pi, "Raspberry Pi"),
+                    ], badges: badges)
+                    switch section {
+                    case .printer:
+                        columns(wide: geo.size.width >= 940) {
+                            printerPanel
+                            if session.bedLevel != nil { connectionPanel }
+                        } right: {
+                            // Without Bed Visualizer, the connection fills the other column instead.
+                            if let bed = session.bedLevel { BedMeshPanel(session: session, settings: bed) } else { connectionPanel }
                         }
-                    } else {
-                        printerPanel
-                        if let bed = session.bedLevel { BedMeshPanel(session: session, settings: bed) }
-                        serverPanel
-                        if let pi = session.pi { PiHealthPanel(session: session, pi: pi) }
-                        connectionPanel
-                        powerPanel
-                        if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
-                        if let plugins = session.plugins { PluginsPanel(session: session, plugins: plugins) }
-                        if let backups = session.backups { BackupsPanel(session: session, state: backups) }
-                        LogsPanel(session: session)
+                    case .octoPrint:
+                        columns(wide: geo.size.width >= 940) {
+                            serverPanel
+                            if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
+                            if let backups = session.backups { BackupsPanel(session: session, state: backups) }
+                        } right: {
+                            if let plugins = session.plugins { PluginsPanel(session: session, plugins: plugins) }
+                        }
+                    case .pi:
+                        columns(wide: geo.size.width >= 940) {
+                            if let pi = session.pi { PiHealthPanel(session: session, pi: pi) }
+                            powerPanel
+                        } right: {
+                            LogsPanel(session: session)
+                        }
                     }
                 }
+            }
+        }
+        // A problem right now (OctoPrint in safe mode, a struggling Pi, a printer that stopped answering) is shown
+        // first, rather than left behind another section.
+        .onAppear {
+            if badges[section] != Palette.hot, let urgent = Section.allCases.first(where: { badges[$0] == Palette.hot }) {
+                section = urgent
             }
         }
         // Loads again whenever the printer comes online: opened before OctoMac had connected (just after launch,
@@ -74,6 +103,22 @@ struct MachinePage: View {
                 .compactMap { $0 }.joined(separator: " ")
             ConfirmSheet(symbol: symbol(for: command.action), tint: Palette.warm, title: Text(verbatim: "\(name)?"),
                          message: Text(verbatim: message), confirmTitle: Text(verbatim: name), onConfirm: { session.run(command) })
+        }
+    }
+
+    /// Two columns on a wide window, one after the other on a narrow one.
+    @ViewBuilder
+    private func columns<Left: View, Right: View>(wide: Bool, @ViewBuilder left: () -> Left, @ViewBuilder right: () -> Right) -> some View {
+        if wide {
+            HStack(alignment: .top, spacing: 20) {
+                VStack(spacing: 20) { left() }
+                VStack(spacing: 20) { right() }
+            }
+        } else {
+            VStack(spacing: 20) {
+                left()
+                right()
+            }
         }
     }
 

@@ -5,6 +5,8 @@ struct CapsulePicker<Value: Hashable>: View {
     @Binding var selection: Value
     let options: [(value: Value, title: LocalizedStringKey)]
     var compact = false
+    /// A coloured dot after an option that needs attention.
+    var badges: [Value: Color] = [:]
     @Namespace private var carriage
 
     var body: some View {
@@ -15,11 +17,17 @@ struct CapsulePicker<Value: Hashable>: View {
                 Button {
                     withAnimation(.snappy(duration: 0.22)) { selection = option.value }
                 } label: {
-                    Text(option.title)
-                        .font(Typeface.text(compact ? 12 : 13, .demibold))
-                        .lineLimit(1)
-                        .fixedSize()
-                        .foregroundStyle(selected ? Palette.graphite : Palette.dust)
+                    HStack(spacing: 6) {
+                        Text(option.title)
+                            .font(Typeface.text(compact ? 12 : 13, .demibold))
+                            .lineLimit(1)
+                            .fixedSize()
+                        if let badge = badges[option.value] {
+                            Circle().fill(badge).frame(width: 7, height: 7)
+                                .overlay(Circle().strokeBorder(Palette.graphite.opacity(selected ? 0.5 : 0), lineWidth: 1))
+                        }
+                    }
+                    .foregroundStyle(selected ? Palette.graphite : Palette.dust)
                         .padding(.horizontal, compact ? 11 : 14)
                         .padding(.vertical, compact ? 4 : 6)
                         .background {
