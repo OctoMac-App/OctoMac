@@ -94,7 +94,7 @@ You can also open `Package.swift` in Xcode and press Run.
 
 **Reaching OctoPrint from outside your home?** If it's behind a reverse proxy that asks for its own sign-in (nginx or Caddy with a password, Cloudflare Access and so on), open **Sign-in** when adding the printer and enter the user name and password, or the headers it needs, such as `CF-Access-Client-Id` and `CF-Access-Client-Secret`. OctoMac sends them only to that printer's address.
 
-Your API keys stay on your Mac. By default they're kept in an encrypted file only your account can read; if you'd rather use the macOS Keychain, switch it on in **Settings → Printers**. See [PRIVACY.md](PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.
+Your API keys stay on your Mac. They're kept in the macOS Keychain, protected by your login password. If you'd rather not use the Keychain, switch it off in **Settings → Printers** and OctoMac keeps them in an encrypted file only your account can read instead. See [PRIVACY.md](PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.
 
 ### Just looking?
 

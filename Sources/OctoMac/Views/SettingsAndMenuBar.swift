@@ -122,7 +122,7 @@ private struct KeychainToggle: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Keep API keys in the Keychain").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
                     Text(failed ? "The Keychain didn't accept the keys, so they're still in OctoMac's own file."
-                                : "Off: keys are kept in an encrypted file only your account can read. On: the macOS Keychain looks after them.")
+                                : "On: the macOS Keychain keeps your API keys and proxy sign-ins, protected by your login password. Off: they're kept in an encrypted file only your account can read.")
                         .font(Typeface.caption).foregroundStyle(failed ? Palette.warm : Palette.faint)
                         .fixedSize(horizontal: false, vertical: true)
                 }

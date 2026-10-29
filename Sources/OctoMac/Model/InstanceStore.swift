@@ -27,7 +27,7 @@ final class InstanceStore {
             return
         }
         load()
-        CredentialStore.migrateFromKeychain(ids: instances.map(\.id))
+        CredentialStore.settleStorage(ids: instances.map(\.id))
         for instance in instances { startSession(for: instance) }
     }
 

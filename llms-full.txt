@@ -104,7 +104,7 @@ You can also open `Package.swift` in Xcode and press Run.
 
 **Reaching OctoPrint from outside your home?** If it's behind a reverse proxy that asks for its own sign-in (nginx or Caddy with a password, Cloudflare Access and so on), open **Sign-in** when adding the printer and enter the user name and password, or the headers it needs, such as `CF-Access-Client-Id` and `CF-Access-Client-Secret`. OctoMac sends them only to that printer's address.
 
-Your API keys stay on your Mac. By default they're kept in an encrypted file only your account can read; if you'd rather use the macOS Keychain, switch it on in **Settings → Printers**. See [PRIVACY.md](https://github.com/OctoMac-App/OctoMac/blob/master/PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.
+Your API keys stay on your Mac. They're kept in the macOS Keychain, protected by your login password. If you'd rather not use the Keychain, switch it off in **Settings → Printers** and OctoMac keeps them in an encrypted file only your account can read instead. See [PRIVACY.md](https://github.com/OctoMac-App/OctoMac/blob/master/PRIVACY.md) for exactly what OctoMac stores, and what it doesn't.
 
 ### Just looking?
 
@@ -226,7 +226,7 @@ OctoMac is built to keep your data on your own Mac and your own network.
 All of this stays on your Mac:
 
 - **Your printers' names and addresses**, in OctoMac's preferences.
-- **Your API keys.** By default they're kept in `~/Library/Application Support/OctoMac/api-keys.dat`, readable only by your user account and encrypted with a key built into the app. Because OctoMac is open source, that built-in key is public, so this stops a casual look at the file rather than a determined attacker. If you'd prefer, turn on **Settings → Printers → Keep API keys in the Keychain** to store them in the macOS Keychain instead. A proxy sign-in (user name, password or headers) you add for a printer is stored the same way, alongside its API key, and is only ever sent to that printer's address.
+- **Your API keys**, in the macOS Keychain, protected by your login password and readable only by OctoMac. If you switch off **Settings → Printers → Keep API keys in the Keychain**, they're kept in `~/Library/Application Support/OctoMac/api-keys.dat` instead, readable only by your user account and encrypted with a key built into the app. Because OctoMac is open source, that built-in key is public, so the file stops a casual look rather than a determined attacker. A proxy sign-in (user name, password or headers) you add for a printer is stored the same way, alongside its API key, and is only ever sent to that printer's address. (If you build OctoMac yourself without a Developer ID, it uses the file by default, as macOS would otherwise ask for Keychain permission after every rebuild.)
 - **A small status file for the widgets** in `~/Library/Application Support/OctoMac/Widgets/`: printer names, states, progress, temperatures and a small camera picture. Only OctoMac's own widgets read it.
 - **A list of the prints OctoMac has seen finish or fail** in `~/Library/Application Support/OctoMac/History/`: file names, dates, how long they took and how much filament they used, for the statistics in the History tab. It's deleted when you remove the printer.
 - **Your choices**, such as console filters, highlights and notification settings.
@@ -322,7 +322,7 @@ Each new build is a new binary to macOS, which can silently block its local netw
 ## Layout
 
 - `Sources/OctoPrintKit`: a standalone client library for OctoPrint, with no app or UI code. Covers the REST API (`Endpoints/`), push updates over the websocket (`Push.swift`), Application Keys (`AppKeys.swift`), self-signed certificate pinning (`CertificateTrust.swift`), plugin APIs (`Plugins/`) and a fast G-code parser (`GCode/`). Anything that talks to OctoPrint belongs here, with tests in `Tests/OctoPrintKitTests`.
-- `Sources/OctoMac/Model`: app state. `PrinterSession` holds everything live for one printer, `InstanceStore` the list of printers. API keys and proxy sign-ins live in `CredentialStore` (an encrypted file by default, the Keychain if the user chooses), never in `UserDefaults`.
+- `Sources/OctoMac/Model`: app state. `PrinterSession` holds everything live for one printer, `InstanceStore` the list of printers. API keys and proxy sign-ins live in `CredentialStore` (the Keychain by default for Developer ID builds; an encrypted file for ad-hoc builds or if the user switches the Keychain off), never in `UserDefaults`.
 - `Sources/OctoMac/Views`: one file per tab or panel. `Sources/OctoMac/Design` holds the palette, fonts and shared controls; use them rather than system defaults.
 - `Sources/OctoMacWidgets` and `Sources/WidgetData`: the widget extension, which reads a status file the app writes. It's linked with `NSExtensionMain` (see `Package.swift`); without that, macOS's extension loader crashes it.
 - `docs/`: README images and screenshots, plus `docs/index.html`, which only forwards the old website address to the new one.

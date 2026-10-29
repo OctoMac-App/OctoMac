@@ -58,11 +58,10 @@ struct ProxyAccess: Codable, Equatable, Sendable {
     }
 }
 
-/// API keys, and any proxy sign-in (`ProxyAccess`). By default they're stored in `~/Library/Application Support/OctoMac/api-keys.dat`: JSON sealed with
-/// AES-GCM under a key compiled into the app, with owner-only (0600) permissions. This keeps keys out of plain text
-/// (backups, grep, screenshots) but isn't protection against someone who has the app binary, an accepted trade-off
-/// for printer API keys. Settings can switch to the macOS Keychain instead (off by default: builds that aren't
-/// Developer ID signed get a Keychain prompt after every rebuild).
+/// API keys, and any proxy sign-in (`ProxyAccess`). Kept in the macOS Keychain by default (see `keychainByDefault`).
+/// Settings can switch to `~/Library/Application Support/OctoMac/api-keys.dat` instead: JSON sealed with AES-GCM under a
+/// key compiled into the app, with owner-only (0600) permissions. That keeps keys out of plain text (backups, grep,
+/// screenshots) but isn't protection against someone who has the app binary, since the app is open source.
 enum CredentialStore {
     static let fileURL: URL = {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
@@ -70,10 +69,34 @@ enum CredentialStore {
     }()
 
     static let useKeychainKey = "credentials.useKeychain"
+    /// Where secrets are kept right now. Settled once at launch by `settleStorage`, then changed only from Settings.
     static var usesKeychain: Bool { UserDefaults.standard.bool(forKey: useKeychainKey) }
 
-    /// Plain-JSON file written by an earlier build; migrated and removed on first load.
-    private static let legacyPlainURL = fileURL.deletingLastPathComponent().appending(path: "api-keys.json")
+    /// The Keychain is the default for builds signed with a Developer ID, such as releases: their signature stays the
+    /// same across updates, so the Keychain never asks for permission again. Builds signed ad-hoc (a contributor's own)
+    /// look like a new app after every rebuild and would be asked each time, so they keep the file.
+    static var keychainByDefault: Bool {
+        var code: SecCode?
+        var staticCode: SecStaticCode?
+        var information: CFDictionary?
+        guard SecCodeCopySelf([], &code) == errSecSuccess, let code,
+              SecCodeCopyStaticCode(code, [], &staticCode) == errSecSuccess, let staticCode,
+              SecCodeCopySigningInformation(staticCode, SecCSFlags(rawValue: kSecCSSigningInformation), &information) == errSecSuccess,
+              let information = information as? [String: Any]
+        else { return false }
+        return information[kSecCodeInfoTeamIdentifier as String] != nil
+    }
+
+    /// On first launch (or the first launch of a version with this choice), uses the default storage and moves any
+    /// keys already saved into it. A choice made in Settings is never changed.
+    static func settleStorage(ids: [UUID]) {
+        guard UserDefaults.standard.object(forKey: useKeychainKey) == nil else { return }
+        UserDefaults.standard.set(false, forKey: useKeychainKey)
+        if keychainByDefault, !setUsesKeychain(true, ids: ids) {
+            // The Keychain wouldn't take the keys; they stay in the file, which still works.
+            UserDefaults.standard.set(false, forKey: useKeychainKey)
+        }
+    }
 
     private static let sealingKey = SymmetricKey(data: SHA256.hash(data: Data("uk.co.district5.OctoMac/credentials/v1/7c1e9a4b".utf8)))
 
@@ -138,32 +161,12 @@ enum CredentialStore {
         return true
     }
 
-    /// One-time move of keys saved by early builds from the Keychain into the file.
-    static func migrateFromKeychain(ids: [UUID]) {
-        let flag = "credentials.migratedFromKeychain"
-        guard !UserDefaults.standard.bool(forKey: flag), !usesKeychain else { return }
-        var keys = load()
-        for id in ids where keys[id.uuidString] == nil {
-            if let key = Keychain.secret(id.uuidString) { keys[id.uuidString] = key }
-        }
-        save(keys)
-        ids.map(\.uuidString).forEach(Keychain.delete)
-        UserDefaults.standard.set(true, forKey: flag)
-    }
-
     private static func load() -> [String: String] {
         if let sealed = try? Data(contentsOf: fileURL),
            let box = try? AES.GCM.SealedBox(combined: sealed),
            let json = try? AES.GCM.open(box, using: sealingKey)
         {
             return (try? JSONDecoder().decode([String: String].self, from: json)) ?? [:]
-        }
-        if let plain = try? Data(contentsOf: legacyPlainURL),
-           let keys = try? JSONDecoder().decode([String: String].self, from: plain)
-        {
-            save(keys)
-            try? FileManager.default.removeItem(at: legacyPlainURL)
-            return keys
         }
         return [:]
     }
