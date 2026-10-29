@@ -96,22 +96,13 @@ struct MachinePage: View {
             if let options = session.connection?.options {
                 VStack(spacing: 12) {
                     pickerRow("Port") {
-                        Picker("Port", selection: $port) {
-                            Text("Auto").tag("")
-                            ForEach(options.ports, id: \.self) { Text($0).tag($0) }
-                        }
+                        PlateMenu(selection: $port, options: [("", "Auto")] + options.ports.map { ($0, $0) })
                     }
                     pickerRow("Baud rate") {
-                        Picker("Baud rate", selection: $baudrate) {
-                            Text("Auto").tag(0)
-                            ForEach(options.baudrates, id: \.self) { Text(String($0)).tag($0) }
-                        }
+                        PlateMenu(selection: $baudrate, options: [(0, "Auto")] + options.baudrates.map { ($0, String($0)) })
                     }
                     pickerRow("Profile") {
-                        Picker("Profile", selection: $profile) {
-                            Text("Default").tag("")
-                            ForEach(options.printerProfiles) { Text($0.name).tag($0.id) }
-                        }
+                        PlateMenu(selection: $profile, options: [("", "Default")] + options.printerProfiles.map { ($0.id, $0.name) })
                     }
                     HStack {
                         Toggle("Remember these settings", isOn: $saveConnection)
@@ -204,7 +195,7 @@ struct MachinePage: View {
     private func pickerRow<P: View>(_ title: String, @ViewBuilder picker: () -> P) -> some View {
         HStack {
             Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.dust).frame(width: 90, alignment: .leading)
-            picker().labelsHidden().pickerStyle(.menu).tint(Palette.accent).frame(maxWidth: 300)
+            picker().frame(maxWidth: 300)
             Spacer()
         }
     }

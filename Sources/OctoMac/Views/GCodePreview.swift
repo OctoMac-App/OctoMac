@@ -267,11 +267,8 @@ struct GCodeLayerViewer: View {
                     .help("Jump to the layer being printed and keep up with it")
                 }
             }
-            HStack(spacing: 6) {
-                Chip(title: "Layer", selected: mode == .layer) { mode = .layer }
-                Chip(title: "3D", selected: mode == .threeD) { mode = .threeD }
-            }
-            .padding(.trailing, 8)
+            CapsulePicker(selection: $mode, options: [(.layer, "Layer"), (.threeD, "3D")], compact: true)
+                .padding(.trailing, 8)
             Text("Layer \(layer + 1) of \(path.layers.count)").font(Typeface.number(17)).foregroundStyle(Palette.paper)
             Text(String(format: "Z %.2f mm", current.z)).font(Typeface.number(17)).foregroundStyle(filament)
         }

@@ -23,13 +23,7 @@ struct StatisticsPanel: View {
                 PanelHeading(title: "Statistics", detail: nil)
                 Spacer()
                 if store.instances.count > 1 {
-                    Picker("Show", selection: $allPrinters) {
-                        Text("This printer").tag(false)
-                        Text("All printers").tag(true)
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
-                    .fixedSize()
+                    CapsulePicker(selection: $allPrinters, options: [(false, "This printer"), (true, "All printers")], compact: true)
                 }
             }
             HStack(alignment: .top, spacing: 24) {

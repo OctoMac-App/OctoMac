@@ -118,12 +118,7 @@ struct GeneralSettings: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer()
-                Picker("Temperatures", selection: $unit) {
-                    ForEach(TemperatureUnit.allCases) { Text($0.title).tag($0.rawValue) }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .fixedSize()
+                CapsulePicker(selection: $unit, options: TemperatureUnit.allCases.map { ($0.rawValue, $0.title) })
             }
             .padding(14)
             .machined(radius: 12)

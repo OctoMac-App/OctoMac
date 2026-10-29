@@ -58,12 +58,7 @@ struct BedMeshPanel: View {
     private var controls: some View {
         HStack(spacing: 10) {
             if session.bedMesh != nil {
-                Picker("View", selection: $style) {
-                    ForEach(Style.allCases, id: \.self) { Text($0.rawValue).tag($0) }
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .fixedSize()
+                CapsulePicker(selection: $style, options: Style.allCases.map { ($0, $0.rawValue) }, compact: true)
             }
             Spacer()
             if !settings.canMeasure {

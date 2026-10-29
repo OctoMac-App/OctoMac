@@ -25,13 +25,7 @@ struct LayerAlertsSheet: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 10) {
-                Picker("", selection: $action) {
-                    Text("Pause at").tag(LayerAlert.Action.pause)
-                    Text("Tell me at").tag(LayerAlert.Action.notify)
-                }
-                .pickerStyle(.segmented)
-                .labelsHidden()
-                .fixedSize()
+                CapsulePicker(selection: $action, options: [(.pause, "Pause at"), (.notify, "Tell me at")])
                 Text("layer").font(Typeface.body).foregroundStyle(Palette.dust)
                 TextField("", value: $layer, format: .number)
                     .plateField()
