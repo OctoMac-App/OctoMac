@@ -43,7 +43,7 @@ struct SettingsView: View {
             }
         }
         .padding(24)
-        .frame(width: 560, height: 520, alignment: .top)
+        .frame(width: 560, height: 660, alignment: .top)
         .background(Palette.graphite)
         .containerBackground(Palette.graphite, for: .window)
         .toolbar(removing: .title)

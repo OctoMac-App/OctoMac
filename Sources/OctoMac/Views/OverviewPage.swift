@@ -288,6 +288,7 @@ struct JobPanel: View {
     let filament: Color
     @Binding var tab: StageTab
     @State private var showingObjects = false
+    @State private var showingLayerAlerts = false
 
     var body: some View {
         let flags = session.flags
@@ -389,6 +390,20 @@ struct JobPanel: View {
                     }
                     Spacer(minLength: 12)
                     VStack(alignment: .trailing, spacing: 8) {
+                    if flags.isJobActive && !flags.cancelling {
+                        let alerts = session.layerAlerts.count
+                        Button { showingLayerAlerts = true } label: {
+                            Label(alerts == 0 ? "Layer alerts" : alerts == 1 ? "1 layer alert" : "\(alerts) layer alerts",
+                                  systemImage: alerts == 0 ? "bell" : "bell.badge.fill")
+                                .lineLimit(1)
+                        }
+                        .buttonStyle(.plateQuiet)
+                        .fixedSize()
+                        .disabled(session.layerProgress?.hasLayers != true)
+                        .help(session.layerProgress?.hasLayers == true
+                              ? "Pause or get a notification when the print reaches a layer"
+                              : "Layer alerts need the DisplayLayerProgress plugin in OctoPrint")
+                    }
                     let objects = session.printObjects.filter { !$0.ignored }
                     if session.hasCancelObject, objects.count > 1 {
                         Button { showingObjects = true } label: {
@@ -420,6 +435,7 @@ struct JobPanel: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .machined(radius: 20)
         .sheet(isPresented: $showingObjects) { CancelObjectsSheet(session: session, filament: filament) }
+        .sheet(isPresented: $showingLayerAlerts) { LayerAlertsSheet(session: session, filament: filament) }
     }
 
     private var timeLeftTitle: String {

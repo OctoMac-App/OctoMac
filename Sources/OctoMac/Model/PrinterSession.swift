@@ -63,6 +63,14 @@ struct UploadItem: Identifiable, Equatable {
     var state: State = .uploading
 }
 
+/// Something to do when the print reaches a layer.
+struct LayerAlert: Identifiable, Hashable {
+    enum Action: String, CaseIterable { case pause, notify }
+    var id = UUID()
+    var layer: Int
+    var action: Action
+}
+
 struct ErrorBanner: Identifiable, Equatable {
     let id = UUID()
     let message: String
@@ -131,6 +139,10 @@ final class PrinterSession {
     // Plugins and health
     /// Real layer numbers from the DisplayLayerProgress plugin.
     private(set) var layerProgress: LayerProgress?
+    /// Pause or notify when the print reaches a layer (needs DisplayLayerProgress). Cleared when a print starts.
+    private(set) var layerAlerts: [LayerAlert] = []
+    /// The first-layer notification has been sent for this print.
+    private var firstLayerChecked = false
     /// Set while Bed Level Visualizer is measuring the bed.
     private(set) var bedMeasuringSince: Date?
     /// A mesh measured while the app has been running (newer than the one stored in the plugin's settings).
@@ -595,7 +607,9 @@ final class PrinterSession {
         case .plugin(let id, let data) where id == PrusaMMU.pluginID:
             handleMMU(data)
         case .plugin(let id, let data) where id == LayerProgress.pushID:
+            let previous = layerProgress?.currentLayer
             layerProgress = LayerProgress(push: data)
+            layerChanged(from: previous, to: layerProgress?.currentLayer)
         case .plugin(let id, let data) where id == PiSupportInfo.pluginID:
             if let update = PiSupportInfo.throttleUpdate(data) {
                 if update.currentIssue, throttle?.currentIssue != true {
@@ -696,6 +710,48 @@ final class PrinterSession {
         }
     }
 
+    // MARK: Layer alerts
+
+    func addLayerAlert(_ alert: LayerAlert) {
+        layerAlerts.removeAll { $0.layer == alert.layer }
+        layerAlerts.append(alert)
+        layerAlerts.sort { $0.layer < $1.layer }
+    }
+
+    func removeLayerAlert(_ alert: LayerAlert) {
+        layerAlerts.removeAll { $0.id == alert.id }
+    }
+
+    /// DisplayLayerProgress says a new layer has started: check the first layer, and run any alerts for it.
+    private func layerChanged(from previous: Int?, to current: Int?) {
+        guard let current, current != previous, flags.isJobActive, !isDemoSession else { return }
+        let file = job?.file.displayName.map { SlicedName($0).title } ?? "The print"
+        if current >= 2, !firstLayerChecked {
+            firstLayerChecked = true
+            Notifier.shared.post(.firstLayer, printer: instance, title: "First layer done",
+                                 body: "\(file): check it looks right before it carries on.",
+                                 picture: cameraPicture(), actions: .printControls)
+        }
+        let due = layerAlerts.filter { $0.layer <= current && $0.layer > (previous ?? 0) }
+        guard !due.isEmpty else { return }
+        layerAlerts.removeAll { alert in due.contains { $0.id == alert.id } }
+        let layer = due.map(\.layer).max() ?? current
+        if due.contains(where: { $0.action == .pause }) {
+            jobCommand(.pause)
+            Notifier.shared.post(.layerReached, printer: instance, title: "Paused at layer \(layer)",
+                                 body: "\(file) is paused. Resume it when you're ready.", picture: cameraPicture())
+        } else {
+            let total = layerProgress?.totalLayers.map { " of \($0)" } ?? ""
+            Notifier.shared.post(.layerReached, printer: instance, title: "Layer \(layer)\(total)",
+                                 body: "\(file) has reached layer \(layer).", picture: cameraPicture(), actions: .printControls)
+        }
+    }
+
+    /// The camera's latest frame, turned the same way as on screen.
+    private func cameraPicture() -> Data? {
+        camera.latestFrameData.flatMap { Snapshot.jpeg($0, transform: webcamTransform) }
+    }
+
     /// Remembers a finished or failed print for statistics.
     private func log(_ event: ServerEvent) {
         guard !isDemoSession, let path = event.payload["path"]?.stringValue else { return }
@@ -717,7 +773,7 @@ final class PrinterSession {
     private func notify(_ kind: NotificationKind, _ title: String, _ body: String) {
         guard !isDemoSession else { return }
         // The camera picture is turned the same way as on screen.
-        let picture = kind.showsCamera ? camera.latestFrameData.flatMap { Snapshot.jpeg($0, transform: webcamTransform) } : nil
+        let picture = kind.showsCamera ? cameraPicture() : nil
         Notifier.shared.post(kind, printer: instance, title: title, body: body, picture: picture)
     }
 
@@ -758,6 +814,8 @@ final class PrinterSession {
         switch event.type {
         case "PrintStarted":
             layerProgress = nil
+            layerAlerts = []
+            firstLayerChecked = false
             printObjects = []
             activeObjectID = nil
             // The plugin reads the file's object labels as the print starts.

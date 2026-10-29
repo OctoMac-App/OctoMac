@@ -4,7 +4,7 @@ import UserNotifications
 
 /// The kinds of thing OctoMac can tell you about, each with its own switch in Settings.
 enum NotificationKind: String, CaseIterable, Identifiable {
-    case printDone, printFailed, needsAttention, printerProblem, piWarning
+    case printDone, printFailed, firstLayer, layerReached, needsAttention, printerProblem, piWarning
 
     var id: String { rawValue }
 
@@ -12,6 +12,8 @@ enum NotificationKind: String, CaseIterable, Identifiable {
         switch self {
         case .printDone: "Print finished"
         case .printFailed: "Print failed or stopped"
+        case .firstLayer: "First layer done"
+        case .layerReached: "Layer alerts"
         case .needsAttention: "Printer needs you"
         case .printerProblem: "Printer stopped answering"
         case .piWarning: "Raspberry Pi warnings"
@@ -22,6 +24,8 @@ enum NotificationKind: String, CaseIterable, Identifiable {
         switch self {
         case .printDone: "When a print completes."
         case .printFailed: "When a print fails, or is stopped from the printer."
+        case .firstLayer: "A camera picture once the first layer is down, so you can catch a bad start early."
+        case .layerReached: "When a print reaches a layer you chose to be told about or pause at."
         case .needsAttention: "Filament changes, a paused print, or a filament choice for the Prusa MMU."
         case .printerProblem: "When the printer reports an error or drops its connection mid-print."
         case .piWarning: "Low power or overheating on the Raspberry Pi, which can spoil prints."
@@ -33,7 +37,7 @@ enum NotificationKind: String, CaseIterable, Identifiable {
     /// Whether this kind of notification comes with a picture from the printer's camera.
     var showsCamera: Bool {
         switch self {
-        case .printDone, .printFailed, .needsAttention: true
+        case .printDone, .printFailed, .firstLayer, .layerReached, .needsAttention: true
         case .printerProblem, .piWarning: false
         }
     }
@@ -44,6 +48,22 @@ enum NotificationKind: String, CaseIterable, Identifiable {
 
     var isEnabled: Bool {
         UserDefaults.standard.object(forKey: defaultsKey) as? Bool ?? true
+    }
+}
+
+/// Buttons a notification can offer.
+enum NotificationActions: String {
+    /// Pause and Stop Print, for checking on a print in progress.
+    case printControls
+
+    static let pause = "pause"
+    static let stop = "stop"
+
+    var category: UNNotificationCategory {
+        UNNotificationCategory(identifier: rawValue, actions: [
+            UNNotificationAction(identifier: Self.pause, title: "Pause", options: []),
+            UNNotificationAction(identifier: Self.stop, title: "Stop Print", options: [.destructive]),
+        ], intentIdentifiers: [])
     }
 }
 
@@ -59,6 +79,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private var asked = false
+    /// Runs a notification button (Pause or Stop Print) for a printer. Set by the instance store.
+    var onAction: ((UUID, String) -> Void)?
     /// Messages already sent recently, so a burst of identical events makes one banner.
     private var recent: [String: Date] = [:]
 
@@ -67,6 +89,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     func start() {
         guard let center else { return }
         center.delegate = self
+        center.setNotificationCategories([NotificationActions.printControls.category])
         Task {
             if await center.notificationSettings().authorizationStatus == .notDetermined {
                 _ = await requestPermission()
@@ -75,7 +98,8 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
     }
 
     /// `picture` is a JPEG from the printer's camera, shown in the notification when the kind and Settings allow it.
-    func post(_ kind: NotificationKind, printer: Instance, title: String, body: String, picture: Data? = nil) {
+    func post(_ kind: NotificationKind, printer: Instance, title: String, body: String, picture: Data? = nil,
+              actions: NotificationActions? = nil) {
         guard kind.isEnabled, let center else { return }
         let key = "\(printer.id)|\(title)|\(body)"
         if let last = recent[key], Date.now.timeIntervalSince(last) < 60 { return }
@@ -88,6 +112,7 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
         content.sound = kind == .printDone ? .default : .defaultCritical
         content.threadIdentifier = printer.id.uuidString
         content.userInfo = ["printer": printer.id.uuidString]
+        if let actions { content.categoryIdentifier = actions.rawValue }
         if kind.showsCamera, NotificationKind.includesCamera, let picture, let attachment = Self.attachment(picture) {
             content.attachments = [attachment]
         }
@@ -138,6 +163,13 @@ final class Notifier: NSObject, UNUserNotificationCenterDelegate {
 
     nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
         let printer = response.notification.request.content.userInfo["printer"] as? String
+        let action = response.actionIdentifier
+        if action == NotificationActions.pause || action == NotificationActions.stop {
+            await MainActor.run {
+                if let id = printer.flatMap(UUID.init(uuidString:)) { Notifier.shared.onAction?(id, action) }
+            }
+            return
+        }
         await MainActor.run {
             // Clicking a notification shows that printer.
             if let printer { UserDefaults.standard.set(printer, forKey: "selectedInstance") }

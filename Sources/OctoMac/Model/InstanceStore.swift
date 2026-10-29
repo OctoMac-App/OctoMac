@@ -17,6 +17,11 @@ final class InstanceStore {
     private let storageKey = "instances.v1"
 
     init() {
+        // Pause and Stop Print buttons on notifications.
+        Notifier.shared.onAction = { [weak self] id, action in
+            guard let session = self?.sessions[id], session.flags.isJobActive else { return }
+            if action == NotificationActions.pause { session.jobCommand(.pause) } else { session.stopPrint() }
+        }
         if isDemo {
             loadDemo()
             return
