@@ -168,6 +168,10 @@ scripts/build-app.sh debug     # build a debug copy of the app
 
 The OctoPrint API is documented at [docs.octoprint.org](https://docs.octoprint.org/en/main/api/index.html).
 
+## Support OctoMac
+
+OctoMac is free. If it makes your printing easier and you'd like to say thanks, you can [buy me a coffee](https://buymeacoffee.com/rogerthomas).
+
 ## Thanks
 
 OctoMac stands on the shoulders of the wonderful [OctoPrint](https://octoprint.org) project and its community of plugin authors. OctoMac is an independent project and isn't affiliated with OctoPrint.
