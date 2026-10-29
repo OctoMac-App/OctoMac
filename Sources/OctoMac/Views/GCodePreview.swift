@@ -175,8 +175,9 @@ struct GCodeLayerViewer: View {
     @AppStorage("gcodePreviewMode") private var mode: Mode = .threeD
     @State private var layer = 0
     @State private var resetToken = 0
-    /// While printing, the view follows the printer until the user moves the slider.
-    @State private var following = true
+    /// The layer the live nozzle is on. While you're looking at it, the view moves on to the next layer with the
+    /// nozzle; look at any other layer and it stays put until you come back.
+    @State private var nozzleLayer: Int?
     @State private var hidden: Set<GCodeToolpath.Feature> = [.travel]
     @State private var showPreviousLayer = true
     @State private var zoom: CGFloat = 1
@@ -217,7 +218,8 @@ struct GCodeLayerViewer: View {
         // layer view at the first layer.
         .onAppear { layer = liveLayer ?? (mode == .threeD ? path.layers.count - 1 : 0) }
         .onChange(of: mode) { _, new in if new == .threeD && layer == 0 && liveLayer == nil { layer = path.layers.count - 1 } }
-        .onChange(of: liveLayer) { _, new in if following, let new { layer = new } }
+        .onReceive(Timer.publish(every: 0.25, on: .main, in: .common).autoconnect()) { _ in followNozzle() }
+        .onChange(of: liveSegment == nil) { _, ended in if ended { nozzleLayer = nil } }
         .onAppear {
             playhead.load(path)
             playhead.speed = printSpeed
@@ -227,10 +229,20 @@ struct GCodeLayerViewer: View {
         .onChange(of: printSpeed) { _, new in playhead.speed = new }
     }
 
-    private var isFollowing: Bool { liveLayer != nil && following }
+    /// Watching the layer being printed right now.
+    private var following: Bool { nozzleLayer != nil && layer == nozzleLayer }
+
+    /// When the nozzle moves to a new layer, takes you with it if you were watching the one it left.
+    private func followNozzle() {
+        guard liveSegment != nil, let position = playhead.position() else { return }
+        let current = path.layerIndex(ofSegment: min(path.segments.count - 1, Int(position)))
+        guard current != nozzleLayer else { return }
+        // On opening the preview you start on the printer's layer, so that counts as watching.
+        if let current, layer == (nozzleLayer ?? liveLayer) { layer = current }
+        nozzleLayer = current
+    }
 
     private func step(_ delta: Int) -> KeyPress.Result {
-        following = false
         layer = max(0, min(path.layers.count - 1, layer + delta))
         return .handled
     }
@@ -243,11 +255,11 @@ struct GCodeLayerViewer: View {
             Text(name.title).font(Typeface.title).foregroundStyle(Palette.paper).lineLimit(1)
             if !name.tags.isEmpty { TagRow(tags: name.tags) }
             Spacer()
-            if let liveLayer {
+            if let nozzleLayer {
                 if following {
                     LiveBadge(text: "Printing now")
                 } else {
-                    Button { following = true; layer = liveLayer } label: {
+                    Button { layer = nozzleLayer } label: {
                         Label("Follow print", systemImage: "dot.radiowaves.left.and.right")
                     }
                     .buttonStyle(.plate)
@@ -367,7 +379,7 @@ struct GCodeLayerViewer: View {
     }
 
     private var plate3D: some View {
-        GCode3DView(path: path, bed: bed, maxLayer: isFollowing ? path.layers.count - 1 : layer, liveSegment: liveSegment,
+        GCode3DView(path: path, bed: bed, maxLayer: following ? path.layers.count - 1 : layer, liveSegment: liveSegment,
                     printSpeed: printSpeed, hidden: hidden,
                     nozzleWidth: Float(profile?.extruder?.nozzleDiameter ?? 0.4) * 1.12, resetToken: resetToken)
             .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
@@ -449,7 +461,7 @@ struct GCodeLayerViewer: View {
         HStack(spacing: 12) {
             stepButton("chevron.left", help: "Previous layer (←)") { _ = step(-1) }
             // Continuous slider (rounded to whole layers); a stepped one draws a tick per layer.
-            Slider(value: Binding(get: { Double(layer) }, set: { following = false; layer = Int($0.rounded()) }),
+            Slider(value: Binding(get: { Double(layer) }, set: { layer = Int($0.rounded()) }),
                    in: 0...Double(max(1, path.layers.count - 1)))
                 .tint(Palette.accent)
             stepButton("chevron.right", help: "Next layer (→)") { _ = step(1) }
