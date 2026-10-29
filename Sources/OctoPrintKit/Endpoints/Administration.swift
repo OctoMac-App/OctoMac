@@ -61,6 +61,14 @@ extension OctoPrintClient {
         try await get("api/timelapse", query: [URLQueryItem(name: "unrendered", value: includeUnrendered ? "true" : "false")])
     }
 
+    /// Changes how timelapses are made, and keeps it as OctoPrint's default for future prints.
+    @discardableResult
+    public func setTimelapseSettings(_ settings: TimelapseSettings) async throws -> TimelapseList {
+        var body = settings.body
+        body["save"] = .bool(true)
+        return try await post("api/timelapse", body: body)
+    }
+
     public func deleteTimelapse(_ name: String) async throws {
         try await delete("api/timelapse/\(name)")
     }

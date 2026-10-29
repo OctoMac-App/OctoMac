@@ -659,6 +659,18 @@ final class PrinterSession {
         return await attempt { [client] in try await client.timelapseData(file) }
     }
 
+    /// Changes how OctoPrint makes timelapses, from the next print on.
+    func saveTimelapseSettings(_ settings: TimelapseSettings) {
+        guard !isDemoSession else {
+            timelapses?.config = .object(settings.body)
+            return
+        }
+        perform { [client, weak self] in
+            let list = try await client.setTimelapseSettings(settings)
+            self?.timelapses = list
+        }
+    }
+
     func deleteTimelapse(_ file: TimelapseFile) {
         perform { [client, weak self] in
             try await client.deleteTimelapse(file.name)
@@ -1310,6 +1322,10 @@ final class PrinterSession {
             if let date = formatter.date(from: text) { return date }
         }
         return nil
+    }
+
+    func setScrewSettings(_ settings: BedScrews.Settings) {
+        updateJournal { $0.screws = settings }
     }
 
     /// Keeps a newly measured bed for comparing later.

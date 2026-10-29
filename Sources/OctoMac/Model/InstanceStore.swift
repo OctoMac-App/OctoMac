@@ -13,6 +13,17 @@ final class InstanceStore {
     /// Start in it with `--demo`, or switch at any time from the Help menu.
     private(set) var isDemo = CommandLine.arguments.contains("--demo")
 
+    /// A message for the whole app, such as how an import went.
+    struct Notice: Equatable {
+        var text: String
+        var isProblem = false
+        init(_ text: String, isProblem: Bool = false) {
+            self.text = text
+            self.isProblem = isProblem
+        }
+    }
+    var notice: Notice?
+
     private let defaults = UserDefaults.standard
     private let storageKey = "instances.v1"
 

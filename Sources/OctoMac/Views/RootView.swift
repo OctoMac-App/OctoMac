@@ -71,6 +71,19 @@ struct RootView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: store.instances.compactMap { store.sessions[$0.id]?.mmuPromptSince })
+        // How an import or export went, when it was started from the File menu.
+        .overlay(alignment: .bottom) {
+            if let notice = store.notice {
+                ErrorToast(message: notice.text, isProblem: notice.isProblem) { store.notice = nil }
+                    .padding(.bottom, 24)
+                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                    .task(id: notice) {
+                        try? await Task.sleep(for: .seconds(8))
+                        if store.notice == notice { store.notice = nil }
+                    }
+            }
+        }
+        .animation(.snappy, value: store.notice)
         .onChange(of: inbox.pending) { _, files in routeOpenedFiles(files) }
         .onAppear { routeOpenedFiles(inbox.pending) }
         .onAppear {

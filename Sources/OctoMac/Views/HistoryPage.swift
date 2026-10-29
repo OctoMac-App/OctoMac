@@ -138,37 +138,50 @@ private struct TimelapsePanel: View {
     let filament: Color
     @State private var playing: TimelapseFile?
     @State private var deleting: TimelapseFile?
+    @State private var editing = false
 
     var body: some View {
         let list = session.timelapses
         let files = list?.files ?? []
         let unrendered = list?.unrendered ?? []
         StagePanel(title: "Timelapses", detail: list.map { timelapseMode($0) }, fills: true) {
-            if files.isEmpty && unrendered.isEmpty {
-                Text(list?.config?["type"]?.stringValue == "off"
-                     ? "Timelapses are switched off. Turn them on in OctoPrint's Timelapse tab and each print gets a video here."
-                     : "No timelapses yet. They appear here once a print with timelapse turned on finishes.")
-                    .font(Typeface.body).foregroundStyle(Palette.dust)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 6) {
-                        ForEach(files) { file in
-                            TimelapseRow(session: session, file: file, rendered: true) { playing = file } delete: { deleting = file }
-                        }
-                        if !unrendered.isEmpty {
-                            Text("Waiting to be made into videos")
-                                .font(Typeface.caption).foregroundStyle(Palette.faint)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.top, 10)
-                            ForEach(unrendered) { file in
-                                TimelapseRow(session: session, file: file, rendered: false) {} delete: { deleting = file }
+            VStack(alignment: .leading, spacing: 12) {
+                if files.isEmpty && unrendered.isEmpty {
+                    Text(list?.config?["type"]?.stringValue == "off"
+                         ? "Timelapses are switched off. Turn them on in Timelapse settings and each print gets a video here."
+                         : "No timelapses yet. They appear here once a print with timelapse turned on finishes.")
+                        .font(Typeface.body).foregroundStyle(Palette.dust)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 6) {
+                            ForEach(files) { file in
+                                TimelapseRow(session: session, file: file, rendered: true) { playing = file } delete: { deleting = file }
+                            }
+                            if !unrendered.isEmpty {
+                                Text("Waiting to be made into videos")
+                                    .font(Typeface.caption).foregroundStyle(Palette.faint)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.top, 10)
+                                ForEach(unrendered) { file in
+                                    TimelapseRow(session: session, file: file, rendered: false) {} delete: { deleting = file }
+                                }
                             }
                         }
                     }
                 }
+                if list != nil {
+                    HStack {
+                        Spacer()
+                        Button { editing = true } label: { Label("Timelapse settings…", systemImage: "slider.horizontal.3") }
+                            .buttonStyle(.plateQuiet)
+                            .controlSize(.small)
+                            .help("Choose when OctoPrint takes pictures and how the video is made")
+                    }
+                }
             }
         }
+        .sheet(isPresented: $editing) { TimelapseSettingsSheet(session: session) }
         .sheet(item: $playing) { TimelapsePlayer(session: session, file: $0) }
         .sheet(item: $deleting) { file in
             ConfirmSheet(symbol: "trash", title: "Delete this timelapse?", message: "\(file.name) is deleted from OctoPrint. This can't be undone.",

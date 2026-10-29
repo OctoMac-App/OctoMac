@@ -18,6 +18,12 @@ struct OctoMacApp: App {
         .windowBackgroundDragBehavior(.enabled)
         .commands {
             CommandGroup(replacing: .newItem) {}
+            CommandGroup(replacing: .importExport) {
+                Button("Import Printers…") { PrinterTransfer.importList(into: store) }
+                    .disabled(store.isDemo)
+                Button("Export Printers…") { PrinterTransfer.export(store) }
+                    .disabled(store.isDemo || store.instances.isEmpty)
+            }
             CommandGroup(replacing: .appInfo) {
                 AboutCommand()
                 Button("Check for Updates…") { Updates.shared.checkForUpdates() }

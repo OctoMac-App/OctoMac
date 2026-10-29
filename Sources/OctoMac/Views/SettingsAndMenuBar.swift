@@ -93,12 +93,26 @@ private struct PrinterSettings: View {
 
             KeychainToggle()
 
-            HStack {
-                Text("Drag to reorder. Double-click a printer to edit it.")
-                    .font(Typeface.caption).foregroundStyle(Palette.faint)
+            HStack(spacing: 8) {
+                Button { PrinterTransfer.importList(into: store) } label: { Label("Import…", systemImage: "square.and.arrow.down") }
+                    .disabled(store.isDemo)
+                    .help("Add printers from a list exported on another Mac")
+                Button { PrinterTransfer.export(store) } label: { Label("Export…", systemImage: "square.and.arrow.up") }
+                    .disabled(store.isDemo || store.instances.isEmpty)
+                    .help("Save your printer list to move it to another Mac. API keys and sign-ins aren't included.")
                 Spacer()
                 Button { editor = .new } label: { Label("Add a printer", systemImage: "plus") }
                     .buttonStyle(.plate)
+            }
+            .buttonStyle(.plateQuiet)
+
+            if let notice = store.notice {
+                Label(notice.text, systemImage: notice.isProblem ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+                    .font(Typeface.caption).foregroundStyle(notice.isProblem ? Palette.warm : Palette.ready)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text("Drag to reorder. Double-click a printer to edit it.")
+                    .font(Typeface.caption).foregroundStyle(Palette.faint)
             }
         }
         .sheet(item: $editor) { InstanceEditor(target: $0) }

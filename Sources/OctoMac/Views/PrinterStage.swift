@@ -596,11 +596,14 @@ struct UploadRow: View {
 
 struct ErrorToast: View {
     let message: String
+    /// False for news rather than a problem, such as a finished import.
+    var isProblem = true
     let dismiss: () -> Void
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(Palette.hot)
+            Image(systemName: isProblem ? "exclamationmark.triangle.fill" : "checkmark.circle.fill")
+                .foregroundStyle(isProblem ? Palette.hot : Palette.ready)
             Text(message).font(Typeface.body).foregroundStyle(Palette.paper).lineLimit(3)
             Button { dismiss() } label: { Image(systemName: "xmark").foregroundStyle(Palette.dust) }
                 .buttonStyle(.plain)

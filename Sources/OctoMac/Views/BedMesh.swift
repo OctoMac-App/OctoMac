@@ -12,7 +12,7 @@ struct BedMeshPanel: View {
     @State private var earlier: Date?
     @State private var showsChange = true
 
-    enum Style: String, CaseIterable { case map = "Map", surface = "3D" }
+    enum Style: String, CaseIterable { case map = "Map", surface = "3D", screws = "Screws" }
 
     /// Earlier measurements, newest first (the latest is the panel's usual view).
     private var history: [PrinterJournal.Mesh] { Array(session.journal.meshes.dropLast().reversed()) }
@@ -35,7 +35,7 @@ struct BedMeshPanel: View {
         let shown = shown
         StagePanel(title: "Bed level", detail: shown?.detail) {
             VStack(alignment: .leading, spacing: 18) {
-                if !history.isEmpty, session.bedMesh != nil {
+                if !history.isEmpty, session.bedMesh != nil, style != .screws {
                     HStack(spacing: 12) {
                         PlateMenu(selection: $earlier, options: [(nil, String(localized: "Latest measurement"))]
                                   + history.map { ($0.date, $0.date.formatted(date: .abbreviated, time: .shortened)) })
@@ -46,13 +46,15 @@ struct BedMeshPanel: View {
                         Spacer()
                     }
                 }
-                if let shown {
+                if style == .screws, let latest = session.bedMesh {
+                    BedScrewsView(session: session, mesh: latest)
+                } else if let shown {
                     let mesh = shown.mesh
                     HStack(alignment: .top, spacing: 24) {
                         Group {
                             switch style {
                             case .map: BedMeshMap(mesh: mesh)
-                            case .surface: BedMeshSurface(mesh: mesh)
+                            case .surface, .screws: BedMeshSurface(mesh: mesh)
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -98,7 +100,7 @@ struct BedMeshPanel: View {
     private var controls: some View {
         HStack(spacing: 10) {
             if session.bedMesh != nil {
-                CapsulePicker(selection: $style, options: [(.map, "Map"), (.surface, "3D")], compact: true)
+                CapsulePicker(selection: $style, options: [(.map, "Map"), (.surface, "3D"), (.screws, "Screws")], compact: true)
             }
             Spacer()
             if !settings.canMeasure {

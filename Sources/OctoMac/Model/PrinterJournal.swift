@@ -48,6 +48,8 @@ struct PrinterJournal: Codable, Equatable {
     var notes: [String: Note] = [:]
     /// Oldest first.
     var meshes: [Mesh] = []
+    /// The bed's levelling screws, for turning a mesh into screw turns.
+    var screws: BedScrews.Settings?
 
     static let meshLimit = 40
 

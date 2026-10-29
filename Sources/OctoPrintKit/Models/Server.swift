@@ -175,6 +175,61 @@ public struct TimelapseList: Decodable, Sendable {
     public var enabled: Bool?
     public var files: [TimelapseFile]
     public var unrendered: [TimelapseFile]?
+
+    public var settings: TimelapseSettings { TimelapseSettings(config) }
+}
+
+/// How OctoPrint makes timelapses: https://docs.octoprint.org/en/main/api/timelapse.html
+public struct TimelapseSettings: Sendable, Hashable {
+    public enum Mode: String, Sendable, CaseIterable {
+        case off
+        /// A picture every time the print moves up a layer.
+        case zchange
+        /// A picture every few seconds.
+        case timed
+    }
+
+    /// Which prints get made into a video afterwards.
+    public enum Render: String, Sendable, CaseIterable {
+        case always, success, failure, never
+    }
+
+    public var mode: Mode = .off
+    public var fps = 25
+    /// Seconds the last picture is held at the end of the video.
+    public var postRoll = 0
+    /// Seconds between pictures, for timed timelapses.
+    public var interval = 10
+    /// The shortest time between pictures on layer changes, so vase mode or tiny layers don't flood the video.
+    public var minDelay = 5.0
+    /// For prints that hop the nozzle up on retraction: hops of this height aren't taken as a new layer.
+    public var retractionZHop = 0.0
+    public var render = Render.always
+
+    public init() {}
+
+    public init(_ json: JSONValue?) {
+        mode = json?["type"]?.stringValue.flatMap(Mode.init(rawValue:)) ?? .off
+        fps = json?["fps"]?.intValue ?? fps
+        postRoll = json?["postRoll"]?.intValue ?? postRoll
+        interval = json?["interval"]?.intValue ?? interval
+        minDelay = json?["minDelay"]?.doubleValue ?? minDelay
+        retractionZHop = json?["retractionZHop"]?.doubleValue ?? retractionZHop
+        render = json?["renderAfterPrint"]?.stringValue.flatMap(Render.init(rawValue:)) ?? render
+    }
+
+    /// What OctoPrint takes. Setting the type resets everything else, so every value goes every time.
+    public var body: CommandBody {
+        [
+            "type": .string(mode.rawValue),
+            "fps": .number(Double(max(fps, 1))),
+            "postRoll": .number(Double(max(postRoll, 0))),
+            "interval": .number(Double(max(interval, 1))),
+            "minDelay": .number(max(minDelay, 0)),
+            "retractionZHop": .number(max(retractionZHop, 0)),
+            "renderAfterPrint": .string(render.rawValue),
+        ]
+    }
 }
 
 /// `GET /plugin/logging/logs`
