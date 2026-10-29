@@ -43,7 +43,7 @@ No printer handy? Start OctoMac with `--demo`, or choose **Help → Try Demo Mod
 
 Releases are tagged `vMAJOR.MINOR.PATCH` (for example `v0.2.0`), and the version number lives in the `VERSION` file. Maintainers build them with `scripts/release.sh`, which makes a universal app (Apple silicon and Intel) and a disk image. Signing details are kept in a local, untracked `scripts/release.local` file and never committed; copy `scripts/release.local.example` to start one. Updates reach people through Sparkle: `scripts/release.sh --notarize --publish --notes notes.md` signs the disk image with the maintainer's update key (kept in their Keychain, never in the repository), publishes the GitHub release, adds it to `appcast.xml`, and points the Homebrew cask in [OctoMac-App/homebrew-tap](https://github.com/OctoMac-App/homebrew-tap) at the new version.
 
-The website lives in `docs/` (`docs/index.html`) and is published by GitHub Pages from the `master` branch. It's styled to look like the app, so it uses the same colours, fonts and shapes as `Sources/OctoMac/Design`.
+The website's source is in `website/`, and it uses the screenshots in `docs/screenshots`. `scripts/publish-site.sh` copies it to [OctoMac-App/octomac-app.github.io](https://github.com/OctoMac-App/octomac-app.github.io), which GitHub Pages serves at https://octomac-app.github.io/; run it after changing the site or its screenshots. The site is styled to look like the app, so it uses the same colours, fonts and shapes as `Sources/OctoMac/Design`. (`docs/index.html` only forwards the old address, https://octomac-app.github.io/OctoMac/, to the new one.)
 
 ## Code of conduct
 

@@ -23,7 +23,8 @@ Each new build is a new binary to macOS, which can silently block its local netw
 - `Sources/OctoMac/Model`: app state. `PrinterSession` holds everything live for one printer, `InstanceStore` the list of printers. API keys and proxy sign-ins live in `CredentialStore` (an encrypted file by default, the Keychain if the user chooses), never in `UserDefaults`.
 - `Sources/OctoMac/Views`: one file per tab or panel. `Sources/OctoMac/Design` holds the palette, fonts and shared controls; use them rather than system defaults.
 - `Sources/OctoMacWidgets` and `Sources/WidgetData`: the widget extension, which reads a status file the app writes. It's linked with `NSExtensionMain` (see `Package.swift`); without that, macOS's extension loader crashes it.
-- `docs/`: README images and the website (`docs/index.html`, published by GitHub Pages from `master`). The site deliberately looks like the app: reuse the palette and fonts from `Sources/OctoMac/Design/Theme.swift`, and update its feature text and screenshots along with the README.
+- `docs/`: README images and screenshots, plus `docs/index.html`, which only forwards the old website address to the new one.
+- `website/`: the website, served at https://octomac-app.github.io/ from `OctoMac-App/octomac-app.github.io`. Never edit that repository; change `website/` and run `scripts/publish-site.sh`. The site deliberately looks like the app: reuse the palette and fonts from `Sources/OctoMac/Design/Theme.swift`, and update its feature text and screenshots along with the README.
 - `scripts/`: `build-app.sh` and `assemble.sh` package the app; `release.sh` makes notarised releases, updates `appcast.xml` and the Homebrew cask in `OctoMac-App/homebrew-tap` (maintainers only; signing settings come from the untracked `scripts/release.local`, see `release.local.example`).
 
 ## Conventions

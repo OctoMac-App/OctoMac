@@ -7,7 +7,7 @@
 
 OctoMac puts all of your [OctoPrint](https://octoprint.org) printers in one place, with a design built for watching and running prints rather than a web page squeezed into a window. Keep an eye on every printer at a glance, start a print in a couple of clicks, and watch it build up in 3D as it goes.
 
-**[octomac-app.github.io/OctoMac](https://octomac-app.github.io/OctoMac/)**
+**[octomac-app.github.io](https://octomac-app.github.io/)**
 
 ![OctoMac showing a print in progress](docs/screenshots/overview.png)
 

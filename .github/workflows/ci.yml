@@ -44,6 +44,6 @@ jobs:
 
       - name: Check for long dashes
         run: |
-          if grep -rn '—' README.md CONTRIBUTING.md PRIVACY.md CLAUDE.md llms.txt Sources scripts Tests; then
+          if grep -rn '—' README.md CONTRIBUTING.md PRIVACY.md CLAUDE.md llms.txt website Sources scripts Tests; then
             echo "Please use a comma, colon or full stop instead of a long dash." && exit 1
           fi
