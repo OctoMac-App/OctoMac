@@ -171,7 +171,7 @@ final class InstanceStore {
             ("Garage Voron", "http://voron.local/", .locked),
         ]
         for (index, (name, url, scenario)) in scenarios.enumerated() {
-            let instance = Instance(name: name, baseURL: URL(string: url)!, filamentHex: Palette.filaments[index].hexString)
+            let instance = Instance(name: name, baseURL: URL(string: url)!, filamentHex: Palette.filaments[index % Palette.filaments.count].hexString)
             instances.append(instance)
             let session = PrinterSession(instance: instance, apiKey: scenario == .locked ? nil : "demo")
             session.loadDemo(scenario)

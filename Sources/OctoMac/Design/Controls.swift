@@ -116,6 +116,8 @@ enum AppMenuItem {
     case action(String, symbol: String? = nil, checked: Bool = false, destructive: Bool = false, disabled: Bool = false, run: @MainActor () -> Void)
     case heading(String)
     case divider
+    /// An action with a small picture in place of a symbol, such as a language's flag.
+    case picture(String, NSImage?, checked: Bool = false, run: @MainActor () -> Void)
 }
 
 /// A dropdown menu in the app's style: any label, opening the same dark list as the temperature presets, rather than
@@ -170,6 +172,29 @@ struct AppMenu<Label: View>: View {
                     .disabled(disabled)
                     .opacity(disabled ? 0.4 : 1)
                     .onHover { hovered = $0 ? index : (hovered == index ? nil : hovered) }
+                case .picture(let title, let image, let checked, let run):
+                    Button {
+                        open = false
+                        DispatchQueue.main.async(execute: run)
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 11, weight: .bold))
+                                .foregroundStyle(Palette.accent)
+                                .frame(width: 14)
+                                .opacity(checked ? 1 : 0)
+                            if let image { FlagImage(image: image) }
+                            Text(title).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                            Spacer(minLength: 0)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 7)
+                        .background(RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(hovered == index ? Palette.extrusionHi : .clear))
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .onHover { hovered = $0 ? index : (hovered == index ? nil : hovered) }
                 }
             }
         }
@@ -177,5 +202,19 @@ struct AppMenu<Label: View>: View {
         .frame(width: width)
         .background(Palette.extrusion)
         .presentationBackground(Palette.extrusion)
+    }
+}
+
+/// A flag, drawn flat at 20 × 15 points with a hairline edge, as in the website's language picker.
+struct FlagImage: View {
+    let image: NSImage
+
+    var body: some View {
+        Image(nsImage: image)
+            .resizable()
+            .interpolation(.high)
+            .frame(width: 20, height: 15)
+            .clipShape(RoundedRectangle(cornerRadius: 2, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 2, style: .continuous).strokeBorder(.white.opacity(0.14), lineWidth: 0.5))
     }
 }

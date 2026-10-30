@@ -204,6 +204,10 @@ struct PrinterRail: View {
             .buttonStyle(.plateQuiet)
             .padding(.horizontal, 16)
 
+            SidebarLanguageMenu()
+                .frame(maxWidth: .infinity)
+                .padding(.top, 10)
+
             // Centred under the Add a printer button. In demo mode the Exit demo badge sits beside
             // the logo when there's room, or underneath it in the narrow sidebar.
             // `--screenshots` leaves the badge out, for pictures of the app on the website and in the README.
@@ -370,5 +374,56 @@ struct AllPrintersTile: View {
         }
         .buttonStyle(.plain)
         .onHover { hovering = $0 }
+    }
+}
+
+/// The language OctoMac speaks, from the sidebar, like the picker on the website. Switching restarts OctoMac, so it
+/// asks first.
+struct SidebarLanguageMenu: View {
+    @State private var switching: String?
+
+    var body: some View {
+        let current = AppLanguage.current
+        AppMenu(items: items(current: current), width: 220) {
+            HStack(spacing: 7) {
+                if let flag = AppLanguage.flag(of: current) { FlagImage(image: flag) }
+                Text(verbatim: AppLanguage.name(of: current))
+                    .font(Typeface.text(12, .demibold))
+                    .foregroundStyle(Palette.dust)
+                    .lineLimit(1)
+                Image(systemName: "chevron.down").font(.system(size: 8, weight: .bold)).foregroundStyle(Palette.faint)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(Palette.extrusion))
+            .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
+        }
+        .help("Choose OctoMac's language")
+        .sheet(item: Binding(get: { switching.map(LanguageChoice.init) }, set: { switching = $0?.code })) { choice in
+            ConfirmSheet(symbol: "globe", tint: Palette.accent,
+                         title: Text("Switch to \(choice.name)?"),
+                         message: Text("OctoMac restarts to change language. Prints carry on as normal."),
+                         confirmTitle: Text("Restart now"), onConfirm: {
+                             AppLanguage.chosen = choice.code.isEmpty ? nil : choice.code
+                             AppLanguage.restart()
+                         }) { EmptyView() }
+        }
+    }
+
+    private struct LanguageChoice: Identifiable {
+        let code: String
+        var id: String { code }
+        var name: String { code.isEmpty ? String(localized: "Same as macOS") : AppLanguage.name(of: code) }
+    }
+
+    private func items(current: String) -> [AppMenuItem] {
+        let chosen = AppLanguage.chosen
+        return [.action(String(localized: "Same as macOS"), symbol: "desktopcomputer", checked: chosen == nil) {
+            if chosen != nil { switching = "" }
+        }, .divider] + AppLanguage.available.map { language in
+            .picture(language.name, AppLanguage.flag(of: language.code), checked: chosen == language.code) {
+                if chosen != language.code { switching = language.code }
+            }
+        }
     }
 }

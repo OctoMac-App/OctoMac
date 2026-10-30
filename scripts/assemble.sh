@@ -14,6 +14,9 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Framewor
 cp "$BIN" "$APP/Contents/MacOS/OctoMac"
 cp Support/Info.plist "$APP/Contents/Info.plist"
 cp Support/AppIcon.icns Support/OctoMark.png Support/DemoCamera.jpg "$APP/Contents/Resources/"
+# The language picker's flags, shared with the website.
+mkdir -p "$APP/Contents/Resources/Flags"
+cp website/site/flags/*.svg website/site/flags/LICENSE "$APP/Contents/Resources/Flags/"
 $PB -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $BUILD" "$APP/Contents/Info.plist"
 
 # Sparkle (automatic updates). OctoMac isn't sandboxed, so Sparkle's XPC services aren't needed.

@@ -41,6 +41,37 @@ enum AppLanguage {
         available.first { $0.code == code }?.name ?? code
     }
 
+    /// Each language's flag: the same pictures as the website's language picker (`website/site/flags`, from the
+    /// flag-icons project), bundled into the app's Resources/Flags.
+    @MainActor
+    static func flag(of code: String) -> NSImage? {
+        let file: String? = switch code {
+        case "en-GB": "gb"
+        case "en": "us"
+        case "cs": "cz"
+        case "cy": "gb-wls"
+        case "da": "dk"
+        case "de": "de"
+        case "es": "es"
+        case "fr": "fr"
+        case "it": "it"
+        case "nl": "nl"
+        case "nb": "no"
+        case "pl": "pl"
+        case "pt-PT": "pt"
+        case "fi": "fi"
+        case "sv": "se"
+        default: nil
+        }
+        guard let file else { return nil }
+        if let cached = flags[file] { return cached }
+        let image = Bundle.main.url(forResource: file, withExtension: "svg", subdirectory: "Flags").flatMap(NSImage.init(contentsOf:))
+        flags[file] = image
+        return image
+    }
+
+    @MainActor private static var flags: [String: NSImage] = [:]
+
     /// Opens a fresh copy of OctoMac, then quits this one, so a new language takes effect.
     @MainActor
     static func restart() {

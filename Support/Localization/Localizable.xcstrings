@@ -23730,6 +23730,100 @@
         }
       }
     },
+    "Choose OctoMac's language": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zvolit jazyk OctoMacu"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dewis iaith OctoMac"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vælg OctoMacs sprog"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sprache von OctoMac wählen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose OctoMac's language"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose OctoMac's language"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elegir el idioma de OctoMac"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valitse OctoMacin kieli"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir la langue d’OctoMac"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli la lingua di OctoMac"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velg språk for OctoMac"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Taal van OctoMac kiezen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wybierz język OctoMac"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolher o idioma do OctoMac"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Välj språk för OctoMac"
+          }
+        }
+      }
+    },
     "Choose a filament": {
       "localizations": {
         "cs": {
@@ -69373,6 +69467,100 @@
         }
       }
     },
+    "OctoMac restarts to change language. Prints carry on as normal.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac se kvůli změně jazyka restartuje. Tisky pokračují jako obvykle."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoMac yn ailgychwyn i newid iaith. Mae printiau'n parhau fel arfer."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac genstarter for at skifte sprog. Udskrifter fortsætter som normalt."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac startet neu, um die Sprache zu wechseln. Drucke laufen ganz normal weiter."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac restarts to change language. Prints carry on as normal."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac restarts to change language. Prints carry on as normal."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac se reinicia para cambiar de idioma. Las impresiones siguen con normalidad."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac käynnistyy uudelleen kielen vaihtamiseksi. Tulostukset jatkuvat normaalisti."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac redémarre pour changer de langue. Les impressions continuent normalement."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac si riavvia per cambiare lingua. Le stampe proseguono normalmente."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac starter på nytt for å bytte språk. Utskrifter fortsetter som vanlig."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac start opnieuw op om van taal te wisselen. Prints gaan gewoon door."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac uruchomi się ponownie, aby zmienić język. Wydruki trwają normalnie."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoMac reinicia para mudar de idioma. As impressões continuam normalmente."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac startar om för att byta språk. Utskrifter fortsätter som vanligt."
+          }
+        }
+      }
+    },
     "OctoMac signs in with it, so it can't be changed here.": {
       "localizations": {
         "cs": {
@@ -112623,6 +112811,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Slå på"
+          }
+        }
+      }
+    },
+    "Switch to %@?": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přepnout na %@?"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Newid i %@?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skift til %@?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zu %@ wechseln?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch to %@?"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch to %@?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Cambiar a %@?"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vaihdetaanko kieleksi %@?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passer en %@ ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passare a %@?"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bytte til %@?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overschakelen naar %@?"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Przełączyć na %@?"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar para %@?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Byta till %@?"
           }
         }
       }
