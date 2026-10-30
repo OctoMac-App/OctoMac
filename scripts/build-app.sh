@@ -13,6 +13,6 @@ BINS="$(swift build -c "$CONFIG" --show-bin-path)"
 [[ -f scripts/release.local ]] && source scripts/release.local
 export SIGN_IDENTITY="${SIGN_IDENTITY:--}"
 VERSION="$(tr -d '[:space:]' < VERSION)"
-scripts/assemble.sh build/OctoMac.app "$BINS/OctoMac" "$BINS/OctoMacWidgets" \
+NO_UPDATES=1 scripts/assemble.sh build/OctoMac.app "$BINS/OctoMac" "$BINS/OctoMacWidgets" \
   .build/artifacts/sparkle/Sparkle/Sparkle.xcframework/macos-arm64_x86_64/Sparkle.framework "$VERSION" 1
 echo "Built build/OctoMac.app"

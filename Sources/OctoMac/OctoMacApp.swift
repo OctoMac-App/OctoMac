@@ -26,8 +26,11 @@ struct OctoMacApp: App {
             }
             CommandGroup(replacing: .appInfo) {
                 AboutCommand()
-                Button("Check for Updates…") { Updates.shared.checkForUpdates() }
-                    .disabled(!Updates.shared.canCheck)
+                // Only released copies update themselves; local test builds leave the update feed out.
+                if Updates.shared.isAvailable {
+                    Button("Check for Updates…") { Updates.shared.checkForUpdates() }
+                        .disabled(!Updates.shared.canCheck)
+                }
             }
             CommandMenu("Printer") { PrinterCommands(store: store) }
             CommandGroup(replacing: .help) { HelpCommands(store: store) }

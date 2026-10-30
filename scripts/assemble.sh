@@ -3,7 +3,8 @@
 #
 #   scripts/assemble.sh APP APP_BINARY WIDGETS_BINARY SPARKLE_FRAMEWORK VERSION BUILD
 #
-# SIGN_IDENTITY (optional) is a Developer ID; without one the app is signed ad-hoc. Set TIMESTAMP=1 for releases.
+# SIGN_IDENTITY (optional) is a Developer ID; without one the app is signed ad-hoc. Set TIMESTAMP=1 for releases, and
+# NO_UPDATES=1 for local builds, which then don't check for updates.
 set -euo pipefail
 APP="$1"; BIN="$2"; WIDGETS_BIN="$3"; SPARKLE="$4"; VERSION="$5"; BUILD="$6"
 IDENTITY="${SIGN_IDENTITY:--}"
@@ -18,6 +19,9 @@ cp Support/AppIcon.icns Support/OctoMark.png Support/DemoCamera.jpg "$APP/Conten
 mkdir -p "$APP/Contents/Resources/Flags"
 cp website/site/flags/*.svg website/site/flags/LICENSE "$APP/Contents/Resources/Flags/"
 $PB -c "Set :CFBundleShortVersionString $VERSION" -c "Set :CFBundleVersion $BUILD" "$APP/Contents/Info.plist"
+# Local builds leave out the update feed, so they never try to update themselves (they share the released app's ID
+# and settings, and an update meant for /Applications would fail on them).
+if [[ "${NO_UPDATES:-}" == 1 ]]; then $PB -c "Delete :SUFeedURL" "$APP/Contents/Info.plist"; fi
 
 # Sparkle (automatic updates). OctoMac isn't sandboxed, so Sparkle's XPC services aren't needed.
 ditto "$SPARKLE" "$APP/Contents/Frameworks/Sparkle.framework"
