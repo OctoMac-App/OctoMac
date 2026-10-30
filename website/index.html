@@ -222,7 +222,7 @@
 
   /* ---------- Smaller windows ---------- */
 
-  .tabs { display: none; }
+  .mobilebar { display: none; }
 
   @media (max-width: 1180px) {
     .hero { grid-template-columns: 1fr; }
@@ -232,16 +232,33 @@
     .rail { display: none; }
     .stage { margin-left: 0; padding: 22px 16px 40px; }
     .header h1 { font-size: 32px; }
-    /* The app's tab bar stands in for the rail. */
-    .tabs {
-      display: flex; gap: 2px; padding: 4px; border-radius: 999px; background: var(--extrusion);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
-      overflow-x: auto; scrollbar-width: none; margin-bottom: 18px; position: sticky; top: 10px; z-index: 5;
+    /* A bar with the logo, Download and a menu stands in for the rail. */
+    .mobilebar {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      position: sticky; top: 0; z-index: 10; margin: -22px -16px 20px; padding: 10px 16px;
+      background: color-mix(in srgb, var(--graphite) 88%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--edge);
     }
-    .tabs::-webkit-scrollbar { display: none; }
-    .tabs a { flex: none; padding: 7px 15px; border-radius: 999px; color: var(--dust); font-weight: 600; font-size: 14px; }
-    .tabs a.selected { background: var(--accent); color: var(--graphite); }
-    .tabs a:hover { text-decoration: none; }
+    /* The bar has Download, and the menu has GitHub, so the header keeps just the language picker. */
+    .header-actions > .plate { display: none; }
+    .mobilebar .brand { padding: 0; font-size: 19px; gap: 7px; }
+    .mobilebar .brand img { width: 28px; height: 28px; }
+    .mobilebar-actions { display: flex; align-items: center; gap: 8px; }
+    .sections { position: relative; }
+    .sections summary {
+      list-style: none; display: grid; place-items: center; width: 40px; height: 34px; border-radius: 999px; cursor: pointer;
+      background: var(--extrusion); box-shadow: inset 0 0 0 1px var(--edge); color: var(--paper);
+    }
+    .sections summary::-webkit-details-marker { display: none; }
+    .sections summary svg { width: 16px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+    .sections summary .close, .sections[open] summary .open { display: none; }
+    .sections[open] summary .close { display: inline; }
+    .sections-menu {
+      position: absolute; right: 0; top: calc(100% + 10px); width: min(330px, calc(100vw - 32px)); padding: 8px;
+      display: grid; gap: 2px; border-radius: 18px; background: var(--rail);
+      box-shadow: inset 0 0 0 1px var(--edge), 0 22px 50px rgba(0, 0, 0, 0.55);
+    }
+    .sections-menu .plate { margin-top: 6px; justify-content: center; }
     .features, .pair { grid-template-columns: 1fr; }
     .feature.wide { grid-column: auto; grid-template-columns: 1fr; }
     .now { grid-template-columns: 1fr; }
@@ -280,15 +297,28 @@
 
 <main class="stage" id="top">
 
-  <nav class="tabs" aria-label="Sections">
-    <a href="#top" class="selected">Overview</a>
-    <a href="#printers" class="tab">Printers</a>
-    <a href="#watch" class="tab">Watch</a>
-    <a href="#files" class="tab">Files</a>
-    <a href="#machine" class="tab">Machine</a>
-    <a href="#plugins" class="tab">Plugins</a>
-    <a href="#install" class="tab">Get it</a>
-  </nav>
+  <!-- On narrow screens the rail becomes this bar: the logo, Download, and a menu of the same sections. -->
+  <div class="mobilebar">
+    <a class="brand" href="#top" aria-label="OctoMac" translate="no"><img src="site/mark.png" alt=""><span><span class="octo">Octo</span>Mac</span></a>
+    <div class="mobilebar-actions">
+      <a class="plate small" href="https://github.com/OctoMac-App/OctoMac/releases/latest">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v9M4 7l4 4 4-4M3 14h10"/></svg>
+        Download
+      </a>
+      <details class="sections">
+        <summary aria-label="Sections"><svg viewBox="0 0 18 14" aria-hidden="true"><path class="open" d="M1 1h16M1 7h16M1 13h16"/><path class="close" d="M3 1l12 12M15 1L3 13"/></svg></summary>
+        <nav class="sections-menu" aria-label="Sections">
+        <a class="tile" href="#printers" style="--c: var(--violet)"><span class="bar"></span><span class="name">Every printer</span><span class="lamp"></span><span class="status">Side by side, live</span></a>
+        <a class="tile" href="#watch" style="--c: var(--teal)"><span class="bar"></span><span class="name">Watch it print</span><span class="lamp"></span><span class="status">Camera, 3D, layer alerts</span></a>
+        <a class="tile" href="#files" style="--c: var(--orange)"><span class="bar"></span><span class="name">Files and history</span><span class="lamp"></span><span class="status">Print, send, look back</span></a>
+        <a class="tile" href="#machine" style="--c: var(--pink)"><span class="bar"></span><span class="name">Your machine</span><span class="lamp"></span><span class="status">Plugins, backups, logs</span></a>
+        <a class="tile" href="#plugins" style="--c: var(--cold)"><span class="bar"></span><span class="name">Plugins</span><span class="lamp"></span><span class="status">Works with your favourites</span></a>
+        <a class="tile" href="#install" style="--c: var(--accent)"><span class="bar"></span><span class="name">Get OctoMac</span><span class="lamp"></span><span class="status">Free download</span></a>
+          <a class="plate quiet" href="https://github.com/OctoMac-App/OctoMac">View on GitHub</a>
+        </nav>
+      </details>
+    </div>
+  </div>
 
   <header class="header">
     <div>
@@ -527,7 +557,14 @@
   }
 
   // Highlight the section on screen in the rail and the tab bar.
-  const links = [...document.querySelectorAll(".rail .tile, .tabs a")];
+  const links = [...document.querySelectorAll(".rail .tile, .sections-menu .tile")];
+
+  // The narrow-screen menu closes when a section is chosen, or on a click elsewhere.
+  const sectionsMenu = document.querySelector(".sections");
+  if (sectionsMenu) {
+    sectionsMenu.querySelectorAll("a").forEach(link => link.addEventListener("click", () => { sectionsMenu.open = false; }));
+    document.addEventListener("click", event => { if (!sectionsMenu.contains(event.target)) sectionsMenu.open = false; });
+  }
   const sections = ["printers", "watch", "files", "machine", "plugins", "install"].map(id => document.getElementById(id));
   function select() {
     let current = "top";
