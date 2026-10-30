@@ -42,6 +42,13 @@ struct PrinterJournal: Codable, Equatable {
         }
     }
 
+    /// A command kept as a button on the Console tab. Several lines are sent one after another.
+    struct SavedCommand: Codable, Equatable, Identifiable {
+        var id = UUID()
+        var name: String
+        var gcode: String
+    }
+
     var scheduled: Scheduled?
     var queue: [Queued] = []
     /// Keyed by the file's path on the printer.
@@ -50,8 +57,22 @@ struct PrinterJournal: Codable, Equatable {
     var meshes: [Mesh] = []
     /// The bed's levelling screws, for turning a mesh into screw turns.
     var screws: BedScrews.Settings?
+    var commands: [SavedCommand] = []
 
     static let meshLimit = 40
+
+    init() {}
+
+    /// Anything missing from an older file starts empty, rather than the whole file failing to read.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        scheduled = try container.decodeIfPresent(Scheduled.self, forKey: .scheduled)
+        queue = try container.decodeIfPresent([Queued].self, forKey: .queue) ?? []
+        notes = try container.decodeIfPresent([String: Note].self, forKey: .notes) ?? [:]
+        meshes = try container.decodeIfPresent([Mesh].self, forKey: .meshes) ?? []
+        screws = try container.decodeIfPresent(BedScrews.Settings.self, forKey: .screws)
+        commands = try container.decodeIfPresent([SavedCommand].self, forKey: .commands) ?? []
+    }
 
     // MARK: Saving
 

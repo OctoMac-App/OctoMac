@@ -4,7 +4,7 @@ import UserNotifications
 
 /// The kinds of thing OctoMac can tell you about, each with its own switch in Settings.
 enum NotificationKind: String, CaseIterable, Identifiable {
-    case printDone, printFailed, firstLayer, layerReached, scheduled, needsAttention, printerProblem, piWarning
+    case printDone, printFailed, firstLayer, layerReached, scheduled, needsAttention, printerMessages, printerProblem, piWarning
 
     var id: String { rawValue }
 
@@ -16,6 +16,7 @@ enum NotificationKind: String, CaseIterable, Identifiable {
         case .layerReached: String(localized: "Layer alerts")
         case .scheduled: String(localized: "Scheduled and queued prints")
         case .needsAttention: String(localized: "Printer needs you")
+        case .printerMessages: String(localized: "Messages from the printer")
         case .printerProblem: String(localized: "Printer stopped answering")
         case .piWarning: String(localized: "Raspberry Pi warnings")
         }
@@ -28,7 +29,8 @@ enum NotificationKind: String, CaseIterable, Identifiable {
         case .firstLayer: String(localized: "A camera picture once the first layer is down, so you can catch a bad start early.")
         case .layerReached: String(localized: "When a print reaches a layer you chose to be told about or pause at.")
         case .scheduled: String(localized: "When a scheduled print starts, and when the next print in the queue is ready to go.")
-        case .needsAttention: String(localized: "Filament changes, a paused print, or a filament choice for the Prusa MMU.")
+        case .needsAttention: String(localized: "Filament changes, a paused print, a question from the printer, or a filament choice for the Prusa MMU.")
+        case .printerMessages: String(localized: "Status messages the printer's firmware sends, such as “Heating done”. Some printers send a lot, so this starts off.")
         case .printerProblem: String(localized: "When the printer reports an error or drops its connection mid-print.")
         case .piWarning: String(localized: "Low power or overheating on the Raspberry Pi, which can spoil prints.")
         }
@@ -40,7 +42,7 @@ enum NotificationKind: String, CaseIterable, Identifiable {
     var showsCamera: Bool {
         switch self {
         case .printDone, .printFailed, .firstLayer, .layerReached, .scheduled, .needsAttention: true
-        case .printerProblem, .piWarning: false
+        case .printerMessages, .printerProblem, .piWarning: false
         }
     }
 
@@ -49,8 +51,11 @@ enum NotificationKind: String, CaseIterable, Identifiable {
     static var includesCamera: Bool { UserDefaults.standard.object(forKey: cameraKey) as? Bool ?? true }
 
     var isEnabled: Bool {
-        UserDefaults.standard.object(forKey: defaultsKey) as? Bool ?? true
+        UserDefaults.standard.object(forKey: defaultsKey) as? Bool ?? isOnUntilChanged
     }
+
+    /// Most kinds are on until you switch them off; chatty ones start off.
+    var isOnUntilChanged: Bool { self != .printerMessages }
 }
 
 /// Buttons a notification can offer.

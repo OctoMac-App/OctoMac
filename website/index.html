@@ -332,7 +332,8 @@
     </article>
     <article class="panel feature">
       <div class="panel-head"><h3>Full control</h3><span class="detail">Move, heat, console</span></div>
-      <p>Heat up with your saved presets, move the print head, extrude, adjust fan, speed and flow, and send G-code from a console that hides the chatter you don't need, with a cheat sheet beside it.</p>
+      <p>Heat up with your saved presets, move the print head, extrude, adjust fan, speed and flow, and send G-code from a console that hides the chatter you don't need, with a cheat sheet beside it and your own one-click commands.</p>
+      <p>While printing, nudge the nozzle up or down a hundredth of a millimetre at a time to get the first layer just right.</p>
       <div class="shot"><img src="screenshots/console.png" width="2000" height="1340" loading="lazy" alt="The console with message filters and the G-code cheat sheet"></div>
     </article>
   </div>
@@ -352,8 +353,8 @@
       <div class="shot"><img src="screenshots/layer-alerts.png" width="2000" height="1340" loading="lazy" alt="The layer alerts sheet with a pause at layer 100 and notifications at later layers"></div>
     </article>
     <article class="panel feature">
-      <div class="panel-head"><h3>When the printer needs you</h3><span class="detail">MMU, failed parts, stops</span></div>
-      <p>With a Prusa MMU, OctoMac asks which filament to load when the printer does. If one part fails, stop just that part while the rest carry on. Stopping the whole print always asks first, and there's a separate emergency stop for when something goes wrong.</p>
+      <div class="panel-head"><h3>When the printer needs you</h3><span class="detail">Questions, MMU, failed parts</span></div>
+      <p>When the printer asks a question, such as "Filament runout. Continue?", answer it from your Mac. With a Prusa MMU, OctoMac asks which filament to load when the printer does. If one part fails, stop just that part while the rest carry on. Stopping the whole print always asks first, and there's a separate emergency stop for when something goes wrong.</p>
       <div class="shot"><img src="screenshots/mmu-filament.png" width="2000" height="1340" loading="lazy" alt="OctoMac asking which filament to load for a Prusa MMU print"></div>
     </article>
     <article class="panel feature wide">
@@ -370,7 +371,7 @@
   <div class="features">
     <article class="panel feature">
       <div class="panel-head"><h3>Your files, as thumbnails</h3><span class="detail">Drag and drop</span></div>
-      <p>Browse files with their slicer thumbnails, check the print time and filament, then press Print. Drag G-code in to upload it, or open it from Finder. Send a file to another printer, or to several at once.</p>
+      <p>Browse files with their slicer thumbnails, check the print time and filament, then press Print. Drag G-code in to upload it, or open it from Finder. Send a file to another printer, or to several at once, or upload straight to the printer's SD card.</p>
       <p><strong>Plan it:</strong> schedule a print to be done by 8am, or queue up the next few. When one finishes, OctoMac asks you to clear the bed and starts the next.</p>
       <p>Print times come from Print Time Genius when it's installed, so they're usually close.</p>
     </article>
@@ -393,14 +394,14 @@
       <div>
         <div class="panel-head"><h3>The Machine tab</h3></div>
         <p>Three tidy parts: the printer, OctoPrint and the Raspberry Pi, each with a dot when something needs you. Your printer's firmware, the Raspberry Pi's power and temperature health, and a 3D bed level map you can measure from OctoMac. Compare today's bed with an earlier measurement to see exactly what's moved, or let the screw guide say which way and how far to turn each levelling screw, on four-corner beds and nine-screw Prusa beds alike.</p>
-        <p>Install OctoPrint and plugin updates with one click, add plugins from OctoPrint's official list, switch them on or off, back up OctoPrint to your Mac, and read or save OctoPrint's logs. If a printer won't connect, OctoMac tells you why in plain words.</p>
+        <p>Install OctoPrint and plugin updates with one click, add plugins, switch them on or off, back up and restore OctoPrint, and read, save or delete its logs. Change the printer profile, the camera and your temperature presets without opening OctoPrint's web page. OctoMac passes on OctoPrint's warnings about unsafe firmware or a nearly full SD card, and if a printer won't connect, it tells you why in plain words.</p>
       </div>
       <div class="shot"><img src="screenshots/machine.png" width="2000" height="1340" loading="lazy" alt="The Machine tab's Printer section, with the printer, its serial connection and the bed level map"></div>
     </article>
     <article class="panel feature wide">
       <div>
         <div class="panel-head"><h3>Add plugins</h3></div>
-        <p>Browse OctoPrint's official plugin list from OctoMac, most popular first. Pick one, watch it install, and OctoMac walks you through the restart.</p>
+        <p>Browse OctoPrint's official plugin list from OctoMac, most popular first, or install one from a web address or a file. Pick one, watch it install, and OctoMac walks you through the restart.</p>
         <p>Plugins that won't work with your OctoPrint, or that nobody looks after any more, stay out of the way.</p>
       </div>
       <div class="shot"><img src="screenshots/add-plugins.png" width="2000" height="1340" loading="lazy" alt="The Add plugins sheet listing OctoPrint's official plugins, with Install buttons"></div>
@@ -409,7 +410,7 @@
       <div>
         <div class="panel-head"><h3>Backups</h3></div>
         <p>Back up OctoPrint before an update or a new plugin, with or without your G-code files and timelapses. Save a copy to your Mac, so a failed SD card is a quick fix rather than a long evening.</p>
-        <p>Old backups can be deleted from the same list. Restoring is done on OctoPrint's own page, which asks for your password first.</p>
+        <p>Restore one from the list, or from a copy on your Mac, and watch OctoPrint's progress as it goes. Old backups can be deleted from the same list.</p>
       </div>
       <div class="shot"><img src="screenshots/backups.png" width="2000" height="1340" loading="lazy" alt="The Machine tab's OctoPrint section, with software updates, plugins and backups"></div>
     </article>

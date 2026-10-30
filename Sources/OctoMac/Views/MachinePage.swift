@@ -11,6 +11,13 @@ struct MachinePage: View {
     @State private var profile = ""
     @State private var saveConnection = false
     @State private var pendingCommand: SystemCommand?
+    /// The printer profile being changed: an existing one, or a new one (nil inside).
+    @State private var editingProfile: ProfileEdit?
+
+    private struct ProfileEdit: Identifiable {
+        var profile: PrinterProfile?
+        var id: String { profile?.id ?? "new" }
+    }
     @AppStorage("machine.section") private var section = Section.printer
 
     /// The tab is split three ways, so each part is short enough to take in at a glance.
@@ -40,9 +47,15 @@ struct MachinePage: View {
         if session.link == .online && !session.isPrinterConnected && !session.isPrinterConnecting {
             badges[.printer] = session.printerFault ? Palette.hot : Palette.warm
         }
+        if session.firmwareWarnings.contains(where: \.isCritical) {
+            badges[.printer] = Palette.hot
+        } else if !session.firmwareWarnings.isEmpty, badges[.printer] == nil {
+            badges[.printer] = Palette.warm
+        }
         if session.pluginSafeMode {
             badges[.octoPrint] = Palette.hot
-        } else if session.pluginsNeedRestart || session.restartingSince != nil || (session.updates ?? []).contains(where: \.updateAvailable) {
+        } else if session.pluginsNeedRestart || session.restartingSince != nil || (session.updates ?? []).contains(where: \.updateAvailable)
+                    || !session.serverHealth.isEmpty {
             badges[.octoPrint] = Palette.warm
         }
         if let throttle = session.throttle, throttle.currentIssue || throttle.pastIssue {
@@ -59,17 +72,21 @@ struct MachinePage: View {
                         .frame(maxWidth: .infinity)
                     switch section {
                     case .printer:
+                        if !session.firmwareWarnings.isEmpty { FirmwareWarningsPanel(warnings: session.firmwareWarnings) }
                         columns(wide: geo.size.width >= 940) {
                             printerPanel
                             if session.bedLevel != nil { connectionPanel }
+                            if session.bedLevel != nil, !session.printerNotes.isEmpty { PrinterMessagesPanel(session: session) }
                         } right: {
                             // Without Bed Visualizer, the connection fills the other column instead.
                             if let bed = session.bedLevel { BedMeshPanel(session: session, settings: bed) } else { connectionPanel }
+                            if session.bedLevel == nil, !session.printerNotes.isEmpty { PrinterMessagesPanel(session: session) }
                         }
                     case .octoPrint:
                         columns(wide: geo.size.width >= 940) {
                             serverPanel
                             if let updates = session.updates { UpdatesPanel(session: session, updates: updates) }
+                            OctoPrintSettingsPanel(session: session)
                             if let backups = session.backups { BackupsPanel(session: session, state: backups) }
                         } right: {
                             if let plugins = session.plugins { PluginsPanel(session: session, plugins: plugins) }
@@ -119,6 +136,10 @@ struct MachinePage: View {
             ConfirmSheet(symbol: symbol(for: command.action), tint: Palette.warm, title: Text(verbatim: "\(name)?"),
                          message: Text(verbatim: message), confirmTitle: Text(verbatim: name), onConfirm: { session.run(command) })
         }
+        .sheet(item: $editingProfile) { edit in PrinterProfileSheet(session: session, profile: edit.profile) }
+        .sheet(isPresented: Binding(get: { session.restore != nil }, set: { if !$0 { session.dismissRestore() } })) {
+            RestoreProgressSheet(session: session)
+        }
     }
 
     /// Two columns on a wide window, one after the other on a narrow one.
@@ -159,11 +180,35 @@ struct MachinePage: View {
                                 .help(firmware)
                         }
                     }
+                    HStack(spacing: 8) {
+                        Button("Edit profile…") { editingProfile = ProfileEdit(profile: profile) }
+                            .buttonStyle(.plateQuiet)
+                        AppMenu(items: profileItems(besides: profile)) {
+                            HStack(spacing: 6) {
+                                Text("Other profiles").font(Typeface.text(13, .demibold)).foregroundStyle(Palette.paper)
+                                Image(systemName: "chevron.down").font(.system(size: 9, weight: .bold)).foregroundStyle(Palette.faint)
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .machined(radius: 14)
+                        }
+                    }
+                    .controlSize(.small)
+                    .disabled(session.flags.isJobActive)
+                    .help(session.flags.isJobActive ? "Wait until the print finishes" : "")
                 }
             } else {
                 Text("Printer details appear once OctoPrint reports a profile.").font(Typeface.body).foregroundStyle(Palette.dust)
             }
         }
+    }
+
+    /// The other printer profiles to change, and a new one.
+    private func profileItems(besides current: PrinterProfile) -> [AppMenuItem] {
+        let others = session.profiles.filter { $0.id != current.id }
+            .map { other in AppMenuItem.action(other.name, symbol: "cube") { editingProfile = ProfileEdit(profile: other) } }
+        return others + (others.isEmpty ? [] : [.divider])
+            + [.action(String(localized: "New profile…"), symbol: "plus") { editingProfile = ProfileEdit(profile: nil) }]
     }
 
     private var connectionPanel: some View {
@@ -178,6 +223,16 @@ struct MachinePage: View {
                     }
                     pickerRow("Profile") {
                         PlateMenu(selection: $profile, options: [("", String(localized: "Default"))] + options.printerProfiles.map { ($0.id, $0.name) })
+                    }
+                    HStack {
+                        Toggle("Connect when OctoPrint starts", isOn: Binding(get: { session.autoconnect },
+                                                                              set: { session.saveSettings(["serial": ["autoconnect": .bool($0)]]) }))
+                            .toggleStyle(.switch)
+                            .tint(Palette.accent)
+                            .font(Typeface.body)
+                            .foregroundStyle(Palette.dust)
+                            .help("OctoPrint connects to the printer by itself after the Raspberry Pi starts, with the settings it last used")
+                        Spacer()
                     }
                     HStack {
                         Toggle("Remember these settings", isOn: $saveConnection)
@@ -218,6 +273,7 @@ struct MachinePage: View {
                     .font(Typeface.number(13))
                     .foregroundStyle(Palette.faint)
                     .textSelection(.enabled)
+                if !session.serverHealth.isEmpty { ServerHealthList(session: session) }
             }
         }
     }

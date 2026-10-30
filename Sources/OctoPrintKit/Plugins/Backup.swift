@@ -3,8 +3,9 @@ import Foundation
 /// OctoPrint's bundled Backup & Restore plugin: https://docs.octoprint.org/en/main/bundledplugins/backup.html
 ///
 /// A backup is a zip of OctoPrint's settings, plugins and data, kept on the Raspberry Pi. Making one runs in the
-/// background, and the plugin pushes `backup_started`, then `backup_done` or `backup_error`. Restoring isn't offered
-/// here: OctoPrint asks for the password again and restarts, which is best done on its own page.
+/// background, and the plugin pushes `backup_started`, then `backup_done` or `backup_error`. Restoring replaces
+/// OctoPrint's settings and plugins with the backup's, pushing `restore_started`, log lines, then `restore_done` or
+/// `restore_failed`; OctoPrint restarts afterwards.
 public enum Backup {
     public static let pluginID = "backup"
 
@@ -39,10 +40,13 @@ public enum Backup {
         /// Newest first.
         public var backups: [File]
         public var inProgress: Bool
+        /// False on systems where OctoPrint can't restore (Windows).
+        public var canRestore: Bool
 
-        public init(backups: [File], inProgress: Bool) {
+        public init(backups: [File], inProgress: Bool, canRestore: Bool = true) {
             self.backups = backups
             self.inProgress = inProgress
+            self.canRestore = canRestore
         }
     }
 
@@ -50,6 +54,10 @@ public enum Backup {
         case started(String)
         case done(String)
         case failed(name: String, error: String)
+        case restoreStarted
+        case restoreLog(String)
+        case restoreDone
+        case restoreFailed
 
         public init?(_ data: JSONValue) {
             let name = data["name"]?.stringValue ?? ""
@@ -57,6 +65,10 @@ public enum Backup {
             case "backup_started": self = .started(name)
             case "backup_done": self = .done(name)
             case "backup_error": self = .failed(name: name, error: data["error"]?.stringValue ?? "")
+            case "restore_started": self = .restoreStarted
+            case "logline": self = .restoreLog(data["line"]?.stringValue ?? "")
+            case "restore_done": self = .restoreDone
+            case "restore_failed": self = .restoreFailed
             default: return nil
             }
         }
@@ -65,7 +77,8 @@ public enum Backup {
     static func state(_ json: JSONValue) -> State {
         let backups = (json["backups"]?.arrayValue ?? []).compactMap(File.init)
             .sorted { ($0.date ?? .distantPast) > ($1.date ?? .distantPast) }
-        return State(backups: backups, inProgress: json["backup_in_progress"]?.boolValue ?? false)
+        return State(backups: backups, inProgress: json["backup_in_progress"]?.boolValue ?? false,
+                     canRestore: json["restore_supported"]?.boolValue ?? true)
     }
 }
 
@@ -83,6 +96,20 @@ extension OctoPrintClient {
 
     public func deleteBackup(_ file: Backup.File) async throws {
         try await delete("plugin/\(Backup.pluginID)/backup/\(file.name)")
+    }
+
+    /// Restores a backup already on the Pi. It runs in the background; watch for `Backup.Message`.
+    public func restoreBackup(_ file: Backup.File) async throws {
+        try await post("plugin/\(Backup.pluginID)/restore", body: ["path": .string(file.name)] as CommandBody)
+    }
+
+    /// Uploads a backup from this Mac and restores it.
+    public func restoreBackup(fileURL: URL, progress: @escaping @Sendable (Double) -> Void) async throws {
+        var form = MultipartForm()
+        form.addFile(name: "file", filename: fileURL.lastPathComponent, contentType: "application/zip", data: try Data(contentsOf: fileURL))
+        var request = makeRequest(.post, "plugin/\(Backup.pluginID)/restore")
+        request.setValue(form.contentType, forHTTPHeaderField: "Content-Type")
+        _ = try await upload(request, body: form.encoded(), progress: progress)
     }
 
     /// Downloads a backup straight to a file, since they can be large. Reports progress from 0 to 1.

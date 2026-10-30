@@ -71,6 +71,15 @@ struct RootView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: store.instances.compactMap { store.sessions[$0.id]?.mmuPromptSince })
+        // A question from a printer's firmware ("Filament runout. Continue?"), likewise whichever printer is on screen.
+        .overlay {
+            if let session = store.instances.compactMap({ store.sessions[$0.id] }).first(where: { $0.printerPrompt != nil }),
+               let prompt = session.printerPrompt {
+                PrinterPromptOverlay(session: session, prompt: prompt)
+                    .id(prompt)
+            }
+        }
+        .animation(.easeOut(duration: 0.2), value: store.instances.compactMap { store.sessions[$0.id]?.printerPrompt })
         // How an import or export went, when it was started from the File menu.
         .overlay(alignment: .bottom) {
             if let notice = store.notice {

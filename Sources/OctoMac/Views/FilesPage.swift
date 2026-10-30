@@ -13,6 +13,8 @@ struct FilesPage: View {
     @State private var folder: [String] = []
     @State private var search = ""
     @State private var importing = false
+    /// The next upload goes to the printer's SD card rather than the Raspberry Pi.
+    @State private var importingToSD = false
     @State private var dropTargeted = false
     @State private var creatingFolder = false
     @State private var pendingDelete: FileEntry?
@@ -54,7 +56,7 @@ struct FilesPage: View {
 
                 Button { creatingFolder = true } label: { Label("New folder", systemImage: "folder.badge.plus") }
                     .buttonStyle(.plateQuiet)
-                Button { importing = true } label: { Label("Upload", systemImage: "arrow.up") }
+                Button { importingToSD = false; importing = true } label: { Label("Upload", systemImage: "arrow.up") }
                     .buttonStyle(.plate)
             }
 
@@ -83,6 +85,7 @@ struct FilesPage: View {
                                     send: { sending = file },
                                     queue: { session.addToQueue(file) },
                                     queued: session.journal.queue.contains { $0.path == file.path },
+                                    duplicate: file.origin == .local && !file.isFolder ? { session.duplicate(file) } : nil,
                                     delete: { pendingDelete = file })
                                 // Drag a file or folder onto a folder (or a folder name in the path above) to move it there.
                                 .draggable(FileDrag.payload(for: file, instance: session.instance.id)) {
@@ -99,7 +102,17 @@ struct FilesPage: View {
                 // Right-click on empty space (rows have their own menus).
                 .contextMenu {
                     Button("New folder…") { creatingFolder = true }
-                    Button("Upload files…") { importing = true }
+                    Button("Upload files…") { importingToSD = false; importing = true }
+                    if session.flags.sdReady {
+                        Divider()
+                        Button("Upload to the SD card…") {
+                            importingToSD = true
+                            importing = true
+                        }
+                        .disabled(session.flags.isJobActive)
+                        Button("Refresh the SD card") { session.refreshSDCard() }
+                            .disabled(session.flags.isJobActive)
+                    }
                     if !folder.isEmpty {
                         Divider()
                         Button("Back to \(folder.count > 1 ? folder[folder.count - 2] : String(localized: "All files"))") { goUp() }
@@ -145,7 +158,8 @@ struct FilesPage: View {
             } isTargeted: { dropTargeted = $0 }
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: Self.uploadTypes, allowsMultipleSelection: true) { result in
-            if case .success(let urls) = result { session.upload(urls, folder: folderPath) }
+            if case .success(let urls) = result { session.upload(urls, folder: folderPath, toSDCard: importingToSD) }
+            importingToSD = false
         }
         .sheet(isPresented: $creatingFolder) {
             NameSheet(title: "New folder", placeholder: "Folder name", confirmTitle: "Create folder") { name in
@@ -292,6 +306,8 @@ struct FileRow: View {
     let send: () -> Void
     let queue: () -> Void
     var queued = false
+    /// Nil where a copy can't be made (folders, and files on the SD card).
+    var duplicate: (() -> Void)?
     let delete: () -> Void
     @State private var hovering = false
     @State private var previewing = false
@@ -384,6 +400,7 @@ struct FileRow: View {
                     Button("Add to Queue", action: queue)
                     Button("Send to Another Printer…", action: send)
                 }
+                if let duplicate { Button("Duplicate", action: duplicate) }
             }
             Divider()
             Button("Delete…", role: .destructive, action: delete)

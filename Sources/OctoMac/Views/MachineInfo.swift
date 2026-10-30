@@ -63,6 +63,7 @@ struct UpdatesPanel: View {
     @State private var checking = false
     @State private var showAll = false
     @State private var confirmingUpdate = false
+    @State private var showingLog = true
 
     private var pending: [SoftwareComponent] { updates.filter(\.updateAvailable) }
 
@@ -83,6 +84,19 @@ struct UpdatesPanel: View {
                     }
                     Text("Updating restarts OctoPrint, so wait until nothing is printing.")
                         .font(Typeface.caption).foregroundStyle(Palette.faint)
+                }
+
+                if session.updatingSince != nil || !session.updateLog.isEmpty {
+                    DisclosureGroup(isExpanded: $showingLog) {
+                        LiveLog(lines: session.updateLog).frame(height: 180).padding(.top, 6)
+                    } label: {
+                        HStack(spacing: 8) {
+                            if session.updatingSince != nil { ProgressView().controlSize(.small).tint(Palette.accent) }
+                            Text(session.updatingSince != nil ? "Updating. OctoPrint restarts when it's done." : "The last update's log")
+                                .font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                        }
+                    }
+                    .tint(Palette.dust)
                 }
 
                 if showAll {
@@ -137,6 +151,7 @@ struct UpdatesPanel: View {
 struct LogsPanel: View {
     let session: PrinterSession
     @State private var viewing: LogFile?
+    @State private var deleting: LogFile?
 
     var body: some View {
         StagePanel(title: "Logs", detail: session.logs.isEmpty ? nil : "\(session.logs.count) files") {
@@ -146,7 +161,7 @@ struct LogsPanel: View {
                 ScrollView {
                     VStack(spacing: 4) {
                         ForEach(session.logs) { file in
-                            LogRow(file: file) { viewing = file } save: { save(file) }
+                            LogRow(file: file) { viewing = file } save: { save(file) } delete: { deleting = file }
                         }
                     }
                 }
@@ -155,6 +170,12 @@ struct LogsPanel: View {
         }
         .sheet(item: $viewing) { file in
             LogViewer(session: session, file: file)
+        }
+        .sheet(item: $deleting) { file in
+            ConfirmSheet(symbol: "trash", title: "Delete this log?", message: "OctoPrint removes it from the Raspberry Pi. Logs are useful when reporting a problem, so keep recent ones.",
+                         confirmTitle: "Delete", onConfirm: { session.deleteLog(file) }) {
+                Text(verbatim: file.name).font(Typeface.caption).foregroundStyle(Palette.faint)
+            }
         }
     }
 
@@ -172,6 +193,7 @@ private struct LogRow: View {
     let file: LogFile
     let view: () -> Void
     let save: () -> Void
+    let delete: () -> Void
     @State private var hovering = false
 
     var body: some View {
@@ -188,6 +210,9 @@ private struct LogRow: View {
             Button { save() } label: { Image(systemName: "square.and.arrow.down") }
                 .buttonStyle(.plateQuiet).controlSize(.small)
                 .help("Save the whole log")
+            Button { delete() } label: { Image(systemName: "trash") }
+                .buttonStyle(.plateQuiet).controlSize(.small)
+                .help("Delete this log")
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 7)

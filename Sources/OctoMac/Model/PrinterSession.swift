@@ -188,6 +188,22 @@ final class PrinterSession {
     /// Print speed and flow, as last set here or reported by the printer (M220 / M221).
     var feedRate = 100.0
     var flowRate = 100.0
+    /// A question from the printer's firmware that it's waiting on, such as "Filament runout. Continue?".
+    private(set) var printerPrompt: ActionPrompt.Prompt?
+    /// Messages the printer's firmware has sent, oldest first.
+    private(set) var printerNotes: [ActionNotification.Note] = []
+    /// OctoPrint's own health checks that found something (OctoPrint 1.11 and later).
+    private(set) var serverHealth: [HealthCheck.Item] = []
+    /// Warnings about the printer's firmware, from OctoPrint's Firmware Check.
+    private(set) var firmwareWarnings: [FirmwareCheck.Warning] = []
+    /// What the Software Update plugin printed during the latest update.
+    private(set) var updateLog: [String] = []
+    /// A backup being restored, with OctoPrint's log as it goes.
+    private(set) var restore: BackupRestore?
+    /// How far the nozzle has been nudged during this print, in mm. Above zero is further from the bed.
+    private(set) var zNudge = 0.0
+    /// Set when the printer answers a nudge with "Unknown command".
+    private(set) var zNudgeUnsupported = false
     /// For notifications: a pause asked for from this app needs no banner, and a disconnect only matters mid-print.
     private var pausedHere = false
     private var wasPrinting = false
@@ -398,6 +414,11 @@ final class PrinterSession {
             throttle = info.throttle
         }
         printerError = try? await client.lastPrinterError()
+        // Each of these is a bundled plugin that may be switched off; missing ones are quietly skipped.
+        printerPrompt = try? await client.actionPrompt()
+        if let notes = try? await client.printerNotifications() { printerNotes = notes }
+        serverHealth = ((try? await client.healthChecks()) ?? []).filter { $0.result != .ok }
+        firmwareWarnings = (try? await client.firmwareWarnings()) ?? []
     }
 
     func refreshPlugins() async {
@@ -440,6 +461,50 @@ final class PrinterSession {
                 self?.pluginInstall?.outcome = .failed(error.localizedDescription)
             }
         }
+    }
+
+    /// Installs a plugin from a web address, such as a GitHub archive link.
+    func installPlugin(from url: URL) {
+        guard pluginInstall?.isRunning != true, !flags.isJobActive else { return }
+        let plugin = Self.unlistedPlugin(named: url.lastPathComponent.isEmpty ? url.absoluteString : url.lastPathComponent, archive: url)
+        pluginInstall = PluginInstall(plugin: plugin)
+        guard !isDemoSession else {
+            Task { await demoInstall(plugin) }
+            return
+        }
+        Task { [client, weak self] in
+            do {
+                try await client.installPlugin(from: url)
+            } catch {
+                self?.pluginInstall?.outcome = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// Uploads a plugin from this Mac and installs it.
+    func installPlugin(fileURL: URL) {
+        guard pluginInstall?.isRunning != true, !flags.isJobActive else { return }
+        let plugin = Self.unlistedPlugin(named: fileURL.lastPathComponent, archive: fileURL)
+        pluginInstall = PluginInstall(plugin: plugin)
+        guard !isDemoSession else {
+            Task { await demoInstall(plugin) }
+            return
+        }
+        Task { [client, weak self] in
+            let scoped = fileURL.startAccessingSecurityScopedResource()
+            defer { if scoped { fileURL.stopAccessingSecurityScopedResource() } }
+            do {
+                try await client.installPlugin(fileURL: fileURL)
+            } catch {
+                self?.pluginInstall?.outcome = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// A plugin that isn't in OctoPrint's list, named after its file or address for the install screen.
+    private static func unlistedPlugin(named name: String, archive: URL) -> RepositoryPlugin {
+        RepositoryPlugin(id: name, title: name, summary: "", author: "", homepage: nil, page: nil, archive: archive,
+                         compatible: true, abandoned: false, users: 0)
     }
 
     func refreshBackups() async {
@@ -516,6 +581,17 @@ final class PrinterSession {
 
     private func handleBackup(_ data: JSONValue) {
         switch Backup.Message(data) {
+        case .restoreStarted:
+            restore?.upload = nil
+        case .restoreLog(let line):
+            guard restore?.isRunning == true, !line.isEmpty else { return }
+            restore?.upload = nil
+            restore?.log.append(line)
+            if let count = restore?.log.count, count > 1000 { restore?.log.removeFirst(count - 1000) }
+        case .restoreDone:
+            restore?.outcome = .done
+        case .restoreFailed:
+            restore?.outcome = .failed(String(localized: "OctoPrint couldn't restore the backup. The log above may say why."))
         case .started:
             backups?.inProgress = true
         case .done(let name):
@@ -526,6 +602,105 @@ final class PrinterSession {
             error = ErrorBanner(message: String(localized: "OctoPrint couldn't make the backup: \(message)"))
         case nil:
             break
+        }
+    }
+
+    /// Replaces OctoPrint's settings, plugins and files with a backup's. OctoPrint restarts when it's done.
+    func restoreBackup(_ file: Backup.File) {
+        guard restore?.isRunning != true, !flags.isJobActive else { return }
+        restore = BackupRestore(name: file.name)
+        guard !isDemoSession else {
+            Task { await demoRestore() }
+            return
+        }
+        Task { [client, weak self] in
+            do {
+                try await client.restoreBackup(file)
+            } catch {
+                self?.restore?.outcome = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// Uploads a backup from this Mac and restores it.
+    func restoreBackup(fileURL: URL) {
+        guard restore?.isRunning != true, !flags.isJobActive else { return }
+        restore = BackupRestore(name: fileURL.lastPathComponent, upload: 0)
+        guard !isDemoSession else {
+            Task { await demoRestore() }
+            return
+        }
+        Task { [client, weak self] in
+            let scoped = fileURL.startAccessingSecurityScopedResource()
+            defer { if scoped { fileURL.stopAccessingSecurityScopedResource() } }
+            do {
+                try await client.restoreBackup(fileURL: fileURL) { fraction in
+                    Task { @MainActor in if self?.restore?.upload != nil { self?.restore?.upload = fraction } }
+                }
+            } catch {
+                self?.restore?.outcome = .failed(error.localizedDescription)
+            }
+        }
+    }
+
+    /// Clears a finished restore.
+    func dismissRestore() {
+        if restore?.isRunning == false { restore = nil }
+    }
+
+    private func demoRestore() async {
+        for line in DemoPlugins.restoreLog {
+            try? await Task.sleep(for: .milliseconds(300))
+            restore?.upload = nil
+            restore?.log.append(line)
+        }
+        restore?.outcome = .done
+    }
+
+    private func handleSoftwareUpdate(_ data: JSONValue) {
+        guard let message = SoftwareUpdateMessage(data) else { return }
+        switch message {
+        case .log(let lines):
+            guard updatingSince != nil else { return }
+            updateLog.append(contentsOf: lines.filter { !$0.isEmpty })
+            if updateLog.count > 1000 { updateLog.removeFirst(updateLog.count - 1000) }
+        case .failed(let target, let reason):
+            let name = updates?.first { $0.id == target }?.name ?? target
+            error = ErrorBanner(message: reason.map { String(localized: "Couldn't update \(name): \($0)") }
+                                ?? String(localized: "Couldn't update \(name). The update's log may say why."))
+        case .restartManually, .restartFailed:
+            updatingSince = nil
+            pluginsNeedRestart = true
+            Task { await refreshUpdates(force: true) }
+        case .success:
+            updatingSince = nil
+            Task { await refreshUpdates(force: true) }
+        case .error:
+            updatingSince = nil
+            error = ErrorBanner(message: String(localized: "The update didn't finish. The update's log shows what happened."))
+        case .updating, .restarting:
+            break
+        }
+    }
+
+    /// Answers the printer's question with one of its choices.
+    func answerPrinterPrompt(_ index: Int) {
+        printerPrompt = nil
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.answerActionPrompt(index) }
+    }
+
+    func clearPrinterNotes() {
+        printerNotes = []
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.clearPrinterNotifications() }
+    }
+
+    /// Server health checks again, with fresh results rather than OctoPrint's last ones.
+    func recheckServerHealth() async {
+        guard !isDemoSession else { return }
+        if let items = await attempt({ [client] in try await client.healthChecks(refresh: true) }) {
+            serverHealth = items.filter { $0.result != .ok }
         }
     }
 
@@ -603,6 +778,7 @@ final class PrinterSession {
     func updateSoftware(_ targets: [String]) {
         guard !targets.isEmpty, !flags.isJobActive else { return }
         updatingSince = .now
+        updateLog = []
         guard !isDemoSession else { return }
         perform { [client] in try await client.updateSoftware(targets) }
     }
@@ -678,6 +854,18 @@ final class PrinterSession {
         }
     }
 
+    /// Throws away the pictures of a timelapse that was never made into a video.
+    func deleteUnrenderedTimelapse(_ file: TimelapseFile) {
+        guard !isDemoSession else {
+            timelapses?.unrendered?.removeAll { $0.name == file.name }
+            return
+        }
+        perform { [client, weak self] in
+            try await client.deleteUnrenderedTimelapse(file.name)
+            await self?.refreshTimelapses()
+        }
+    }
+
     func renderTimelapse(_ file: TimelapseFile) {
         perform { [client, weak self] in
             try await client.renderTimelapse(file.name)
@@ -696,6 +884,74 @@ final class PrinterSession {
     func refreshLogs() async {
         guard !isDemoSession else { return }
         if let list = try? await client.logFiles() { logs = list.files.sorted { ($0.date ?? 0) > ($1.date ?? 0) } }
+    }
+
+    func deleteLog(_ file: LogFile) {
+        guard !isDemoSession else {
+            logs.removeAll { $0.name == file.name }
+            return
+        }
+        perform { [client, weak self] in
+            try await client.deleteLogFile(file.name)
+            await self?.refreshLogs()
+        }
+    }
+
+    // MARK: OctoPrint settings
+
+    /// Saves part of OctoPrint's settings, such as `{"serial": {"autoconnect": true}}`, then reads them back.
+    func saveSettings(_ partial: JSONValue) {
+        guard !isDemoSession else {
+            settings = settings.map { $0.merging(partial) } ?? partial
+            return
+        }
+        perform { [client, weak self] in
+            _ = try await client.saveSettings(partial)
+            await self?.refreshSettings()
+        }
+    }
+
+    /// Whether OctoPrint connects to the printer by itself when it starts.
+    var autoconnect: Bool { settings?.value(at: "serial", "autoconnect")?.boolValue ?? false }
+
+    var cameraSettings: CameraSettings { CameraSettings(settings) }
+
+    func saveCameraSettings(_ camera: CameraSettings) {
+        saveSettings(camera.partial)
+    }
+
+    /// Replaces OctoPrint's temperature presets.
+    func saveTemperaturePresets(_ presets: [TemperaturePresetDraft]) {
+        saveSettings(["temperature": ["profiles": .array(presets.map(\.json))]])
+    }
+
+    var temperaturePresetDrafts: [TemperaturePresetDraft] {
+        (settings?.value(at: "temperature", "profiles")?.arrayValue ?? []).map(TemperaturePresetDraft.init)
+    }
+
+    // MARK: Printer profiles
+
+    /// Saves a printer profile: changes to an existing one, or a new one based on the current profile.
+    func saveProfile(_ draft: PrinterProfileDraft) {
+        guard !isDemoSession else { return }
+        perform { [client, weak self] in
+            if let id = draft.id {
+                _ = try await client.updatePrinterProfile(id, with: draft.json)
+            } else {
+                _ = try await client.addPrinterProfile(draft.json, basedOn: self?.currentProfile?.id)
+            }
+            await self?.refreshProfiles()
+            await self?.refreshConnection()
+        }
+    }
+
+    func deleteProfile(_ profile: PrinterProfile) {
+        guard !isDemoSession, profile.default != true, profile.current != true else { return }
+        perform { [client, weak self] in
+            try await client.deletePrinterProfile(profile.id)
+            await self?.refreshProfiles()
+            await self?.refreshConnection()
+        }
     }
 
     func refreshVersion() async { version = await attempt { try await client.version() } ?? version }
@@ -846,6 +1102,29 @@ final class PrinterSession {
             handlePluginManager(data)
         case .plugin(let id, let data) where id == Backup.pluginID:
             handleBackup(data)
+        case .plugin(let id, let data) where id == ActionPrompt.pluginID:
+            switch ActionPrompt.Message(data) {
+            case .show(let prompt):
+                printerPrompt = prompt
+                notify(.needsAttention, String(localized: "The printer has a question"), prompt.text)
+            case .close:
+                printerPrompt = nil
+            case nil:
+                break
+            }
+        case .plugin(let id, let data) where id == ActionNotification.pluginID:
+            switch ActionNotification.Message(data) {
+            case .added(let message):
+                printerNotes.append(.init(date: .now, message: message))
+                if printerNotes.count > 100 { printerNotes.removeFirst(printerNotes.count - 100) }
+                notify(.printerMessages, String(localized: "Message from the printer"), message)
+            case .cleared:
+                printerNotes = []
+            }
+        case .plugin(let id, _) where id == FirmwareCheck.pluginID:
+            Task { [client, weak self] in self?.firmwareWarnings = (try? await client.firmwareWarnings()) ?? [] }
+        case .plugin(let id, let data) where id == SoftwareUpdateMessage.pluginID:
+            handleSoftwareUpdate(data)
         default:
             break
         }
@@ -870,6 +1149,7 @@ final class PrinterSession {
         appendTemperatures(payload.temps)
         if !payload.logs.isEmpty {
             readRates(from: payload.logs)
+            if payload.logs.contains(where: { $0.contains("Unknown command") && $0.contains("M290") }) { zNudgeUnsupported = true }
             terminalReceived += payload.logs.count
             terminal.append(contentsOf: payload.logs)
             if terminal.count > Self.terminalLimit { terminal.removeFirst(terminal.count - Self.terminalLimit) }
@@ -1047,6 +1327,7 @@ final class PrinterSession {
         switch event.type {
         case "PrintStarted":
             layerProgress = nil
+            zNudge = 0
             layerAlerts = []
             firstLayerChecked = false
             printObjects = []
@@ -1141,6 +1422,9 @@ final class PrinterSession {
         }
     }
 
+    /// Starts a paused print again from the beginning.
+    func startOver() { jobCommand(.restart) }
+
     /// Cancels the job, exactly like OctoPrint's own Cancel button.
     func stopPrint() { jobCommand(.cancel) }
 
@@ -1158,6 +1442,29 @@ final class PrinterSession {
         feedRate = Double(percent)
         guard !isDemoSession else { return }
         perform { [client] in try await client.setFeedRate(percent) }
+    }
+
+    private var isKlipper: Bool { firmware?.localizedCaseInsensitiveContains("Klipper") == true }
+    private var isPrusa: Bool { firmware?.localizedCaseInsensitiveContains("Prusa") == true }
+
+    /// Raises (above zero) or lowers the nozzle while printing, for getting the first layer right: M290 babystepping,
+    /// or Klipper's own command.
+    func nudgeZ(by amount: Double) {
+        guard amount != 0 else { return }
+        zNudge = ((zNudge + amount) * 1000).rounded() / 1000
+        guard !isDemoSession else { return }
+        let text = amount.formatted(.number.locale(Locale(identifier: "en_US_POSIX")).precision(.fractionLength(0...3)).grouping(.never))
+        sendGcode(isKlipper ? "SET_GCODE_OFFSET Z_ADJUST=\(text) MOVE=1" : "M290 Z\(text)")
+    }
+
+    /// Marlin printers with a bed probe fold nudges into their Z offset; M500 keeps it after a restart. Klipper and
+    /// Prusa printers keep their offset another way.
+    var canSaveZNudge: Bool { !isKlipper && !isPrusa }
+    var zNudgeKlipper: Bool { isKlipper }
+
+    func saveZNudge() {
+        guard canSaveZNudge, !isDemoSession else { return }
+        sendGcode("M500")
     }
 
     func setFlowRate(_ percent: Int) {
@@ -1324,6 +1631,20 @@ final class PrinterSession {
         return nil
     }
 
+    func saveCommand(_ command: PrinterJournal.SavedCommand) {
+        updateJournal { journal in
+            if let index = journal.commands.firstIndex(where: { $0.id == command.id }) {
+                journal.commands[index] = command
+            } else {
+                journal.commands.append(command)
+            }
+        }
+    }
+
+    func removeCommand(_ command: PrinterJournal.SavedCommand) {
+        updateJournal { $0.commands.removeAll { $0.id == command.id } }
+    }
+
     func setScrewSettings(_ settings: BedScrews.Settings) {
         updateJournal { $0.screws = settings }
     }
@@ -1345,6 +1666,57 @@ final class PrinterSession {
         perform { [client] in try await client.select(file.path, origin: file.origin, print: print) }
     }
 
+    /// Makes a copy of a file beside it: "benchy.gcode" becomes "benchy copy.gcode".
+    func duplicate(_ file: FileEntry) {
+        let parent = file.path.split(separator: "/").dropLast().joined(separator: "/")
+        let siblings = Set(fileEntries(in: parent).map(\.name))
+        let name = Self.copyName(for: file.name, avoiding: siblings)
+        let target = parent.isEmpty ? name : parent + "/" + name
+        perform { [client, weak self] in
+            try await client.copy(file.path, to: target, origin: file.origin)
+            await self?.refreshFiles()
+        }
+    }
+
+    /// "benchy.gcode" becomes "benchy copy.gcode", then "benchy copy 2.gcode" and so on, avoiding names in use.
+    nonisolated static func copyName(for name: String, avoiding taken: Set<String>) -> String {
+        let dot = name.lastIndex(of: ".")
+        let base = dot.map { String(name[..<$0]) } ?? name
+        let ext = dot.map { String(name[$0...]) } ?? ""
+        // OctoPrint makes spaces in file names into underscores, so use one to start with.
+        var candidate = base + "_copy" + ext
+        var number = 2
+        while taken.contains(candidate) {
+            candidate = base + "_copy_\(number)" + ext
+            number += 1
+        }
+        return candidate
+    }
+
+    /// The files and folders in a folder ("" for the top level).
+    private func fileEntries(in folder: String) -> [FileEntry] {
+        var level = files
+        for name in folder.split(separator: "/") {
+            level = level.first { $0.isFolder && $0.name == name }?.children ?? []
+        }
+        return level
+    }
+
+    /// Unloads the file OctoPrint has open, so nothing is ready to print.
+    func closeFile() {
+        perform { [client] in try await client.unselect() }
+    }
+
+    /// Asks the printer to read its SD card again, for a card put in after it connected.
+    func refreshSDCard() {
+        guard !isDemoSession else { return }
+        perform { [client, weak self] in
+            try await client.sd("refresh")
+            try? await Task.sleep(for: .seconds(2))
+            await self?.refreshFiles()
+        }
+    }
+
     func delete(_ file: FileEntry) {
         perform { [client, weak self] in
             try await client.deleteFile(file.path, origin: file.origin)
@@ -1352,7 +1724,7 @@ final class PrinterSession {
         }
     }
 
-    func upload(_ urls: [URL], folder: String? = nil, print: Bool = false) {
+    func upload(_ urls: [URL], folder: String? = nil, print: Bool = false, toSDCard: Bool = false) {
         let items = urls.map { url in
             UploadItem(filename: url.lastPathComponent,
                        size: (try? url.resourceValues(forKeys: [.fileSizeKey]))?.fileSize)
@@ -1365,8 +1737,8 @@ final class PrinterSession {
                 let scoped = url.startAccessingSecurityScopedResource()
                 defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                 do {
-                    try await client.upload(fileURL: url, folder: folder, select: print, print: print && urls.count == 1,
-                                            progress: onProgress)
+                    try await client.upload(fileURL: url, to: toSDCard ? .sdcard : .local, folder: toSDCard ? nil : folder,
+                                            select: print, print: print && urls.count == 1, progress: onProgress)
                     self?.updateUpload(item.id) { $0.fraction = 1; $0.state = .done }
                 } catch {
                     self?.updateUpload(item.id) { $0.state = .failed(error.localizedDescription) }
@@ -1674,6 +2046,17 @@ extension PrinterSession {
             activeObjectID = 1
         }
         if printing { layerProgress = LayerProgress(currentLayer: 92, totalLayers: 146, averageLayerDuration: 58, lastLayerDuration: 61) }
+        if printing {
+            printerNotes = [
+                .init(date: .now.addingTimeInterval(-8_100), message: "Heating done"),
+                .init(date: .now.addingTimeInterval(-7_980), message: "Printing gridfinity bins 3x2 PLA"),
+            ]
+            if CommandLine.arguments.contains("--demo-prompt") {
+                printerPrompt = .init(text: "Filament runout. Load new filament, then continue.", choices: ["Continue", "Purge more", "Stop print"])
+            }
+        } else if !toolchanger {
+            serverHealth = [.init(key: "filesystem_storage", result: .warning, context: ["uploads": 88.4, "logs": 3.1])]
+        }
         systemInfo = ["printer.firmware": .string(toolchanger ? "Prusa-Firmware-Buddy 6.1.3" : printing ? "Prusa-Firmware 3.14.1+8237 based on Marlin" : "Marlin 2.1.2.4")]
         pi = PiSupportInfo([
             "model": .string(printing ? "Raspberry Pi 4 Model B Rev 1.2" : "Raspberry Pi 3 Model B Plus Rev 1.3"),

@@ -76,3 +76,11 @@ struct BedScrewsTests {
         #expect(BedScrews.advice(for: round, layout: .corners, settings: .init()) == nil)
     }
 }
+
+struct ZNudgeTests {
+    @Test func showsTheNudgeWithItsSign() {
+        #expect(ZNudgeStepper.text(0.03) == "+0.03 mm")
+        #expect(ZNudgeStepper.text(-0.02) == "-0.02 mm")
+        #expect(ZNudgeStepper.text(0.0000001) == "0.00 mm")
+    }
+}

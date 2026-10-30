@@ -26,6 +26,8 @@ struct ConsolePage: View {
     @State private var frozenAt = 0
     @State private var atBottom = true
     @State private var userScrolling = false
+    /// The saved command being added or changed.
+    @State private var editingCommand: PrinterJournal.SavedCommand?
 
     private var filters: [TerminalFilter] {
         var list = TerminalFilter.fromSettings(session.settings)
@@ -167,6 +169,8 @@ struct ConsolePage: View {
                 .animation(.snappy, value: frozen == nil)
             }
 
+            savedCommands
+
             HStack(spacing: 10) {
                 Text(verbatim: "›").font(.system(size: 18, weight: .bold, design: .monospaced)).foregroundStyle(Palette.accent)
                 TextField("Send a G-code command, e.g. M115", text: $command)
@@ -186,6 +190,51 @@ struct ConsolePage: View {
         }
         .machined(radius: 20)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .sheet(item: $editingCommand) { command in
+            SavedCommandSheet(command: command, isNew: !session.journal.commands.contains { $0.id == command.id }) { saved in
+                session.saveCommand(saved)
+            } remove: {
+                session.removeCommand(command)
+            }
+        }
+    }
+
+    /// Your own one-click commands for this printer, above the command box.
+    private var savedCommands: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(session.journal.commands) { saved in
+                    Button { send(saved) } label: {
+                        Label { Text(verbatim: saved.name) } icon: { Image(systemName: "play.fill") }
+                            .lineLimit(1)
+                    }
+                    .buttonStyle(.plateQuiet)
+                    .controlSize(.small)
+                    .disabled(!session.flags.operational)
+                    .help(Text(verbatim: saved.gcode))
+                    .contextMenu {
+                        Button("Edit…") { editingCommand = saved }
+                        Button("Put in the command box") {
+                            command = saved.gcode.split(whereSeparator: \.isNewline).first.map(String.init) ?? ""
+                            commandFocused = true
+                        }
+                        Divider()
+                        Button("Remove", role: .destructive) { session.removeCommand(saved) }
+                    }
+                }
+                Button {
+                    editingCommand = .init(name: "", gcode: command.trimmingCharacters(in: .whitespaces))
+                } label: {
+                    Label(session.journal.commands.isEmpty ? "Save a command as a button" : "Save a command", systemImage: "plus")
+                        .lineLimit(1)
+                }
+                .buttonStyle(.plateQuiet)
+                .controlSize(.small)
+                .help("Keep a command you use often as a button here, for this printer. Right-click a button to change it.")
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.top, 12)
     }
 
     private var highlightTerms: [String] {
@@ -237,19 +286,30 @@ struct ConsolePage: View {
         frozenAt = session.terminalReceived
     }
 
+    /// Firmware wants capitals ("m115" becomes "M115"), except in the text of messages and file names.
+    static func prepared(_ line: String) -> String {
+        let posix = Locale(identifier: "en_US_POSIX")
+        let parts = line.split(separator: " ", maxSplits: 1)
+        let word = parts.first.map { $0.uppercased(with: posix) } ?? ""
+        let textCommands: Set<String> = ["M117", "M118", "M23", "M28", "M30", "M32"]
+        if parts.count > 1, textCommands.contains(word) { return word + " " + parts[1] }
+        return line.uppercased(with: posix)
+    }
+
+    private func send(_ saved: PrinterJournal.SavedCommand) {
+        let lines = saved.gcode.split(whereSeparator: \.isNewline)
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .filter { !$0.isEmpty }
+        guard !lines.isEmpty else { return }
+        session.sendGcode(lines.map(Self.prepared).joined(separator: "\n"))
+        sentHere = Array((sentHere + lines.map(Self.normalised)).suffix(50))
+        frozen = nil
+    }
+
     private func send() {
         let trimmed = command.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return }
-        // Firmware wants capitals ("m115" becomes "M115"), except in the text of messages and file names.
-        let posix = Locale(identifier: "en_US_POSIX")
-        let parts = trimmed.split(separator: " ", maxSplits: 1)
-        let word = parts.first.map { $0.uppercased(with: posix) } ?? ""
-        let textCommands: Set<String> = ["M117", "M118", "M23", "M28", "M30", "M32"]
-        if parts.count > 1, textCommands.contains(word) {
-            session.sendGcode(word + " " + parts[1])
-        } else {
-            session.sendGcode(trimmed.uppercased(with: posix))
-        }
+        session.sendGcode(Self.prepared(trimmed))
         if history.last != trimmed { history.append(trimmed) }
         sentHere = Array((sentHere + [Self.normalised(trimmed)]).suffix(50))
         historyIndex = nil
@@ -264,6 +324,77 @@ struct ConsolePage: View {
         historyIndex = index
         command = index < history.count ? history[index] : ""
         return .handled
+    }
+}
+
+/// Adds or changes a saved command: a name for its button, and the G-code it sends.
+struct SavedCommandSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    @State private var draft: PrinterJournal.SavedCommand
+    let isNew: Bool
+    let save: (PrinterJournal.SavedCommand) -> Void
+    let remove: () -> Void
+
+    init(command: PrinterJournal.SavedCommand, isNew: Bool, save: @escaping (PrinterJournal.SavedCommand) -> Void, remove: @escaping () -> Void) {
+        _draft = State(initialValue: command)
+        self.isNew = isNew
+        self.save = save
+        self.remove = remove
+    }
+
+    private var trimmed: PrinterJournal.SavedCommand {
+        var copy = draft
+        copy.name = copy.name.trimmingCharacters(in: .whitespacesAndNewlines)
+        copy.gcode = copy.gcode.trimmingCharacters(in: .whitespacesAndNewlines)
+        return copy
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(isNew ? "Save a command" : "Change a saved command").font(Typeface.title).foregroundStyle(Palette.paper)
+                Text("It becomes a button on the Console tab for this printer. Put each command on its own line to send several in a row.")
+                    .font(Typeface.body).foregroundStyle(Palette.dust)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Button name").font(Typeface.caption).foregroundStyle(Palette.faint)
+                TextField("For example, Show settings", text: $draft.name)
+                    .plateField()
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                Text("G-code").font(Typeface.caption).foregroundStyle(Palette.faint)
+                TextEditor(text: $draft.gcode)
+                    .font(.system(size: 13, design: .monospaced))
+                    .foregroundStyle(Palette.paper)
+                    .scrollContentBackground(.hidden)
+                    .scrollIndicators(.never)
+                    .padding(8)
+                    .frame(height: 120)
+                    .background(RoundedRectangle(cornerRadius: 8, style: .continuous).fill(Palette.graphite))
+            }
+            HStack {
+                if !isNew {
+                    Button("Remove", role: .destructive) {
+                        remove()
+                        dismiss()
+                    }
+                    .buttonStyle(.plateQuiet)
+                }
+                Spacer()
+                Button("Cancel") { dismiss() }.buttonStyle(.plateQuiet).keyboardShortcut(.cancelAction)
+                Button("Save") {
+                    save(trimmed)
+                    dismiss()
+                }
+                .buttonStyle(.plate)
+                .keyboardShortcut(.defaultAction)
+                .disabled(trimmed.name.isEmpty || trimmed.gcode.isEmpty)
+            }
+        }
+        .padding(26)
+        .frame(width: 460)
+        .background(Palette.extrusion)
     }
 }
 

@@ -184,8 +184,14 @@ private struct TimelapsePanel: View {
         .sheet(isPresented: $editing) { TimelapseSettingsSheet(session: session) }
         .sheet(item: $playing) { TimelapsePlayer(session: session, file: $0) }
         .sheet(item: $deleting) { file in
-            ConfirmSheet(symbol: "trash", title: "Delete this timelapse?", message: "\(file.name) is deleted from OctoPrint. This can't be undone.",
-                         confirmTitle: "Delete", onConfirm: { session.deleteTimelapse(file) })
+            // Pictures still waiting to be made into a video live somewhere else in OctoPrint.
+            if session.timelapses?.unrendered?.contains(where: { $0.name == file.name }) == true {
+                ConfirmSheet(symbol: "trash", title: "Delete these pictures?", message: "The pictures for \(file.name) are deleted from OctoPrint, so no video can be made from them. This can't be undone.",
+                             confirmTitle: "Delete", onConfirm: { session.deleteUnrenderedTimelapse(file) })
+            } else {
+                ConfirmSheet(symbol: "trash", title: "Delete this timelapse?", message: "\(file.name) is deleted from OctoPrint. This can't be undone.",
+                             confirmTitle: "Delete", onConfirm: { session.deleteTimelapse(file) })
+            }
         }
     }
 

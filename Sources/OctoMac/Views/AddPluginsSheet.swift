@@ -1,14 +1,33 @@
 import OctoPrintKit
 import SwiftUI
+import UniformTypeIdentifiers
 
-/// Browse OctoPrint's official plugin list and install from it. OctoPrint does the installing and sends its log
-/// back as it goes. Installing from a web address or a file is left to OctoPrint's own Plugin Manager.
+/// Browse OctoPrint's official plugin list and install from it, or from a web address or a file. OctoPrint does the
+/// installing and sends its log back as it goes.
 struct AddPluginsSheet: View {
     @Environment(\.dismiss) private var dismiss
     let session: PrinterSession
     @State private var search = ""
     @State private var showHidden = false
     @State private var confirming: RepositoryPlugin?
+    @State private var enteringAddress = false
+    @State private var choosingFile = false
+    /// A plugin from outside the list, waiting for you to confirm.
+    @State private var confirmingUnlisted: Unlisted?
+
+    private enum Unlisted: Identifiable {
+        case file(URL)
+        var id: String {
+            switch self {
+            case .file(let url): url.path
+            }
+        }
+        var name: String {
+            switch self {
+            case .file(let url): url.lastPathComponent
+            }
+        }
+    }
 
     private var installed: Set<String> { Set((session.plugins ?? []).map { $0.key.lowercased() }) }
 
@@ -51,6 +70,23 @@ struct AddPluginsSheet: View {
                          message: "OctoPrint downloads it from its plugin list and installs it. Plugins are made by the OctoPrint community, not by OctoMac, and most need OctoPrint to restart afterwards.",
                          confirmTitle: "Install", onConfirm: { session.installPlugin(plugin) })
         }
+        .sheet(isPresented: $enteringAddress) {
+            PluginAddressSheet { url in session.installPlugin(from: url) }
+        }
+        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.zip, .gzip, .pythonScript, .json, .data]) { result in
+            if case .success(let url) = result { confirmingUnlisted = .file(url) }
+        }
+        .sheet(item: $confirmingUnlisted) { unlisted in
+            ConfirmSheet(symbol: "exclamationmark.shield", tint: Palette.warm, title: "Install a plugin from outside the list?",
+                         message: "Only install plugins you trust: a plugin can do anything on the Raspberry Pi. Plugins from outside OctoPrint's list haven't been looked at by anyone.",
+                         confirmTitle: "Install", onConfirm: {
+                             switch unlisted {
+                             case .file(let url): session.installPlugin(fileURL: url)
+                             }
+                         }) {
+                Text(verbatim: unlisted.name).font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(2).truncationMode(.middle)
+            }
+        }
         .task { await session.refreshPluginRepository() }
         .onDisappear { session.dismissPluginInstall() }
         .animation(.easeOut(duration: 0.2), value: session.pluginInstall == nil)
@@ -60,14 +96,15 @@ struct AddPluginsSheet: View {
         let stage = session.pluginInstall.map { InstallStage(session: session, install: $0) }
         return HStack(spacing: 10) {
             if stage == nil {
-                Button {
-                    NSWorkspace.shared.open(URL(string: "#settings_plugin_pluginmanager", relativeTo: session.instance.baseURL)?.absoluteURL
-                                            ?? session.instance.baseURL)
-                } label: {
-                    Label("Open OctoPrint's Plugin Manager", systemImage: "arrow.up.right")
-                }
-                .buttonStyle(.plateQuiet)
-                .help("To install a plugin from a web address or a file")
+                let blocked = session.pluginInstallBlocker != nil || session.flags.isJobActive
+                Button { enteringAddress = true } label: { Label("From a web address…", systemImage: "link") }
+                    .buttonStyle(.plateQuiet)
+                    .disabled(blocked)
+                    .help("Install a plugin from a link to its archive, such as one on GitHub")
+                Button { choosingFile = true } label: { Label("From a file…", systemImage: "doc") }
+                    .buttonStyle(.plateQuiet)
+                    .disabled(blocked)
+                    .help("Install a plugin archive (.zip or .tar.gz) or a single-file plugin (.py) from this Mac")
             }
             Spacer()
             switch stage {
@@ -329,5 +366,59 @@ private struct InstallProgress: View {
         case .ready:
             Text("OctoPrint has restarted and the plugin is running.")
         }
+    }
+}
+
+/// A web address for a plugin that isn't in OctoPrint's list, with a word of warning before it's installed.
+private struct PluginAddressSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let install: (URL) -> Void
+    @State private var text = ""
+
+    private var url: URL? {
+        guard let url = URL(string: text.trimmingCharacters(in: .whitespaces)), let scheme = url.scheme?.lowercased(),
+              ["http", "https"].contains(scheme), url.host != nil else { return nil }
+        return url
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(spacing: 14) {
+                Image(systemName: "link")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Palette.warm)
+                    .frame(width: 44, height: 44)
+                    .background(Circle().fill(Palette.warm.opacity(0.15)))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Install from a web address").font(Typeface.title).foregroundStyle(Palette.paper)
+                    Text("A link to the plugin's archive, such as a .zip on GitHub.").font(Typeface.body).foregroundStyle(Palette.dust)
+                }
+            }
+            TextField(text: $text, prompt: Text(verbatim: "https://github.com/…/archive/main.zip")) { EmptyView() }
+                .font(.system(size: 13, design: .monospaced))
+                .plateField()
+                .onSubmit(confirm)
+            Label("Only install plugins you trust: a plugin can do anything on the Raspberry Pi. Plugins from outside OctoPrint's list haven't been looked at by anyone.",
+                  systemImage: "exclamationmark.shield")
+                .font(Typeface.caption).foregroundStyle(Palette.warm)
+                .fixedSize(horizontal: false, vertical: true)
+            HStack {
+                Spacer()
+                Button("Cancel") { dismiss() }.buttonStyle(.plateQuiet).keyboardShortcut(.cancelAction)
+                Button("Install", action: confirm)
+                    .buttonStyle(.plate)
+                    .keyboardShortcut(.defaultAction)
+                    .disabled(url == nil)
+            }
+        }
+        .padding(26)
+        .frame(width: 520)
+        .background(Palette.extrusion)
+    }
+
+    private func confirm() {
+        guard let url else { return }
+        install(url)
+        dismiss()
     }
 }

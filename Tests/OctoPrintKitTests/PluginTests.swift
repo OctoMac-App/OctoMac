@@ -210,6 +210,6 @@ struct BackupTests {
         #expect(Backup.Message(["type": "backup_started", "name": "b.zip"]) == .started("b.zip"))
         #expect(Backup.Message(["type": "backup_done", "name": "b.zip"]) == .done("b.zip"))
         #expect(Backup.Message(["type": "backup_error", "name": "b.zip", "error": "Not enough space"]) == .failed(name: "b.zip", error: "Not enough space"))
-        #expect(Backup.Message(["type": "logline", "line": "x"]) == nil)
+        #expect(Backup.Message(["type": "unknown_plugins"]) == nil)
     }
 }

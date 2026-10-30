@@ -58,6 +58,14 @@ public enum JSONValue: Codable, Sendable, Hashable {
     }
 
     /// Follows a dotted path, e.g. `settings["webcam.streamUrl"]`-style lookups via `value(at: "webcam", "streamUrl")`.
+    /// This value with `other` laid over it: objects are merged key by key, anything else is replaced. The same as
+    /// OctoPrint does when it saves part of its settings.
+    public func merging(_ other: JSONValue) -> JSONValue {
+        guard case .object(var base) = self, case .object(let changes) = other else { return other }
+        for (key, value) in changes { base[key] = base[key].map { $0.merging(value) } ?? value }
+        return .object(base)
+    }
+
     public func value(at path: String...) -> JSONValue? {
         path.reduce(Optional(self)) { $0?[$1] }
     }

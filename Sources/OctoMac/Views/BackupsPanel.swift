@@ -2,13 +2,32 @@ import OctoPrintKit
 import SwiftUI
 import UniformTypeIdentifiers
 
-/// OctoPrint's backups (Backup & Restore plugin): make one, save it to this Mac, or delete old ones. Restoring is
-/// left to OctoPrint's own page, which asks for the password again and restarts.
+/// OctoPrint's backups (Backup & Restore plugin): make one, save it to this Mac, restore one, or delete old ones.
 struct BackupsPanel: View {
     let session: PrinterSession
     let state: Backup.State
     @State private var choosing = false
     @State private var deleting: Backup.File?
+    /// A backup on the Pi, or one chosen from this Mac, waiting for you to confirm restoring it.
+    @State private var restoring: RestoreChoice?
+    @State private var choosingFile = false
+
+    private enum RestoreChoice: Identifiable {
+        case onPi(Backup.File)
+        case fromMac(URL)
+        var id: String {
+            switch self {
+            case .onPi(let file): file.name
+            case .fromMac(let url): url.path
+            }
+        }
+        var name: String {
+            switch self {
+            case .onPi(let file): file.date.map { $0.formatted(date: .abbreviated, time: .shortened) } ?? file.name
+            case .fromMac(let url): url.lastPathComponent
+            }
+        }
+    }
     /// Which five to show, newest first. Some people keep dozens.
     @State private var page = 0
 
@@ -37,22 +56,22 @@ struct BackupsPanel: View {
                 } else {
                     VStack(spacing: 4) {
                         ForEach(shown) { file in
-                            BackupRow(session: session, file: file, isNew: file.name == session.newBackup,
-                                      save: { save(file) }, delete: { deleting = file })
+                            BackupRow(session: session, file: file, isNew: file.name == session.newBackup, canRestore: canRestore,
+                                      save: { save(file) }, restore: { restoring = .onPi(file) }, delete: { deleting = file })
                         }
                     }
                     if pageCount > 1 { pager }
                 }
 
                 HStack(spacing: 8) {
-                    Button {
-                        NSWorkspace.shared.open(URL(string: "#settings_plugin_backup", relativeTo: session.instance.baseURL)?.absoluteURL
-                                                ?? session.instance.baseURL)
-                    } label: {
-                        Label("Restore in OctoPrint", systemImage: "arrow.up.right")
+                    if state.canRestore {
+                        Button { choosingFile = true } label: {
+                            Label("Restore from a file…", systemImage: "arrow.counterclockwise")
+                        }
+                        .buttonStyle(.plateQuiet)
+                        .disabled(!canRestore)
+                        .help(session.flags.isJobActive ? "Wait until the print finishes" : "Restore a backup saved on this Mac")
                     }
-                    .buttonStyle(.plateQuiet)
-                    .help("Restoring replaces OctoPrint's settings and restarts it, so it's done on OctoPrint's own page")
                     Spacer()
                     Button { choosing = true } label: {
                         Label("Back up now…", systemImage: "externaldrive.badge.plus")
@@ -68,6 +87,21 @@ struct BackupsPanel: View {
         .onChange(of: session.newBackup) { page = 0 }
         .onChange(of: pageCount) { page = min(page, pageCount - 1) }
         .sheet(isPresented: $choosing) { BackupOptionsSheet(session: session) }
+        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.zip]) { result in
+            if case .success(let url) = result { restoring = .fromMac(url) }
+        }
+        .sheet(item: $restoring) { choice in
+            ConfirmSheet(symbol: "arrow.counterclockwise", title: "Restore this backup?",
+                         message: "OctoPrint's settings, plugins and files are replaced with the ones in the backup, then OctoPrint restarts. Anything changed since the backup was made is lost.",
+                         confirmTitle: "Restore", onConfirm: {
+                             switch choice {
+                             case .onPi(let file): session.restoreBackup(file)
+                             case .fromMac(let url): session.restoreBackup(fileURL: url)
+                             }
+                         }) {
+                Text(verbatim: choice.name).font(Typeface.caption).foregroundStyle(Palette.faint)
+            }
+        }
         .sheet(item: $deleting) { file in
             ConfirmSheet(symbol: "trash", title: "Delete this backup?",
                          message: "OctoPrint removes it from the Raspberry Pi. Copies you've saved to this Mac aren't affected.",
@@ -76,6 +110,8 @@ struct BackupsPanel: View {
             }
         }
     }
+
+    private var canRestore: Bool { state.canRestore && !session.flags.isJobActive && session.restore == nil }
 
     private var pager: some View {
         HStack(spacing: 6) {
@@ -111,7 +147,9 @@ private struct BackupRow: View {
     let session: PrinterSession
     let file: Backup.File
     let isNew: Bool
+    let canRestore: Bool
     let save: () -> Void
+    let restore: @MainActor () -> Void
     let delete: @MainActor () -> Void
     @State private var hovering = false
 
@@ -137,7 +175,9 @@ private struct BackupRow: View {
                     .buttonStyle(.plateQuiet).controlSize(.small)
                     .disabled(session.backupDownload != nil)
                     .help("Save to this Mac")
-                AppMenu(items: [.action(String(localized: "Delete…"), symbol: "trash", destructive: true, run: delete)], width: 180) {
+                AppMenu(items: [.action(String(localized: "Restore…"), symbol: "arrow.counterclockwise", disabled: !canRestore, run: restore),
+                                .divider,
+                                .action(String(localized: "Delete…"), symbol: "trash", destructive: true, run: delete)], width: 180) {
                     QuietMenuLabel(symbol: "ellipsis")
                 }
             }

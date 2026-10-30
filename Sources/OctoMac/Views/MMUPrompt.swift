@@ -140,3 +140,66 @@ extension Color {
         return 0.299 * c.redComponent + 0.587 * c.greenComponent + 0.114 * c.blueComponent > 0.6
     }
 }
+
+/// A question from the printer's firmware, such as "Filament runout. Continue?", shown over the whole window because
+/// the printer is waiting. The answer goes back to the printer, just like pressing the button on its screen.
+struct PrinterPromptOverlay: View {
+    let session: PrinterSession
+    let prompt: ActionPrompt.Prompt
+    @State private var dismissed = false
+
+    var body: some View {
+        if !dismissed {
+            ZStack {
+                Color.black.opacity(0.6).ignoresSafeArea()
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack(spacing: 14) {
+                        Image(systemName: "questionmark.bubble.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                            .foregroundStyle(Palette.warm)
+                            .frame(width: 46, height: 46)
+                            .background(Circle().fill(Palette.warm.opacity(0.15)))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(session.instance.name) is asking").font(Typeface.caption).foregroundStyle(Palette.faint)
+                            Text(verbatim: prompt.text).font(Typeface.title).foregroundStyle(Palette.paper)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                    }
+
+                    if prompt.choices.isEmpty {
+                        Text("The printer didn't offer any answers. Carry on from its own screen.")
+                            .font(Typeface.body).foregroundStyle(Palette.dust)
+                    } else {
+                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 12)], spacing: 12) {
+                            ForEach(Array(prompt.choices.enumerated()), id: \.offset) { index, choice in
+                                Button { session.answerPrinterPrompt(index) } label: {
+                                    Text(verbatim: choice)
+                                        .lineLimit(2)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .buttonStyle(index == 0 ? .plate : .plateQuiet)
+                                .controlSize(.large)
+                                .keyboardShortcut(index == 0 ? .defaultAction : KeyboardShortcut(KeyEquivalent(Character(String(min(9, index + 1)))), modifiers: []))
+                            }
+                        }
+                    }
+
+                    HStack(spacing: 10) {
+                        Text("The printer is waiting. Your answer is sent to it straight away.")
+                            .font(Typeface.caption).foregroundStyle(Palette.faint)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer()
+                        Button("Answer on the printer") { dismissed = true }
+                            .buttonStyle(.plateQuiet)
+                            .keyboardShortcut(.cancelAction)
+                    }
+                }
+                .padding(28)
+                .frame(width: 560)
+                .machined(radius: 22, fill: Palette.extrusion)
+                .shadow(color: .black.opacity(0.5), radius: 40, y: 16)
+            }
+            .transition(.opacity)
+        }
+    }
+}

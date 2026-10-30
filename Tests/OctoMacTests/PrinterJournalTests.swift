@@ -11,11 +11,21 @@ struct PrinterJournalTests {
         journal.queue = [.init(path: "b.gcode", origin: "local", name: "b")]
         journal.notes["a.gcode"] = .init(rating: 4, text: "Needs a brim")
         journal.meshes = [.init(date: Date(timeIntervalSince1970: 1_779_000_000), z: [[0.1, nil], [0.2, -0.1]], x: [0, 200], y: [0, 200])]
+        journal.commands = [.init(name: "Settings", gcode: "M503\nM115")]
 
         let id = UUID()
         defer { PrinterJournal.remove(for: id) }
         journal.save(for: id)
         #expect(PrinterJournal.load(for: id) == journal)
+    }
+
+    @Test func readsFilesFromBeforeSavedCommands() throws {
+        // An older file, with no saved commands or screw settings, keeps its queue and notes.
+        let old = #"{"queue":[{"id":"5C1D5F44-0E5B-4C8A-9F43-1D2E3F405162","path":"b.gcode","origin":"local","name":"b"}],"notes":{"a.gcode":{"rating":4,"text":"Brim"}},"meshes":[]}"#
+        let journal = try JSONDecoder().decode(PrinterJournal.self, from: Data(old.utf8))
+        #expect(journal.queue.count == 1)
+        #expect(journal.notes["a.gcode"]?.rating == 4)
+        #expect(journal.commands.isEmpty)
     }
 
     @Test func emptyNotesAreNotKept() {

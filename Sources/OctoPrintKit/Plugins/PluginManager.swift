@@ -195,6 +195,20 @@ extension OctoPrintClient {
         ])
     }
 
+    /// Installs a plugin from an archive's web address. Progress comes as push messages, like a plugin from the list.
+    public func installPlugin(from url: URL) async throws {
+        _ = try await pluginCommand(Self.pluginManagerID, "install", parameters: ["url": .string(url.absoluteString)])
+    }
+
+    /// Uploads a plugin archive (.zip, .tar.gz), a single-file plugin (.py) or a plugin list (.json) and installs it.
+    public func installPlugin(fileURL: URL) async throws {
+        var form = MultipartForm()
+        form.addFile(name: "file", filename: fileURL.lastPathComponent, contentType: "application/octet-stream", data: try Data(contentsOf: fileURL))
+        var request = makeRequest(.post, "plugin/\(Self.pluginManagerID)/upload_file")
+        request.setValue(form.contentType, forHTTPHeaderField: "Content-Type")
+        _ = try await upload(request, body: form.encoded(), progress: { _ in })
+    }
+
     /// Switches a plugin on or off.
     public func togglePlugin(_ key: String) async throws -> PluginChange {
         Self.change(try await pluginCommand(Self.pluginManagerID, "toggle", parameters: ["plugin": .string(key)]))

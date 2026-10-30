@@ -393,7 +393,7 @@ private struct NotificationToggle: View {
 
     init(kind: NotificationKind) {
         self.kind = kind
-        _enabled = AppStorage(wrappedValue: true, kind.defaultsKey)
+        _enabled = AppStorage(wrappedValue: kind.isOnUntilChanged, kind.defaultsKey)
     }
 
     var body: some View {

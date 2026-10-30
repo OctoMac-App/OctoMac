@@ -47,6 +47,15 @@ enum DemoPlugins {
         return Backup.File(name: "octoprint-backup-\(stamp)-091542.zip", date: date, size: Int64(46_812_330 - week * 412_000))
     }
 
+    static let restoreLog: [String] = [
+        "Unpacking backup to /tmp/tmpk2v9x1/backup",
+        "Restoring OctoPrint settings",
+        "Restoring data folder",
+        "Restoring uploads",
+        "Installing plugins from the backup",
+        "Restore successful! The server will now be restarted!",
+    ]
+
     static func installLog(for plugin: RepositoryPlugin) -> [String] {
         [
             "Installing plugin from \(plugin.archive.absoluteString)",

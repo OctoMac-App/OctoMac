@@ -289,6 +289,7 @@ struct JobPanel: View {
     @Binding var tab: StageTab
     @State private var showingObjects = false
     @State private var showingLayerAlerts = false
+    @State private var confirmingStartOver = false
 
     var body: some View {
         let flags = session.flags
@@ -368,11 +369,13 @@ struct JobPanel: View {
                 Spacer(minLength: 0)
 
                 if !flags.cancelling {
-                    HStack(spacing: 10) {
-                        RateStepper(title: "Speed", value: session.feedRate, step: 5, range: 50...200,
-                                    help: "Print speed (M220). Changes take effect straight away.") { session.setFeedRate($0) }
-                        RateStepper(title: "Flow", value: session.flowRate, step: 1, range: 75...125,
-                                    help: "Extrusion flow (M221). Small changes help with over or under extrusion.") { session.setFlowRate($0) }
+                    // All three in a row when there's room; otherwise the Z nudge goes underneath.
+                    ViewThatFits(in: .horizontal) {
+                        HStack(spacing: 10) { rateSteppers; ZNudgeStepper(session: session) }
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 10) { rateSteppers }
+                            ZNudgeStepper(session: session)
+                        }
                     }
                 }
 
@@ -394,6 +397,19 @@ struct JobPanel: View {
         .machined(radius: 20)
         .sheet(isPresented: $showingObjects) { CancelObjectsSheet(session: session, filament: filament) }
         .sheet(isPresented: $showingLayerAlerts) { LayerAlertsSheet(session: session, filament: filament) }
+        .sheet(isPresented: $confirmingStartOver) {
+            ConfirmSheet(symbol: "backward.end.fill", tint: Palette.warm, title: "Start this print over?",
+                         message: "The printer goes back to the first layer and prints the whole file again. Clear the bed first, since what's printed so far stays where it is.",
+                         confirmTitle: "Start over", onConfirm: { session.startOver() })
+        }
+    }
+
+    @ViewBuilder
+    private var rateSteppers: some View {
+        RateStepper(title: "Speed", value: session.feedRate, step: 5, range: 50...200,
+                    help: "Print speed (M220). Changes take effect straight away.") { session.setFeedRate($0) }
+        RateStepper(title: "Flow", value: session.flowRate, step: 1, range: 75...125,
+                    help: "Extrusion flow (M221). Small changes help with over or under extrusion.") { session.setFlowRate($0) }
     }
 
     private var printStats: some View {
@@ -413,6 +429,16 @@ struct JobPanel: View {
     @ViewBuilder
     private func printActions(entry: FileEntry?, iconsOnly: Bool) -> some View {
         let flags = session.flags
+            if flags.paused && !flags.cancelling {
+                Button { confirmingStartOver = true } label: {
+                    Label("Start over", systemImage: "backward.end")
+                        .lineLimit(1)
+                        .labelStyle(PrintActionLabelStyle(iconsOnly: iconsOnly))
+                }
+                .buttonStyle(.plateQuiet)
+                .fixedSize()
+                .help("Print the file again from the beginning")
+            }
             if flags.isJobActive && !flags.cancelling {
                 let alerts = session.layerAlerts.count
                 Button { showingLayerAlerts = true } label: {
@@ -675,6 +701,10 @@ struct OpenedFilePanel: View {
             }
             .buttonStyle(.plateQuiet)
             .help("Choose another file")
+            Button { session.closeFile() } label: { Image(systemName: "xmark") }
+                .buttonStyle(.plateQuiet)
+                .help("Close this file, so nothing is ready to print")
+                .disabled(!session.canControl)
         }
         .fixedSize()
     }
@@ -1178,6 +1208,111 @@ struct PrinterOfflineBanner: View {
 }
 
 /// A compact "− Speed 100% +" control for adjusting a running print.
+/// Raises or lowers the nozzle a hundredth of a millimetre at a time while printing, for getting the first layer right.
+struct ZNudgeStepper: View {
+    let session: PrinterSession
+    @State private var showingDetail = false
+
+    static let step = 0.01
+
+    var body: some View {
+        let nudge = session.zNudge
+        HStack(spacing: 0) {
+            button("arrow.down", by: -Self.step, help: "Lower the nozzle 0.01 mm, closer to the bed")
+            Button { showingDetail.toggle() } label: {
+                HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    Text("Z nudge").font(Typeface.caption).foregroundStyle(Palette.faint)
+                    Text(verbatim: Self.text(nudge))
+                        .font(Typeface.number(16))
+                        .foregroundStyle(nudge == 0 ? Palette.paper : Palette.warm)
+                        .contentTransition(.numericText(value: nudge))
+                        .frame(minWidth: 52)
+                }
+                .padding(.horizontal, 4)
+                .frame(height: 32)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .help(session.zNudgeUnsupported
+                  ? "This printer doesn't accept Z nudges from OctoPrint. Use its own menu instead."
+                  : "Moves the nozzle up or down while printing, for a better first layer. Lower it if lines have gaps or don't stick; raise it if they're squashed flat.")
+            .popover(isPresented: $showingDetail, arrowEdge: .bottom) { detail }
+            button("arrow.up", by: Self.step, help: "Raise the nozzle 0.01 mm, further from the bed")
+        }
+        .background(Capsule().fill(Palette.graphite))
+        .overlay(Capsule().strokeBorder(Palette.edge, lineWidth: 1))
+        .fixedSize()
+        .opacity(session.zNudgeUnsupported ? 0.5 : 1)
+        .animation(.snappy, value: nudge)
+    }
+
+    /// "+0.03 mm", "-0.02 mm" or "0.00 mm", with the language's own signs and decimal mark.
+    static func text(_ value: Double) -> String {
+        let rounded = (value * 100).rounded() / 100
+        return rounded.formatted(.number.precision(.fractionLength(2)).sign(strategy: .always(includingZero: false))) + " mm"
+    }
+
+    /// "0.02 mm", without a sign, for sentences that say which way.
+    static func distance(_ value: Double) -> String {
+        abs(value).formatted(.number.precision(.fractionLength(2))) + " mm"
+    }
+
+    private func button(_ symbol: String, by amount: Double, help: LocalizedStringKey) -> some View {
+        Button { session.nudgeZ(by: amount) } label: {
+            Image(systemName: symbol)
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(Palette.dust)
+                .frame(width: 32, height: 32)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(session.zNudgeUnsupported)
+        .help(help)
+    }
+
+    private var detail: some View {
+        let nudge = session.zNudge
+        return VStack(alignment: .leading, spacing: 12) {
+            Text("Z nudge").font(Typeface.subhead).foregroundStyle(Palette.paper)
+            Text(nudge == 0
+                 ? "Watch the first layer on the camera, and nudge the nozzle down if lines have gaps or don't stick, or up if they're squashed flat."
+                 : nudge > 0 ? "The nozzle is \(Self.distance(nudge)) further from the bed than when this print started."
+                             : "The nozzle is \(Self.distance(nudge)) closer to the bed than when this print started.")
+                .font(Typeface.body).foregroundStyle(Palette.dust)
+                .fixedSize(horizontal: false, vertical: true)
+            if session.zNudgeUnsupported {
+                Label("This printer doesn't accept Z nudges from OctoPrint. Use its own menu instead.", systemImage: "exclamationmark.triangle.fill")
+                    .font(Typeface.caption).foregroundStyle(Palette.warm)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            if nudge != 0 {
+                HStack(spacing: 8) {
+                    Button("Undo nudges") { session.nudgeZ(by: -nudge) }
+                        .buttonStyle(.plateQuiet)
+                    if session.canSaveZNudge {
+                        Button("Keep in the printer") {
+                            session.saveZNudge()
+                            showingDetail = false
+                        }
+                        .buttonStyle(.plate)
+                    }
+                }
+                Text(session.canSaveZNudge
+                     ? "Keep in the printer sends M500. Printers with a bed probe then keep the nudge as their Z offset. Without a probe, add it to your slicer's Z offset instead."
+                     : session.zNudgeKlipper
+                     ? "To keep it, run Z_OFFSET_APPLY_PROBE and then SAVE_CONFIG in the console once the print has finished."
+                     : "To keep it, set the same change in the printer's own Z offset or Live adjust Z menu.")
+                    .font(Typeface.caption).foregroundStyle(Palette.faint)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(16)
+        .frame(width: 320)
+        .background(Palette.extrusion)
+        .presentationBackground(Palette.extrusion)
+    }
+}
+
 struct RateStepper: View {
     let title: LocalizedStringKey
     let value: Double
