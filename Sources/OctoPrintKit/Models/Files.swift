@@ -4,7 +4,13 @@ import Foundation
 
 public enum FileOrigin: String, Codable, Sendable, CaseIterable {
     case local
+    /// The printer's SD card, before OctoPrint 2.0.
     case sdcard
+    /// The printer's own storage (its SD card), from OctoPrint 2.0, which renamed `sdcard`.
+    case printer
+
+    /// Stored on the printer rather than the Raspberry Pi.
+    public var isOnPrinter: Bool { self != .local }
 }
 
 public struct GcodeAnalysis: Decodable, Sendable, Hashable {

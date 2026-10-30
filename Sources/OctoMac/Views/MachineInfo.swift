@@ -152,6 +152,7 @@ struct LogsPanel: View {
     let session: PrinterSession
     @State private var viewing: LogFile?
     @State private var deleting: LogFile?
+    @State private var settingLevels = false
 
     var body: some View {
         StagePanel(title: "Logs", detail: session.logs.isEmpty ? nil : "\(session.logs.count) files") {
@@ -167,10 +168,18 @@ struct LogsPanel: View {
                 }
                 .frame(maxHeight: 280)
             }
+            HStack {
+                Spacer()
+                Button("How much to log…") { settingLevels = true }
+                    .buttonStyle(.plateQuiet)
+                    .controlSize(.small)
+                    .help("Log more detail from parts of OctoPrint, or the whole conversation with the printer, while finding a fault")
+            }
         }
         .sheet(item: $viewing) { file in
             LogViewer(session: session, file: file)
         }
+        .sheet(isPresented: $settingLevels) { LoggingSheet(session: session) }
         .sheet(item: $deleting) { file in
             ConfirmSheet(symbol: "trash", title: "Delete this log?", message: "OctoPrint removes it from the Raspberry Pi. Logs are useful when reporting a problem, so keep recent ones.",
                          confirmTitle: "Delete", onConfirm: { session.deleteLog(file) }) {

@@ -200,6 +200,19 @@ final class PrinterSession {
     private(set) var updateLog: [String] = []
     /// A backup being restored, with OctoPrint's log as it goes.
     private(set) var restore: BackupRestore?
+    /// Problems OctoPrint's File Check found, keyed by file path on the Raspberry Pi.
+    private(set) var fileProblems: [String: [String]] = [:]
+    /// The file being copied to the printer's SD card, while OctoPrint sends it.
+    private(set) var sdTransfer: String?
+    /// Timelapse pictures taken during this print, and the video being made from them, if any.
+    private(set) var timelapsePictures = 0
+    private(set) var timelapseRendering: String?
+    /// Temperature offsets OctoPrint adds to targets from the file, per heater ("tool0", "bed").
+    private(set) var offsets: [String: Double] = [:]
+    /// How much OctoPrint logs, once asked for.
+    private(set) var logging: LoggingSetup?
+    /// What uninstalled plugins left behind, once asked for.
+    private(set) var pluginLeftovers: [PluginLeftovers]?
     /// How far the nozzle has been nudged during this print, in mm. Above zero is further from the bed.
     private(set) var zNudge = 0.0
     /// Set when the printer answers a nudge with "Unknown command".
@@ -897,6 +910,101 @@ final class PrinterSession {
         }
     }
 
+    // MARK: Logging
+
+    func refreshLogging() async {
+        guard !isDemoSession else {
+            if logging == nil {
+                logging = LoggingSetup(available: ["octoprint.plugins.backup", "octoprint.plugins.pluginmanager", "octoprint.server",
+                                                   "octoprint.server.util.flask", "octoprint.util.comm"],
+                                       levels: ["octoprint.util.comm": "DEBUG"], serialLog: false)
+            }
+            return
+        }
+        logging = await attempt { [client] in try await client.loggingSetup() } ?? logging
+        // OctoPrint 2.0's logging plugin no longer says whether the serial log is on; its settings do.
+        if let on = settings?.value(at: "serial", "log")?.boolValue ?? settings?.value(at: "plugins", "serial_connector", "log")?.boolValue {
+            logging?.serialLog = on
+        }
+    }
+
+    func saveLoggingLevels(_ levels: [String: String]) {
+        logging?.levels = levels
+        guard !isDemoSession else { return }
+        perform { [client, weak self] in
+            try await client.setLoggingLevels(levels)
+            await self?.refreshLogging()
+        }
+    }
+
+    /// Logs the whole conversation with the printer to serial.log. Useful for finding a fault; slows OctoPrint a little.
+    func setSerialLog(_ on: Bool) {
+        logging?.serialLog = on
+        saveSettings(["serial": ["log": .bool(on)]])
+    }
+
+    // MARK: Plugin leftovers
+
+    func refreshPluginLeftovers() async {
+        guard !isDemoSession else {
+            if pluginLeftovers == nil { pluginLeftovers = [PluginLeftovers(key: "octolapse", settings: true, data: true)] }
+            return
+        }
+        pluginLeftovers = try? await client.pluginLeftovers()
+    }
+
+    /// Removes what an uninstalled plugin left behind, or every plugin's leftovers when `key` is nil.
+    func cleanUpLeftovers(_ key: String?) {
+        guard !isDemoSession else {
+            pluginLeftovers?.removeAll { key == nil || $0.key == key }
+            pluginsNeedRestart = true
+            return
+        }
+        perform { [client, weak self] in
+            if let key { try await client.cleanUpPlugin(key) } else { try await client.cleanUpAllPlugins() }
+            self?.pluginsNeedRestart = true
+            await self?.refreshPluginLeftovers()
+        }
+    }
+
+    // MARK: Global API key
+
+    /// OctoPrint's single key for the whole server, from before application keys. Nil when there isn't one, or
+    /// OctoPrint didn't say.
+    var globalAPIKey: String? { settings?.value(at: "api", "key")?.stringValue.flatMap { $0.isEmpty ? nil : $0 } }
+
+    /// OctoPrint 2.1 removes the global key altogether, along with making or removing one.
+    var globalAPIKeyRetired: Bool { isOctoPrint(atLeast: 2, 1) }
+
+    /// OctoMac signs in with the global key itself, so removing it would lock OctoMac out.
+    var usesGlobalAPIKey: Bool { globalAPIKey != nil && globalAPIKey == client.apiKey }
+
+    /// Makes a new global key and puts it on the clipboard, so it's never shown on screen.
+    func makeGlobalAPIKey() {
+        guard !isDemoSession, !usesGlobalAPIKey else { return }
+        perform { [client, weak self] in
+            if let key = try await client.makeGlobalAPIKey() {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(key, forType: .string)
+            }
+            await self?.refreshSettings()
+        }
+    }
+
+    func removeGlobalAPIKey() {
+        guard !isDemoSession, !usesGlobalAPIKey else { return }
+        perform { [client, weak self] in
+            try await client.removeGlobalAPIKey()
+            await self?.refreshSettings()
+        }
+    }
+
+    /// Fetches the camera's still picture from the Raspberry Pi's side, to check the address works.
+    func checkSnapshot(_ address: String) async -> AddressCheck? {
+        guard !isDemoSession else { return AddressCheck(ok: true, status: 200, contentType: "image/jpeg") }
+        return await attempt { [client] in try await client.checkSnapshot(address) }
+    }
+
     // MARK: OctoPrint settings
 
     /// Saves part of OctoPrint's settings, such as `{"serial": {"autoconnect": true}}`, then reads them back.
@@ -999,6 +1107,7 @@ final class PrinterSession {
         files = list.files
         freeSpace = list.free
         prefetchThumbnails()
+        if let problems = try? await client.fileCheckResults() { fileProblems = problems }
     }
 
     /// Warms the thumbnail cache so this printer's files show their previews the moment it's selected.
@@ -1125,6 +1234,15 @@ final class PrinterSession {
             Task { [client, weak self] in self?.firmwareWarnings = (try? await client.firmwareWarnings()) ?? [] }
         case .plugin(let id, let data) where id == SoftwareUpdateMessage.pluginID:
             handleSoftwareUpdate(data)
+        case .plugin(let id, let data) where id == FileCheck.pluginID:
+            switch FileCheck.Message(data) {
+            case .found(let storage, let path, let problems) where storage == "local" && !problems.isEmpty:
+                fileProblems[path] = problems
+            case .found, .updated:
+                Task { [client, weak self] in if let problems = try? await client.fileCheckResults() { self?.fileProblems = problems } }
+            case nil:
+                break
+            }
         default:
             break
         }
@@ -1142,6 +1260,7 @@ final class PrinterSession {
         }
         if let job = payload.job { self.job = job }
         if let progress = payload.progress { self.progress = progress }
+        if let offsets = payload.offsets { self.offsets = offsets }
         if payload.state?.flags.closedOrError != true { currentZ = payload.currentZ }
         if let latest = payload.temps.last {
             heaters.merge(latest.heaters.filter { !isDuplicateTool($0.key) }) { _, new in new }
@@ -1328,6 +1447,7 @@ final class PrinterSession {
         case "PrintStarted":
             layerProgress = nil
             zNudge = 0
+            timelapsePictures = 0
             layerAlerts = []
             firstLayerChecked = false
             printObjects = []
@@ -1337,8 +1457,26 @@ final class PrinterSession {
                 try? await Task.sleep(for: .seconds(3))
                 await refreshPrintObjects()
             }
-        case "MovieDone", "MovieFailed", "MovieRendering":
+        case "CaptureDone":
+            timelapsePictures += 1
+        case "MovieRendering":
+            timelapseRendering = event.payload["movie_basename"]?.stringValue ?? event.payload["gcode"]?.stringValue ?? ""
             Task { await refreshTimelapses() }
+        case "MovieDone", "MovieFailed":
+            timelapseRendering = nil
+            if event.type == "MovieFailed" {
+                let name = event.payload["movie_basename"]?.stringValue ?? ""
+                error = ErrorBanner(message: String(localized: "OctoPrint couldn't make the timelapse video \(name). Its log may say why."))
+            }
+            Task { await refreshTimelapses() }
+        case "TransferStarted":
+            sdTransfer = event.payload["remote"]?.stringValue ?? event.payload["local"]?.stringValue ?? ""
+        case "TransferDone", "TransferFailed":
+            if event.type == "TransferFailed" {
+                error = ErrorBanner(message: String(localized: "Couldn't copy \(sdTransfer ?? "") to the SD card."))
+            }
+            sdTransfer = nil
+            Task { await refreshFiles() }
         case "UpdatedFiles", "FileAdded", "FileRemoved", "FolderAdded", "FolderRemoved", "MetadataAnalysisFinished", "PrintDone":
             Task { await refreshFiles() }
         case "Connected", "Disconnected", "Connecting", "PrinterProfileModified", "Error":
@@ -1419,6 +1557,31 @@ final class PrinterSession {
         heaters.contains { key, data in
             guard HeaterKind(key: key).isHeater, let actual = data.actual, let target = data.target else { return false }
             return target > 0 && actual < target - 3
+        }
+    }
+
+    /// Tells OctoPrint to carry on as if the printer had answered, for a conversation that's stuck waiting.
+    func unstickConnection() {
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.fakeAck() }
+    }
+
+    /// Which extruder moves and extrudes, on a printer with more than one.
+    func selectTool(_ index: Int) {
+        guard !isDemoSession else { return }
+        perform { [client] in try await client.selectTool("tool\(index)") }
+    }
+
+    /// Adds `offset` degrees to the targets the file sets for a heater ("tool0", "bed"), for this print and the next.
+    func setOffset(_ offset: Double, heater: String) {
+        offsets[heater] = offset
+        guard !isDemoSession else { return }
+        perform { [client] in
+            if heater == "bed" {
+                try await client.setBedOffset(offset)
+            } else {
+                try await client.setToolOffsets([heater: offset])
+            }
         }
     }
 
@@ -1678,6 +1841,30 @@ final class PrinterSession {
         }
     }
 
+    /// Renames a file or folder where it is. A file keeps its extension if the new name leaves it off.
+    func rename(_ file: FileEntry, to newName: String) {
+        let parent = file.path.split(separator: "/").dropLast().joined(separator: "/")
+        let name = Self.renamed(file.name, to: newName, isFolder: file.isFolder)
+        guard name != file.name else { return }
+        if fileEntries(in: parent).contains(where: { $0.name.caseInsensitiveCompare(name) == .orderedSame && $0.path != file.path }) {
+            error = ErrorBanner(message: String(localized: "There's already something called \(name) here."))
+            return
+        }
+        let target = parent.isEmpty ? name : parent + "/" + name
+        perform { [client, weak self] in
+            try await client.move(file.path, to: target, origin: file.origin)
+            await self?.refreshFiles()
+        }
+    }
+
+    /// "benchy" for "old.gcode" becomes "benchy.gcode"; "benchy.gcode" stays as it is.
+    nonisolated static func renamed(_ oldName: String, to newName: String, isFolder: Bool) -> String {
+        let trimmed = newName.trimmingCharacters(in: .whitespaces)
+        guard !isFolder, let dot = oldName.lastIndex(of: ".") else { return trimmed }
+        let ext = String(oldName[dot...])
+        return trimmed.lowercased().hasSuffix(ext.lowercased()) ? trimmed : trimmed + ext
+    }
+
     /// "benchy.gcode" becomes "benchy copy.gcode", then "benchy copy 2.gcode" and so on, avoiding names in use.
     nonisolated static func copyName(for name: String, avoiding taken: Set<String>) -> String {
         let dot = name.lastIndex(of: ".")
@@ -1700,6 +1887,17 @@ final class PrinterSession {
             level = level.first { $0.isFolder && $0.name == name }?.children ?? []
         }
         return level
+    }
+
+    /// The SD card's name in OctoPrint's file API: "sdcard", or "printer" from OctoPrint 2.0.
+    private var sdOrigin: FileOrigin { isOctoPrint(atLeast: 2, 0) ? .printer : .sdcard }
+
+    /// True when the server is this version of OctoPrint or newer ("2.0.0rc7" counts as 2.0).
+    func isOctoPrint(atLeast major: Int, _ minor: Int) -> Bool {
+        guard let server = version?.server else { return false }
+        let parts = server.split(separator: ".").map { Int($0.prefix { $0.isNumber }) ?? 0 }
+        let (a, b) = (parts.first ?? 0, parts.count > 1 ? parts[1] : 0)
+        return a > major || (a == major && b >= minor)
     }
 
     /// Unloads the file OctoPrint has open, so nothing is ready to print.
@@ -1732,12 +1930,13 @@ final class PrinterSession {
         uploads.append(contentsOf: items)
         let client = self.client
         let handlers = items.map { uploadProgressHandler($0.id) }
+        let origin = toSDCard ? sdOrigin : FileOrigin.local
         Task { [weak self] in
             for ((url, item), onProgress) in zip(zip(urls, items), handlers) {
                 let scoped = url.startAccessingSecurityScopedResource()
                 defer { if scoped { url.stopAccessingSecurityScopedResource() } }
                 do {
-                    try await client.upload(fileURL: url, to: toSDCard ? .sdcard : .local, folder: toSDCard ? nil : folder,
+                    try await client.upload(fileURL: url, to: origin, folder: toSDCard ? nil : folder,
                                             select: print, print: print && urls.count == 1, progress: onProgress)
                     self?.updateUpload(item.id) { $0.fraction = 1; $0.state = .done }
                 } catch {
@@ -2013,6 +2212,11 @@ extension PrinterSession {
         var journal = PrinterJournal()
         journal.notes["spool_holder_v4_PETG.gcode"] = .init(rating: 5, text: "Brim helped. 245\u{00B0} hotend, no stringing.")
         journal.notes["3dbenchy.gcode"] = .init(rating: 3, text: "Slight ringing on the hull; try 90% speed.")
+        journal.commands = [
+            .init(name: "Show settings", gcode: "M503"),
+            .init(name: "Firmware info", gcode: "M115"),
+            .init(name: "Park the nozzle", gcode: "G91\nG1 Z10 F600\nG90\nG1 X0 Y200 F6000"),
+        ]
         if !printing {
             journal.queue = [
                 .init(path: "cable_chain_link.gcode", origin: "local", name: "cable chain link"),

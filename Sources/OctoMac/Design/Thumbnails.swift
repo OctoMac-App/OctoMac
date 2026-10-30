@@ -89,14 +89,21 @@ struct SlicedName {
         while ["gcode", "gco", "g", "bgcode"].contains((base as NSString).pathExtension.lowercased()) {
             base = (base as NSString).deletingPathExtension
         }
+        // A copy ("…_2h16m_copy", "…_2h16m_copy_2") keeps its slicer details; "copy" moves to the end of the title.
+        var copy = ""
+        if let match = base.firstMatch(of: /(?i)[_ ](copy(?:[_ ]\d+)?)$/) {
+            copy = " " + match.1.replacingOccurrences(of: "_", with: " ")
+            base.removeSubrange(match.range)
+        }
         let parts = base.split(separator: "_").map(String.init)
         if parts.count >= 5,
            parts[parts.count - 4].range(of: #"^\d+(\.\d+)?mm$"#, options: .regularExpression) != nil,
            parts[parts.count - 1].range(of: #"^(\d+d)?(\d+h)?\d+m$"#, options: .regularExpression) != nil
         {
-            title = parts.dropLast(4).joined(separator: "_").replacingOccurrences(of: "_", with: " ")
+            title = parts.dropLast(4).joined(separator: "_").replacingOccurrences(of: "_", with: " ") + copy
             tags = Array(parts[(parts.count - 4)...(parts.count - 2)])
         } else {
+            base += copy.replacingOccurrences(of: " ", with: "_")
             title = base.replacingOccurrences(of: "_", with: " ")
             tags = []
         }
@@ -150,7 +157,7 @@ struct FilePreview: View {
                 section("File") {
                     row("Name", file.name, selectable: true)
                     row("Folder", folder)
-                    row("Stored on", file.origin == .sdcard ? String(localized: "Printer's SD card") : String(localized: "OctoPrint (Raspberry Pi)"))
+                    row("Stored on", file.origin.isOnPrinter ? String(localized: "Printer's SD card") : String(localized: "OctoPrint (Raspberry Pi)"))
                     if let size = file.size {
                         row("Size", String(localized: "\(Fmt.bytes(size))  (\(size.formatted()) bytes)"))
                     }

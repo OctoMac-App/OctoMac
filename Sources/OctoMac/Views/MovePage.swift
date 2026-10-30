@@ -7,6 +7,8 @@ struct MovePage: View {
     let session: PrinterSession
     @AppStorage("jogStep") private var step = 10.0
     @AppStorage("extrudeAmount") private var extrudeAmount = 5.0
+    /// The extruder last chosen here. OctoPrint doesn't report it, so it starts at the first.
+    @State private var activeTool = 0
     @State private var fan = 100.0
 
     private let steps: [Double] = [0.1, 1, 10, 50, 100]
@@ -63,6 +65,16 @@ StagePanel(title: "Print head", detail: "Step \(Fmt.number(step)) mm", fills: tr
     private var controls: some View {
 VStack(spacing: 20) {
     StagePanel(title: "Filament") {
+        // Printers with several nozzles: choose which one moves and extrudes. (Not for a shared nozzle, where
+        // changing tool loads a different filament.)
+        if let extruders = session.currentProfile?.extruder, (extruders.count ?? 1) > 1, extruders.sharedNozzle != true {
+            HStack(spacing: 10) {
+                Text("Extruder").font(Typeface.bodyStrong).foregroundStyle(Palette.dust)
+                CapsulePicker(selection: Binding(get: { activeTool }, set: { activeTool = $0; session.selectTool($0) }),
+                              options: (0..<(extruders.count ?? 1)).map { ($0, LocalizedStringKey("\($0 + 1)")) })
+                Spacer(minLength: 0)
+            }
+        }
         HStack(spacing: 10) {
             TextField("mm", value: $extrudeAmount, format: .number)
                 .plateField()

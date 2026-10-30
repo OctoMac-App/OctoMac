@@ -11,6 +11,7 @@ struct PluginsPanel: View {
     @State private var updating: [String]?
     @State private var restarting = false
     @State private var adding = false
+    @State private var cleaningUp = false
 
     private var shown: [InstalledPlugin] { plugins.filter { showBuiltIn || !$0.bundled } }
     private var updatable: [String: SoftwareComponent] {
@@ -61,6 +62,9 @@ struct PluginsPanel: View {
                         withAnimation(.snappy) { showBuiltIn.toggle() }
                     }
                     .buttonStyle(.plateQuiet)
+                    Button("Clean up…") { cleaningUp = true }
+                        .buttonStyle(.plateQuiet)
+                        .help("Remove settings and data left behind by plugins you've uninstalled")
                     Spacer()
                     Button { adding = true } label: {
                         Label("Add plugins…", systemImage: "plus")
@@ -71,6 +75,7 @@ struct PluginsPanel: View {
                 .controlSize(.small)
             }
         }
+        .sheet(isPresented: $cleaningUp) { PluginLeftoversSheet(session: session) }
         .sheet(isPresented: $adding) { AddPluginsSheet(session: session) }
         .sheet(item: $uninstalling) { plugin in
             ConfirmSheet(symbol: "trash", title: "Uninstall \(plugin.name)?",

@@ -180,8 +180,11 @@ struct HeatEditor: View {
     let current: Double
     let done: () -> Void
     @State private var value: Double = 0
+    @State private var offset: Double = 0
 
     private var kind: HeaterKind { HeaterKind(key: key) }
+    /// OctoPrint can add an offset to the temperatures a file sets, for nozzles and beds.
+    private var hasOffset: Bool { kind != .chamber }
 
     private var presets: [Double] {
         let fromSettings = session.temperaturePresets.map { kind == .bed ? $0.bed : $0.extruder }
@@ -204,6 +207,22 @@ struct HeatEditor: View {
                     Chip(verbatim: Fmt.deg(preset), selected: value == preset) { value = preset }
                 }
             }
+            if hasOffset {
+                Divider().overlay(Palette.edge)
+                HStack(spacing: 10) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Offset").font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                        Text("Added to the temperatures the file asks for.").font(Typeface.caption).foregroundStyle(Palette.faint)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    Spacer()
+                    Text(verbatim: Self.offsetText(offset))
+                        .font(Typeface.number(16)).foregroundStyle(offset == 0 ? Palette.paper : Palette.warm)
+                        .frame(minWidth: 52, alignment: .trailing)
+                    Stepper("", value: $offset, in: -50...50, step: 1) { editing in if !editing { session.setOffset(offset, heater: key) } }
+                        .labelsHidden()
+                }
+            }
             HStack {
                 Button("Turn off") { session.setTarget(0, heater: key); done() }
                     .buttonStyle(.plateQuiet)
@@ -216,7 +235,19 @@ struct HeatEditor: View {
         .padding(20)
         .frame(width: 320)
         .background(Palette.extrusion)
-        .onAppear { value = current > 0 ? current : (presets.first ?? 0) }
+        .onAppear {
+            value = current > 0 ? current : (presets.first ?? 0)
+            offset = session.offsets[key] ?? 0
+        }
+    }
+}
+
+extension HeatEditor {
+    /// "+5°C", or "+9°F" in Fahrenheit: a difference, so no 32 is added.
+    static func offsetText(_ celsius: Double) -> String {
+        let unit = TemperatureUnit.current
+        let shown = unit == .celsius ? celsius : celsius * 9 / 5
+        return shown.formatted(.number.precision(.fractionLength(0)).sign(strategy: .always(includingZero: false))) + unit.symbol
     }
 }
 

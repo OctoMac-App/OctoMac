@@ -116,14 +116,25 @@ struct NameSheet: View {
     let title: LocalizedStringKey
     let placeholder: LocalizedStringKey
     let confirmTitle: LocalizedStringKey
+    var symbol = "folder.badge.plus"
     let onConfirm: (String) -> Void
-    @State private var name = ""
+    @State private var name: String
     @Environment(\.dismiss) private var dismiss
+
+    init(title: LocalizedStringKey, placeholder: LocalizedStringKey, confirmTitle: LocalizedStringKey, symbol: String = "folder.badge.plus",
+         initial: String = "", onConfirm: @escaping (String) -> Void) {
+        self.title = title
+        self.placeholder = placeholder
+        self.confirmTitle = confirmTitle
+        self.symbol = symbol
+        self.onConfirm = onConfirm
+        _name = State(initialValue: initial)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
             HStack(spacing: 14) {
-                Image(systemName: "folder.badge.plus")
+                Image(systemName: symbol)
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Palette.accent)
                     .frame(width: 44, height: 44)

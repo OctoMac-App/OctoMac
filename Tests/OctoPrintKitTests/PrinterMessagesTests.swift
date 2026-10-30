@@ -66,3 +66,41 @@ struct PrinterMessagesTests {
         #expect(merged.value(at: "webcam", "streamUrl")?.stringValue == "/webcam/")
     }
 }
+
+struct HousekeepingTests {
+    @Test func readsFileCheckResults() {
+        let results = FileCheck.results(["check_result": ["local:prints/benchy.gcode": ["leaked_api_key"], "local:ok.gcode": [],
+                                                          "sdcard:other.gco": ["travel_speed"]]])
+        #expect(results == ["prints/benchy.gcode": ["leaked_api_key"]])
+        #expect(FileCheck.Message(["action": "notify", "storage": "local", "path": "a.gcode", "types": ["travel_speed"]])
+            == .found(storage: "local", path: "a.gcode", problems: ["travel_speed"]))
+        #expect(FileCheck.Message(["action": "check_update"]) == .updated)
+        #expect(FileCheck.helpURL(for: "leaked_api_key")?.absoluteString == "https://faq.octoprint.org/file-check-leaked-api-key")
+    }
+
+    @Test func readsLoggingSetup() {
+        let setup = LoggingSetup(["setup": ["loggers": ["octoprint.server", "octoprint.util.comm"], "levels": ["octoprint.util.comm": "DEBUG"]],
+                                  "serial_log": ["enabled": true]])
+        #expect(setup.available == ["octoprint.server", "octoprint.util.comm"])
+        #expect(setup.levels == ["octoprint.util.comm": "DEBUG"])
+        #expect(setup.serialLog)
+    }
+
+    @Test func readsPluginLeftovers() {
+        let leftovers = PluginLeftovers.list(["orphan_data": ["octolapse": ["settings": true, "data": false, "disabled": false]]])
+        #expect(leftovers == [PluginLeftovers(key: "octolapse", settings: true, data: false)])
+    }
+
+    @Test func readsAddressChecks() {
+        let check = AddressCheck(["url": "http://127.0.0.1:8080/?action=snapshot", "status": 200, "result": true,
+                                  "response": ["assumed_content_type": "image/jpeg", "content": "/9j/"]])
+        #expect(check.ok && check.status == 200 && check.contentType == "image/jpeg")
+        #expect(check.content == Data([0xFF, 0xD8, 0xFF]))
+    }
+
+    @Test func knowsOctoPrintTwosStorageName() throws {
+        let entry = try JSONDecoder().decode(FileEntry.self, from: Data(#"{"name": "a.gco", "origin": "printer"}"#.utf8))
+        #expect(entry.origin == .printer && entry.origin.isOnPrinter)
+        #expect(!FileOrigin.local.isOnPrinter)
+    }
+}

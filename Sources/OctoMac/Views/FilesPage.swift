@@ -15,6 +15,7 @@ struct FilesPage: View {
     @State private var importing = false
     /// The next upload goes to the printer's SD card rather than the Raspberry Pi.
     @State private var importingToSD = false
+    @State private var renaming: FileEntry?
     @State private var dropTargeted = false
     @State private var creatingFolder = false
     @State private var pendingDelete: FileEntry?
@@ -38,6 +39,18 @@ struct FilesPage: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
+            if let copying = session.sdTransfer {
+                HStack(spacing: 10) {
+                    ProgressView().controlSize(.small).tint(Palette.accent)
+                    Text(session.progress?.completion.map { String(localized: "Copying \(copying) to the SD card, \(Fmt.percent($0)).") }
+                         ?? String(localized: "Copying \(copying) to the SD card."))
+                        .font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
+                    Text("The printer can't do anything else until it's done.").font(Typeface.caption).foregroundStyle(Palette.faint)
+                    Spacer(minLength: 0)
+                }
+                .padding(12)
+                .machined(radius: 12, fill: Palette.graphite)
+            }
             if !session.journal.queue.isEmpty {
                 QueuePanel(session: session, filament: filament)
             }
@@ -86,6 +99,8 @@ struct FilesPage: View {
                                     queue: { session.addToQueue(file) },
                                     queued: session.journal.queue.contains { $0.path == file.path },
                                     duplicate: file.origin == .local && !file.isFolder ? { session.duplicate(file) } : nil,
+                                    rename: file.origin == .local ? { renaming = file } : nil,
+                                    problems: file.origin == .local ? session.fileProblems[file.path] ?? [] : [],
                                     delete: { pendingDelete = file })
                                 // Drag a file or folder onto a folder (or a folder name in the path above) to move it there.
                                 .draggable(FileDrag.payload(for: file, instance: session.instance.id)) {
@@ -164,6 +179,12 @@ struct FilesPage: View {
         .sheet(isPresented: $creatingFolder) {
             NameSheet(title: "New folder", placeholder: "Folder name", confirmTitle: "Create folder") { name in
                 session.createFolder(name, in: folderPath)
+            }
+        }
+        .sheet(item: $renaming) { file in
+            NameSheet(title: file.isFolder ? "Rename folder" : "Rename file", placeholder: "New name", confirmTitle: "Rename",
+                      symbol: "pencil", initial: file.name) { name in
+                session.rename(file, to: name)
             }
         }
         .sheet(item: $sending) { file in
@@ -308,6 +329,10 @@ struct FileRow: View {
     var queued = false
     /// Nil where a copy can't be made (folders, and files on the SD card).
     var duplicate: (() -> Void)?
+    /// Nil for files on the SD card, which OctoPrint can't rename.
+    var rename: (() -> Void)?
+    /// What OctoPrint's File Check found in this file.
+    var problems: [String] = []
     let delete: () -> Void
     @State private var hovering = false
     @State private var previewing = false
@@ -323,6 +348,11 @@ struct FileRow: View {
                             .font(Typeface.text(14, .demibold))
                             .foregroundStyle(Palette.paper)
                             .lineLimit(1)
+                        if !problems.isEmpty {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(Palette.warm)
+                                .help(problems.map(FileProblems.describe).joined(separator: "\n\n"))
+                        }
                         if !file.isFolder, let date = file.date, !compact {
                             Text("added \(date.formatted(.relative(presentation: .named)))")
                                 .font(Typeface.caption)
@@ -402,6 +432,7 @@ struct FileRow: View {
                 }
                 if let duplicate { Button("Duplicate", action: duplicate) }
             }
+            if let rename { Button("Rename…", action: rename) }
             Divider()
             Button("Delete…", role: .destructive, action: delete)
         }

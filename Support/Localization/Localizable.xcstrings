@@ -3949,6 +3949,100 @@
         }
       }
     },
+    "%lld": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        }
+      }
+    },
     "%lld added, %lld built in": {
       "localizations": {
         "cs": {
@@ -15509,6 +15603,100 @@
         }
       }
     },
+    "Added to the temperatures the file asks for.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přičte se k teplotám, které soubor požaduje."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn cael ei ychwanegu at y tymereddau mae'r ffeil yn gofyn amdanyn nhw."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lægges til de temperaturer, filen beder om."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird zu den Temperaturen addiert, die die Datei vorgibt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added to the temperatures the file asks for."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Added to the temperatures the file asks for."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se suma a las temperaturas que pide el archivo."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisätään tiedoston pyytämiin lämpötiloihin."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S’ajoute aux températures demandées par le fichier."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si aggiunge alle temperature richieste dal file."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Legges til temperaturene filen ber om."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wordt opgeteld bij de temperaturen die het bestand vraagt."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dodawane do temperatur, których wymaga plik."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Somado às temperaturas que o ficheiro pede."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Läggs till de temperaturer som filen begär."
+          }
+        }
+      }
+    },
     "Address": {
       "localizations": {
         "cs": {
@@ -16355,6 +16543,100 @@
         }
       }
     },
+    "An entry in the list of switched-off plugins": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Položka v seznamu vypnutých pluginů"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cofnod yn y rhestr o ategion sydd wedi'u diffodd"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En post på listen over plugins, der er slået fra"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Eintrag in der Liste ausgeschalteter Plugins"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An entry in the list of switched-off plugins"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An entry in the list of switched-off plugins"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una entrada en la lista de plugins desactivados"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rivi pois päältä kytkettyjen lisäosien luettelossa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une entrée de la liste des plugins désactivés"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una voce nell'elenco dei plugin disattivati"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En oppføring i listen over avslåtte utvidelser"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Een item in de lijst met uitgeschakelde plug-ins"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pozycja na liście wyłączonych wtyczek"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uma entrada na lista de plugins desativados"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En post i listan över avstängda plugin"
+          }
+        }
+      }
+    },
     "And %lld earlier": {
       "localizations": {
         "cs": {
@@ -17049,6 +17331,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pågående utskrifter går förlorade och kan inte återupptas."
+          }
+        }
+      }
+    },
+    "Anything still using it stops working. Apps that asked for their own key, like OctoMac, keep working.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vše, co ho ještě používá, přestane fungovat. Aplikace, které si vyžádaly vlastní klíč, jako OctoMac, budou fungovat dál."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bydd unrhyw beth sy'n dal i'w defnyddio yn stopio gweithio. Bydd apiau a ofynnodd am eu hallwedd eu hunain, fel OctoMac, yn dal i weithio."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alt, der stadig bruger den, holder op med at virke. Apps, der har bedt om deres egen nøgle, som OctoMac, virker fortsat."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles, was ihn noch nutzt, funktioniert nicht mehr. Apps, die einen eigenen Schlüssel angefordert haben, wie OctoMac, funktionieren weiter."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anything still using it stops working. Apps that asked for their own key, like OctoMac, keep working."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anything still using it stops working. Apps that asked for their own key, like OctoMac, keep working."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo lo que aún la use dejará de funcionar. Las apps que pidieron su propia clave, como OctoMac, siguen funcionando."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaikki, mikä vielä käyttää sitä, lakkaa toimimasta. Omaa avainta pyytäneet sovellukset, kuten OctoMac, toimivat edelleen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce qui l’utilise encore cessera de fonctionner. Les apps qui ont demandé leur propre clé, comme OctoMac, continuent de fonctionner."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutto ciò che la usa ancora smetterà di funzionare. Le app che hanno chiesto una chiave propria, come OctoMac, continuano a funzionare."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alt som fortsatt bruker den, slutter å virke. Apper som har bedt om sin egen nøkkel, som OctoMac, virker fortsatt."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles wat hem nog gebruikt, werkt dan niet meer. Apps die een eigen sleutel hebben gevraagd, zoals OctoMac, blijven werken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wszystko, co nadal go używa, przestanie działać. Aplikacje, które poprosiły o własny klucz, takie jak OctoMac, będą działać dalej."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tudo o que ainda a usa deixa de funcionar. As apps que pediram a sua própria chave, como o OctoMac, continuam a funcionar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allt som fortfarande använder den slutar fungera. Appar som har bett om en egen nyckel, som OctoMac, fortsätter att fungera."
           }
         }
       }
@@ -18366,6 +18742,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tillbaka till OctoMac"
+          }
+        }
+      }
+    },
+    "Back to normal": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zpět na normální"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn ôl i'r arfer"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilbage til normal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zurück auf normal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to normal"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to normal"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a lo normal"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Takaisin normaaliksi"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revenir à la normale"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Torna normale"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tilbake til normalt"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terug naar normaal"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Przywróć normalny"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voltar ao normal"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tillbaka till normalt"
           }
         }
       }
@@ -23448,6 +23918,100 @@
         }
       }
     },
+    "Choose a part of OctoPrint…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vybrat část OctoPrintu…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dewis rhan o OctoPrint…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vælg en del af OctoPrint…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Teil von OctoPrint auswählen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a part of OctoPrint…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a part of OctoPrint…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elige una parte de OctoPrint…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valitse OctoPrintin osa…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisir une partie d’OctoPrint…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scegli una parte di OctoPrint…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Velg en del av OctoPrint …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kies een onderdeel van OctoPrint…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wybierz część OctoPrint…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escolher uma parte do OctoPrint…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Välj en del av OctoPrint…"
+          }
+        }
+      }
+    },
     "Choose a preset": {
       "localizations": {
         "cs": {
@@ -24478,6 +25042,194 @@
           "stringUnit": {
             "state": "translated",
             "value": "Biografläge (F)"
+          }
+        }
+      }
+    },
+    "Clean up after old plugins": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uklidit po starých pluginech"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tacluso ar ôl hen ategion"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ryd op efter gamle plugins"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach alten Plugins aufräumen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean up after old plugins"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean up after old plugins"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpiar restos de plugins antiguos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siivoa vanhojen lisäosien jäljet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nettoyer après d’anciens plugins"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulisci i resti dei vecchi plugin"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rydd opp etter gamle utvidelser"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruim op na oude plug-ins"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posprzątaj po starych wtyczkach"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpar restos de plugins antigos"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Städa upp efter gamla plugin"
+          }
+        }
+      }
+    },
+    "Clean up…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uklidit…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tacluso…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ryd op…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufräumen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean up…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clean up…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpiar…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siivoa…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nettoyer…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pulisci…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rydd opp …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruim op…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posprzątaj…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpar…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Städa upp…"
           }
         }
       }
@@ -27679,6 +28431,194 @@
         }
       }
     },
+    "Copying %@ to the SD card, %@.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopírování %1$@ na SD kartu, %2$@."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn copïo %1$@ i'r cerdyn SD, %2$@."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopierer %1$@ til SD-kortet, %2$@."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ wird auf die SD-Karte kopiert, %2$@."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copying %1$@ to the SD card, %2$@."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copying %1$@ to the SD card, %2$@."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copiando %1$@ a la tarjeta SD, %2$@."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopioidaan %1$@ SD-kortille, %2$@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copie de %1$@ sur la carte SD, %2$@."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copia di %1$@ sulla scheda SD, %2$@."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopierer %1$@ til SD-kortet, %2$@."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ wordt naar de SD-kaart gekopieerd, %2$@."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopiowanie %1$@ na kartę SD, %2$@."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A copiar %1$@ para o cartão SD, %2$@."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopierar %1$@ till SD-kortet, %2$@."
+          }
+        }
+      }
+    },
+    "Copying %@ to the SD card.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopírování %@ na SD kartu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn copïo %@ i'r cerdyn SD."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopierer %@ til SD-kortet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wird auf die SD-Karte kopiert."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copying %@ to the SD card."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copying %@ to the SD card."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copiando %@ a la tarjeta SD."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopioidaan %@ SD-kortille."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copie de %@ sur la carte SD."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copia di %@ sulla scheda SD."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopierer %@ til SD-kortet."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wordt naar de SD-kaart gekopieerd."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopiowanie %@ na kartę SD."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A copiar %@ para o cartão SD."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopierar %@ till SD-kortet."
+          }
+        }
+      }
+    },
     "Could not understand the server's response: %@": {
       "localizations": {
         "cs": {
@@ -27769,6 +28709,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kunde inte tolka serverns svar: %@"
+          }
+        }
+      }
+    },
+    "Couldn't copy %@ to the SD card.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ se nepodařilo zkopírovat na SD kartu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Methu copïo %@ i'r cerdyn SD."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke kopiere %@ til SD-kortet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ konnte nicht auf die SD-Karte kopiert werden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't copy %@ to the SD card."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't copy %@ to the SD card."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se ha podido copiar %@ a la tarjeta SD."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kohdetta %@ ei voitu kopioida SD-kortille."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible de copier %@ sur la carte SD."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossibile copiare %@ sulla scheda SD."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunne ikke kopiere %@ til SD-kortet."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kan %@ niet naar de SD-kaart kopiëren."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie udało się skopiować %@ na kartę SD."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível copiar %@ para o cartão SD."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kunde inte kopiera %@ till SD-kortet."
           }
         }
       }
@@ -29744,6 +30778,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Anpassad färg"
+          }
+        }
+      }
+    },
+    "Data": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiedot"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Données"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dati"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gegevens"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dane"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dados"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data"
           }
         }
       }
@@ -34733,6 +35861,100 @@
         }
       }
     },
+    "Errors only": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jen chyby"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gwallau yn unig"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kun fejl"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur Fehler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Errors only"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Errors only"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo errores"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vain virheet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erreurs seulement"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solo errori"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bare feil"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alleen fouten"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tylko błędy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Só erros"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bara fel"
+          }
+        }
+      }
+    },
     "Estimate": {
       "localizations": {
         "cs": {
@@ -35105,6 +36327,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Alla utskrifter"
+          }
+        }
+      }
+    },
+    "Everything (debug)": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vše (ladění)"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Popeth (dadfygio)"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alt (fejlfinding)"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles (Debug)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything (debug)"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything (debug)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todo (depuración)"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kaikki (vianetsintä)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout (débogage)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tutto (debug)"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alt (feilsøking)"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alles (debug)"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wszystko (debug)"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tudo (depuração)"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allt (felsökning)"
           }
         }
       }
@@ -36273,6 +37589,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Extrudera"
+          }
+        }
+      }
+    },
+    "Extruder": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extruder"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allwthiwr"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekstruder"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extruder"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extruder"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extruder"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extrusor"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekstruuderi"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extrudeur"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Estrusore"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekstruder"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extruder"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ekstruder"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extrusora"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extruder"
           }
         }
       }
@@ -42860,6 +44270,100 @@
         }
       }
     },
+    "Global API key": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Globální klíč API"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allwedd API gyffredinol"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Global API-nøgle"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Globaler API-Schlüssel"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Global API key"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Global API key"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clave de API global"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yleinen API-avain"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clé API globale"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chiave API globale"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Global API-nøkkel"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Algemene API-sleutel"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Globalny klucz API"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chave global da API"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Global API-nyckel"
+          }
+        }
+      }
+    },
     "Goes back to the last saved settings.": {
       "localizations": {
         "cs": {
@@ -47110,6 +48614,194 @@
         }
       }
     },
+    "How much to log": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Úroveň protokolování"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faint i'w logio"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvor meget der logges"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umfang der Protokollierung"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How much to log"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How much to log"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuánto registrar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kuinka paljon kirjataan"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niveau de journalisation"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quanto registrare nei log"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvor mye som logges"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoeveel loggen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ile zapisywać w logu"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quanto registar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hur mycket som loggas"
+          }
+        }
+      }
+    },
+    "How much to log…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Úroveň protokolování…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faint i'w logio…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvor meget der logges…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umfang der Protokollierung …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How much to log…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How much to log…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuánto registrar…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kuinka paljon kirjataan…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niveau de journalisation…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quanto registrare nei log…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvor mye som logges …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoeveel loggen…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ile zapisywać w logu…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quanto registar…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hur mycket som loggas…"
+          }
+        }
+      }
+    },
     "How often OctoPrint sends temperatures and progress": {
       "localizations": {
         "cs": {
@@ -47388,6 +49080,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Om första lagret fortfarande ser tunt eller tillplattat ut på ena sidan, justera Bed level correction i skrivarens Calibration-meny. Första lagret visar åt vilket håll. Om din bädd har justerbara skruvar (nylock-modden), välj Nio skruvar nedan."
+          }
+        }
+      }
+    },
+    "If the printer seems stuck waiting partway through a conversation, this tells OctoPrint to carry on as if it had answered. Only use it when things have stopped.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokud se zdá, že tiskárna uprostřed komunikace uvízla a na něco čeká, tímto OctoPrintu řeknete, aby pokračoval, jako by odpověděla. Použijte to, jen když se vše zastavilo."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Os yw'n ymddangos bod yr argraffydd yn sownd yn aros hanner ffordd drwy sgwrs, mae hyn yn dweud wrth OctoPrint am barhau fel petai wedi ateb. Defnyddiwch hwn dim ond pan fydd pethau wedi stopio."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvis printeren ser ud til at hænge og vente midt i en samtale, får dette OctoPrint til at fortsætte, som om den havde svaret. Brug det kun, når alt er gået i stå."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wenn der Drucker mitten in der Kommunikation festzuhängen scheint, macht OctoPrint hiermit weiter, als hätte er geantwortet. Nur verwenden, wenn nichts mehr passiert."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the printer seems stuck waiting partway through a conversation, this tells OctoPrint to carry on as if it had answered. Only use it when things have stopped."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If the printer seems stuck waiting partway through a conversation, this tells OctoPrint to carry on as if it had answered. Only use it when things have stopped."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si la impresora parece atascada esperando a mitad de una conversación, esto le dice a OctoPrint que siga como si hubiera respondido. Úsalo solo cuando todo se haya detenido."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jos tulostin näyttää jääneen odottamaan kesken keskustelun, tämä käskee OctoPrintia jatkamaan kuin tulostin olisi vastannut. Käytä vain, kun kaikki on pysähtynyt."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si l’imprimante semble bloquée en attente au milieu d’un échange, ceci indique à OctoPrint de continuer comme si elle avait répondu. À n’utiliser que lorsque tout est à l’arrêt."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se la stampante sembra bloccata in attesa a metà di una conversazione, questo dice a OctoPrint di proseguire come se avesse risposto. Usalo solo quando tutto si è fermato."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hvis skriveren ser ut til å henge og vente midt i en samtale, ber dette OctoPrint fortsette som om den hadde svart. Bruk det bare når ting har stoppet opp."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als de printer midden in een gesprek lijkt vast te zitten, laat dit OctoPrint doorgaan alsof de printer heeft geantwoord. Gebruik het alleen als alles stilstaat."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeśli drukarka wydaje się utknąć w oczekiwaniu w trakcie wymiany poleceń, to każe OctoPrint działać dalej, jakby odpowiedziała. Używaj tylko wtedy, gdy wszystko stanęło."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se a impressora parecer presa à espera a meio de uma troca de mensagens, isto diz ao OctoPrint para continuar como se ela tivesse respondido. Use apenas quando tudo tiver parado."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Om skrivaren verkar ha fastnat och väntar mitt i en konversation säger detta åt OctoPrint att fortsätta som om den hade svarat. Använd det bara när allt har stannat."
           }
         }
       }
@@ -50721,6 +52507,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Det matchar inte längre det du litade på. Det är väntat om du har skapat ett nytt certifikat, annars bör du kontrollera innan du litar på det."
+          }
+        }
+      }
+    },
+    "It replaces the old one, so anything using that stops working. The new key is copied to the clipboard rather than shown. It gives full control of OctoPrint, so keep it private.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nahradí starý klíč, takže vše, co ho používá, přestane fungovat. Nový klíč se nezobrazí, ale zkopíruje se do schránky. Dává plnou kontrolu nad OctoPrintem, proto si ho nechte pro sebe."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae'n disodli'r hen un, felly bydd unrhyw beth sy'n ei defnyddio yn stopio gweithio. Mae'r allwedd newydd yn cael ei chopïo i'r clipfwrdd yn lle cael ei dangos. Mae'n rhoi rheolaeth lawn dros OctoPrint, felly cadwch hi'n breifat."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den erstatter den gamle, så alt, der bruger den, holder op med at virke. Den nye nøgle kopieres til udklipsholderen i stedet for at blive vist. Den giver fuld kontrol over OctoPrint, så hold den for dig selv."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Er ersetzt den alten, daher funktioniert alles, was diesen nutzt, nicht mehr. Der neue Schlüssel wird in die Zwischenablage kopiert statt angezeigt. Er gibt volle Kontrolle über OctoPrint, also halte ihn geheim."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It replaces the old one, so anything using that stops working. The new key is copied to the clipboard rather than shown. It gives full control of OctoPrint, so keep it private."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It replaces the old one, so anything using that stops working. The new key is copied to the clipboard rather than shown. It gives full control of OctoPrint, so keep it private."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sustituye a la anterior, así que todo lo que la use dejará de funcionar. La clave nueva se copia al portapapeles en lugar de mostrarse. Da control total de OctoPrint, así que no la compartas."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se korvaa vanhan, joten kaikki sitä käyttävä lakkaa toimimasta. Uusi avain kopioidaan leikepöydälle eikä sitä näytetä. Se antaa täyden hallinnan OctoPrintiin, joten pidä se omana tietonasi."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elle remplace l’ancienne, donc tout ce qui utilise celle-ci cessera de fonctionner. La nouvelle clé est copiée dans le presse-papiers au lieu d’être affichée. Elle donne le contrôle total d’OctoPrint, alors gardez-la pour vous."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sostituisce quella vecchia, quindi tutto ciò che la usa smetterà di funzionare. La nuova chiave viene copiata negli appunti invece di essere mostrata. Dà il controllo completo di OctoPrint, quindi tienila privata."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den erstatter den gamle, så alt som bruker den, slutter å virke. Den nye nøkkelen kopieres til utklippstavlen i stedet for å vises. Den gir full kontroll over OctoPrint, så hold den for deg selv."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hij vervangt de oude, dus alles wat die gebruikt, werkt niet meer. De nieuwe sleutel wordt naar het klembord gekopieerd in plaats van getoond. Hij geeft volledige controle over OctoPrint, dus houd hem geheim."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zastąpi stary klucz, więc wszystko, co go używa, przestanie działać. Nowy klucz zostanie skopiowany do schowka, a nie pokazany. Daje pełną kontrolę nad OctoPrint, więc zachowaj go dla siebie."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Substitui a antiga, por isso tudo o que a usa deixa de funcionar. A nova chave é copiada para a área de transferência em vez de ser mostrada. Dá controlo total do OctoPrint, por isso mantenha-a privada."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Den ersätter den gamla, så allt som använder den slutar fungera. Den nya nyckeln kopieras till urklipp i stället för att visas. Den ger full kontroll över OctoPrint, så håll den hemlig."
           }
         }
       }
@@ -54955,6 +56835,194 @@
         }
       }
     },
+    "Log more detail from parts of OctoPrint, or the whole conversation with the printer, while finding a fault": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Při hledání chyby protokolovat podrobněji části OctoPrintu nebo celou komunikaci s tiskárnou"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logio mwy o fanylion o rannau o OctoPrint, neu'r sgwrs gyfan gyda'r argraffydd, wrth chwilio am nam"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log flere detaljer fra dele af OctoPrint eller hele samtalen med printeren, mens du finder en fejl"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei der Fehlersuche mehr Details aus Teilen von OctoPrint oder die ganze Kommunikation mit dem Drucker protokollieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log more detail from parts of OctoPrint, or the whole conversation with the printer, while finding a fault"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log more detail from parts of OctoPrint, or the whole conversation with the printer, while finding a fault"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registra más detalles de partes de OctoPrint, o toda la conversación con la impresora, mientras buscas un fallo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirjaa lokiin enemmän tietoja OctoPrintin osista tai koko keskustelu tulostimen kanssa vikaa etsiessäsi"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journaliser plus de détails sur certaines parties d’OctoPrint, ou tout l’échange avec l’imprimante, pour trouver une panne"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registra più dettagli da parti di OctoPrint, o l'intera conversazione con la stampante, mentre cerchi un guasto"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logg flere detaljer fra deler av OctoPrint, eller hele samtalen med skriveren, mens du leter etter en feil"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log meer details van onderdelen van OctoPrint, of het hele gesprek met de printer, terwijl je een fout opspoort"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zapisuj w logu więcej szczegółów z części OctoPrint albo całą komunikację z drukarką podczas szukania usterki"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registar mais detalhes de partes do OctoPrint, ou toda a comunicação com a impressora, enquanto procura uma avaria"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga fler detaljer från delar av OctoPrint, eller hela konversationen med skrivaren, medan du letar efter ett fel"
+          }
+        }
+      }
+    },
+    "Log the conversation with the printer": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Protokolovat komunikaci s tiskárnou"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logio'r sgwrs gyda'r argraffydd"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log samtalen med printeren"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kommunikation mit dem Drucker protokollieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log the conversation with the printer"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log the conversation with the printer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registrar la conversación con la impresora"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kirjaa keskustelu tulostimen kanssa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Journaliser l’échange avec l’imprimante"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registra la conversazione con la stampante"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logg samtalen med skriveren"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Log het gesprek met de printer"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zapisuj komunikację z drukarką"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Registar a comunicação com a impressora"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Logga konversationen med skrivaren"
+          }
+        }
+      }
+    },
     "Logs": {
       "localizations": {
         "cs": {
@@ -56177,6 +58245,100 @@
         }
       }
     },
+    "Make a new global API key?": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vytvořit nový globální klíč API?"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creu allwedd API gyffredinol newydd?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opret en ny global API-nøgle?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neuen globalen API-Schlüssel erstellen?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make a new global API key?"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make a new global API key?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Crear una clave de API global nueva?"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tehdäänkö uusi yleinen API-avain?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer une nouvelle clé API globale ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creare una nuova chiave API globale?"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lage en ny global API-nøkkel?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Een nieuwe algemene API-sleutel maken?"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utworzyć nowy globalny klucz API?"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Criar uma nova chave global da API?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skapa en ny global API-nyckel?"
+          }
+        }
+      }
+    },
     "Make a video for": {
       "localizations": {
         "cs": {
@@ -56271,6 +58433,100 @@
         }
       }
     },
+    "Make and copy": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vytvořit a zkopírovat"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creu a chopïo"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opret og kopiér"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstellen und kopieren"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make and copy"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make and copy"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crear y copiar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tee ja kopioi"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer et copier"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea e copia"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lag og kopier"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maak en kopieer"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utwórz i skopiuj"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Criar e copiar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skapa och kopiera"
+          }
+        }
+      }
+    },
     "Make clip": {
       "localizations": {
         "cs": {
@@ -56361,6 +58617,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Skapa klipp"
+          }
+        }
+      }
+    },
+    "Make one…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vytvořit…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creu un…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opret en…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstellen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make one…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Make one…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crear una…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tee avain…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En créer une…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creane una…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lag en …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maak er een…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Utwórz…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Criar…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skapa en…"
           }
         }
       }
@@ -56835,6 +59185,100 @@
         }
       }
     },
+    "Making a timelapse video…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vytváří se video timelapse…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn creu fideo timelapse…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laver en timelapse-video…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitraffervideo wird erstellt …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Making a timelapse video…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Making a timelapse video…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creando un vídeo de timelapse…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tehdään timelapse-videota…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Création d’une vidéo timelapse…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creazione del video timelapse…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lager en timelapse-video …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Timelapsevideo maken…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tworzenie wideo timelapse…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A criar um vídeo timelapse…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skapar en timelapsevideo…"
+          }
+        }
+      }
+    },
     "Making the GIF…": {
       "localizations": {
         "cs": {
@@ -56925,6 +59369,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Skapar GIF-filen…"
+          }
+        }
+      }
+    },
+    "Making the video %@…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vytváří se video %@…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yn creu'r fideo %@…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Laver videoen %@…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video %@ wird erstellt …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Making the video %@…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Making the video %@…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creando el vídeo %@…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tehdään videota %@…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Création de la vidéo %@…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creazione del video %@…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lager videoen %@ …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Video %@ maken…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tworzenie wideo %@…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A criar o vídeo %@…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skapar videon %@…"
           }
         }
       }
@@ -60407,6 +62945,194 @@
         }
       }
     },
+    "New key…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nový klíč…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allwedd newydd…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ny nøgle…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neuer Schlüssel …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New key…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New key…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nueva clave…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uusi avain…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelle clé…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuova chiave…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ny nøkkel …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nieuwe sleutel…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nowy klucz…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova chave…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ny nyckel…"
+          }
+        }
+      }
+    },
+    "New name": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nový název"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enw newydd"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nyt navn"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neuer Name"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New name"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New name"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre nuevo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uusi nimi"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouveau nom"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuovo nome"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nytt navn"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nieuwe naam"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nowa nazwa"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Novo nome"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nytt namn"
+          }
+        }
+      }
+    },
     "New printer profile": {
       "localizations": {
         "cs": {
@@ -63451,6 +66177,194 @@
         }
       }
     },
+    "None. Apps ask for their own key instead.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Žádný. Aplikace si místo toho žádají o vlastní klíč."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dim. Mae apiau'n gofyn am eu hallwedd eu hunain yn lle hynny."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen. Apps beder i stedet om deres egen nøgle."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keiner. Apps fordern stattdessen ihren eigenen Schlüssel an."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None. Apps ask for their own key instead."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None. Apps ask for their own key instead."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna. Las apps piden su propia clave."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei mitään. Sovellukset pyytävät sen sijaan omaa avaintaan."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucune. Les apps demandent plutôt leur propre clé."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessuna. Le app chiedono invece una chiave propria."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen. Apper ber om sin egen nøkkel i stedet."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Geen. Apps vragen in plaats daarvan een eigen sleutel."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brak. Aplikacje proszą zamiast tego o własny klucz."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhuma. Em vez disso, as apps pedem a sua própria chave."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingen. Appar ber om en egen nyckel i stället."
+          }
+        }
+      }
+    },
+    "Normal": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normální"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Arferol"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normaali"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normale"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normaal"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normalnie"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normalt"
+          }
+        }
+      }
+    },
     "Not authorised. Check the API key for this printer.": {
       "localizations": {
         "cs": {
@@ -64011,6 +66925,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inget skrivs ut"
+          }
+        }
+      }
+    },
+    "Nothing to clean up.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Není co uklízet."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dim byd i'w dacluso."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intet at rydde op."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nichts aufzuräumen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to clean up."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to clean up."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay nada que limpiar."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ei siivottavaa."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rien à nettoyer."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niente da pulire."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingenting å rydde opp."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Niets op te ruimen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nie ma czego sprzątać."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nada para limpar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inget att städa upp."
           }
         }
       }
@@ -66365,6 +69373,100 @@
         }
       }
     },
+    "OctoMac signs in with it, so it can't be changed here.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac se jím přihlašuje, takže ho tu nelze změnit."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoMac yn mewngofnodi gyda hwn, felly does dim modd ei newid yma."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac logger ind med den, så den kan ikke ændres her."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac meldet sich damit an, daher lässt es sich hier nicht ändern."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac signs in with it, so it can't be changed here."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac signs in with it, so it can't be changed here."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac lo usa para iniciar sesión, así que no se puede cambiar aquí."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac kirjautuu sillä sisään, joten sitä ei voi muuttaa täällä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac s’en sert pour se connecter, donc ce réglage ne peut pas être modifié ici."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac lo usa per accedere, quindi non si può modificare qui."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac logger på med den, så den kan ikke endres her."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac logt ermee in, dus het kan hier niet worden gewijzigd."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac loguje się za jego pomocą, więc nie można go tu zmienić."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoMac inicia sessão com ela, por isso não pode ser alterada aqui."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoMac loggar in med den, så den kan inte ändras här."
+          }
+        }
+      }
+    },
     "OctoPrint": {
       "localizations": {
         "cs": {
@@ -67157,6 +70259,100 @@
         }
       }
     },
+    "OctoPrint can get a picture from the camera.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint může získat snímek z kamery."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoPrint yn gallu cael llun o'r camera."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan hente et billede fra kameraet."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kann ein Bild von der Kamera abrufen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint can get a picture from the camera."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint can get a picture from the camera."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint puede obtener una imagen de la cámara."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint saa kuvan kamerasta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint peut obtenir une image de la caméra."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint riesce a ottenere un'immagine dalla videocamera."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan hente et bilde fra kameraet."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan een beeld van de camera ophalen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint może pobrać obraz z kamery."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint consegue obter uma imagem da câmara."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan hämta en bild från kameran."
+          }
+        }
+      }
+    },
     "OctoPrint can't install plugins on this system, because it couldn't find pip.": {
       "localizations": {
         "cs": {
@@ -67627,6 +70823,100 @@
         }
       }
     },
+    "OctoPrint couldn't get a picture from that address (it answered %lld).": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint z této adresy nezískal snímek (odpověď %lld)."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Methodd OctoPrint gael llun o'r cyfeiriad hwnnw (atebodd %lld)."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunne ikke hente et billede fra den adresse (den svarede %lld)."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint konnte von dieser Adresse kein Bild abrufen (Antwort: %lld)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't get a picture from that address (it answered %lld)."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't get a picture from that address (it answered %lld)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no ha podido obtener una imagen de esa dirección (respondió %lld)."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei saanut kuvaa tuosta osoitteesta (vastaus oli %lld)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’a pas pu obtenir d’image depuis cette adresse (réponse %lld)."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non è riuscito a ottenere un'immagine da quell'indirizzo (ha risposto %lld)."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint fikk ikke et bilde fra den adressen (svaret var %lld)."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan geen beeld ophalen van dat adres (het antwoord was %lld)."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie mógł pobrać obrazu z tego adresu (odpowiedź: %lld)."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não conseguiu obter uma imagem desse endereço (resposta: %lld)."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunde inte hämta en bild från den adressen (svaret var %lld)."
+          }
+        }
+      }
+    },
     "OctoPrint couldn't make the backup: %@": {
       "localizations": {
         "cs": {
@@ -67717,6 +71007,194 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint kunde inte göra säkerhetskopian: %@"
+          }
+        }
+      }
+    },
+    "OctoPrint couldn't make the timelapse video %@. Its log may say why.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nemohl vytvořit video timelapse %@. Důvod může být v jeho protokolu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Methodd OctoPrint greu'r fideo timelapse %@. Efallai bydd ei log yn dweud pam."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunne ikke lave timelapse-videoen %@. Loggen kan måske fortælle hvorfor."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint konnte das Zeitraffervideo %@ nicht erstellen. Sein Protokoll verrät vielleicht, warum."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't make the timelapse video %@. Its log may say why."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't make the timelapse video %@. Its log may say why."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no ha podido crear el vídeo de timelapse %@. Su registro puede indicar por qué."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei voinut tehdä timelapse-videota %@. Sen loki voi kertoa syyn."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’a pas pu créer la vidéo timelapse %@. Son journal en donne peut-être la raison."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non è riuscito a creare il video timelapse %@. Il suo log potrebbe dire perché."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunne ikke lage timelapse-videoen %@. Loggen kan si hvorfor."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan timelapsevideo %@ niet maken. Het logbestand zegt misschien waarom."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie mógł utworzyć wideo timelapse %@. Jego log może wyjaśnić dlaczego."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não conseguiu criar o vídeo timelapse %@. O registo pode indicar porquê."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunde inte skapa timelapsevideon %@. Dess logg kan visa varför."
+          }
+        }
+      }
+    },
+    "OctoPrint couldn't reach that address.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint se k této adrese nedostal."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Methodd OctoPrint gyrraedd y cyfeiriad hwnnw."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunne ikke nå den adresse."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint konnte diese Adresse nicht erreichen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't reach that address."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint couldn't reach that address."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint no ha podido llegar a esa dirección."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ei saanut yhteyttä tuohon osoitteeseen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint n’a pas pu joindre cette adresse."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint non è riuscito a raggiungere quell'indirizzo."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kom ikke fram til den adressen."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kan dat adres niet bereiken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint nie mógł połączyć się z tym adresem."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint não conseguiu contactar esse endereço."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint kunde inte nå den adressen."
           }
         }
       }
@@ -68281,6 +71759,194 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint hämtar uppdateringarna, installerar dem och startar om. Skrivaren förblir ansluten, men OctoMac tappar kontakten med den en minut eller två."
+          }
+        }
+      }
+    },
+    "OctoPrint fetches a picture from this address, as the Raspberry Pi sees it": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint načte snímek z této adresy, tak jak ji vidí Raspberry Pi"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae OctoPrint yn nôl llun o'r cyfeiriad hwn, fel mae'r Raspberry Pi yn ei weld"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint henter et billede fra denne adresse, som Raspberry Pi'en ser den"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ruft ein Bild von dieser Adresse ab, so wie der Raspberry Pi sie sieht"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint fetches a picture from this address, as the Raspberry Pi sees it"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint fetches a picture from this address, as the Raspberry Pi sees it"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint obtiene una imagen de esta dirección, tal como la ve la Raspberry Pi"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hakee kuvan tästä osoitteesta Raspberry Pi:n näkökulmasta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint récupère une image à cette adresse, telle que le Raspberry Pi la voit"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint recupera un'immagine da questo indirizzo, così come lo vede il Raspberry Pi"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint henter et bilde fra denne adressen, slik Raspberry Pi ser den"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint haalt een beeld op van dit adres, zoals de Raspberry Pi het ziet"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint pobiera obraz z tego adresu, widzianego z Raspberry Pi"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint obtém uma imagem deste endereço, tal como o Raspberry Pi o vê"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hämtar en bild från den här adressen, så som Raspberry Pi ser den"
+          }
+        }
+      }
+    },
+    "OctoPrint found a problem in this file (%@).": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint v tomto souboru našel problém (%@)."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daeth OctoPrint o hyd i broblem yn y ffeil hon (%@)."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint fandt et problem i denne fil (%@)."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hat in dieser Datei ein Problem gefunden (%@)."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint found a problem in this file (%@)."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint found a problem in this file (%@)."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ha encontrado un problema en este archivo (%@)."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint löysi ongelman tästä tiedostosta (%@)."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint a trouvé un problème dans ce fichier (%@)."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ha trovato un problema in questo file (%@)."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint fant et problem i denne filen (%@)."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint heeft een probleem in dit bestand gevonden (%@)."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint znalazł problem w tym pliku (%@)."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint encontrou um problema neste ficheiro (%@)."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint hittade ett problem i den här filen (%@)."
           }
         }
       }
@@ -69127,6 +72793,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "OctoPrint gör säkerhetskopian på Raspberry Pi, med inställningar och plugin. Du kan spara en kopia på den här Macen när den är klar."
+          }
+        }
+      }
+    },
+    "OctoPrint needs a full address for still pictures, starting with http://.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint potřebuje pro statické snímky úplnou adresu začínající http://."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae angen cyfeiriad llawn ar OctoPrint ar gyfer lluniau llonydd, yn dechrau gyda http://."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint skal bruge en fuld adresse til stillbilleder, der starter med http://."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint braucht für Standbilder eine vollständige Adresse, die mit http:// beginnt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint needs a full address for still pictures, starting with http://."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint needs a full address for still pictures, starting with http://."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint necesita una dirección completa para las imágenes fijas, que empiece por http://."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint tarvitsee pysäytyskuville täydellisen osoitteen, joka alkaa http://."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint a besoin d’une adresse complète pour les images fixes, commençant par http://."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint ha bisogno di un indirizzo completo per le immagini fisse, che inizi con http://."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint trenger en fullstendig adresse for stillbilder, som begynner med http://."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint heeft voor losse beelden een volledig adres nodig dat begint met http://."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint potrzebuje pełnego adresu do zdjęć, zaczynającego się od http://."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O OctoPrint precisa de um endereço completo para imagens fixas, a começar por http://."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OctoPrint behöver en fullständig adress för stillbilder, som börjar med http://."
           }
         }
       }
@@ -71571,6 +75331,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Offline: %@"
+          }
+        }
+      }
+    },
+    "Offset": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Posun"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gwrthbwyso"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siirtymä"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Décalage"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forskyvning"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offset"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Przesunięcie"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desvio"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Förskjutning"
           }
         }
       }
@@ -87953,6 +91807,100 @@
         }
       }
     },
+    "Remove all": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odstranit vše"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tynnu'r cyfan"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern alle"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle entfernen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove all"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove all"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eliminar todo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Poista kaikki"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout supprimer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rimuovi tutto"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern alle"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwijder alles"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usuń wszystko"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remover tudo"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta bort alla"
+          }
+        }
+      }
+    },
     "Remove printer": {
       "localizations": {
         "cs": {
@@ -88137,6 +92085,194 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ta bort skrivare…"
+          }
+        }
+      }
+    },
+    "Remove settings and data left behind by plugins you've uninstalled": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odstranit nastavení a data, která po sobě nechaly odinstalované pluginy"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tynnu gosodiadau a data a adawyd gan ategion rydych chi wedi'u dadosod"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern indstillinger og data, som afinstallerede plugins har efterladt"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen und Daten entfernen, die deinstallierte Plugins hinterlassen haben"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove settings and data left behind by plugins you've uninstalled"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove settings and data left behind by plugins you've uninstalled"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elimina los ajustes y datos que han dejado los plugins que has desinstalado"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Poista asetukset ja tiedot, jotka poistamasi lisäosat ovat jättäneet jälkeensä"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer les réglages et données laissés par les plugins que vous avez désinstallés"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rimuovi impostazioni e dati lasciati dai plugin che hai disinstallato"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern innstillinger og data som utvidelser du har avinstallert, har etterlatt"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwijder instellingen en gegevens die zijn achtergebleven van plug-ins die je hebt verwijderd"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usuń ustawienia i dane pozostawione przez odinstalowane wtyczki"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remover definições e dados deixados por plugins que desinstalou"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta bort inställningar och data som plugin du har avinstallerat har lämnat kvar"
+          }
+        }
+      }
+    },
+    "Remove the global API key?": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odstranit globální klíč API?"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tynnu'r allwedd API gyffredinol?"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern den globale API-nøgle?"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Globalen API-Schlüssel entfernen?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove the global API key?"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove the global API key?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Eliminar la clave de API global?"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Poistetaanko yleinen API-avain?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer la clé API globale ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rimuovere la chiave API globale?"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjerne den globale API-nøkkelen?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De algemene API-sleutel verwijderen?"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usunąć globalny klucz API?"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remover a chave global da API?"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta bort den globala API-nyckeln?"
           }
         }
       }
@@ -88607,6 +92743,476 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ta bort den här skrivaren?"
+          }
+        }
+      }
+    },
+    "Remove…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odstranit…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tynnu…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eliminar…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Poista…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supprimer…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rimuovi…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fjern …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwijder…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usuń…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remover…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta bort…"
+          }
+        }
+      }
+    },
+    "Rename": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přejmenovat"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailenwi"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omdøb"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umbenennen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renombrar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimeä uudelleen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rinomina"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gi nytt navn"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wijzig naam"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zmień nazwę"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar o nome"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Byt namn"
+          }
+        }
+      }
+    },
+    "Rename file": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přejmenovat soubor"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailenwi ffeil"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omdøb fil"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datei umbenennen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename file"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename file"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renombrar archivo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimeä tiedosto uudelleen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer le fichier"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rinomina file"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gi filen nytt navn"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wijzig bestandsnaam"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zmień nazwę pliku"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar o nome do ficheiro"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Byt namn på fil"
+          }
+        }
+      }
+    },
+    "Rename folder": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přejmenovat složku"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailenwi ffolder"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omdøb mappe"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ordner umbenennen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename folder"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename folder"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renombrar carpeta"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimeä kansio uudelleen"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer le dossier"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rinomina cartella"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gi mappen nytt navn"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wijzig mapnaam"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zmień nazwę folderu"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar o nome da pasta"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Byt namn på mapp"
+          }
+        }
+      }
+    },
+    "Rename…": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Přejmenovat…"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailenwi…"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omdøb…"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Umbenennen …"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename…"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rename…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renombrar…"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimeä uudelleen…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renommer…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rinomina…"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gi nytt navn …"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wijzig naam…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zmień nazwę…"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar o nome…"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Byt namn…"
           }
         }
       }
@@ -95098,6 +99704,100 @@
         }
       }
     },
+    "Saved as serial.log. Useful when the printer misbehaves; slows OctoPrint a little.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ukládá se jako serial.log. Hodí se, když tiskárna zlobí; OctoPrint to trochu zpomalí."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wedi'i gadw fel serial.log. Defnyddiol pan fydd yr argraffydd yn camymddwyn; mae'n arafu OctoPrint ychydig."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemmes som serial.log. Nyttigt, når printeren driller; gør OctoPrint lidt langsommere."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wird als serial.log gespeichert. Hilfreich, wenn der Drucker Probleme macht; bremst OctoPrint etwas aus."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved as serial.log. Useful when the printer misbehaves; slows OctoPrint a little."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saved as serial.log. Useful when the printer misbehaves; slows OctoPrint a little."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se guarda como serial.log. Útil cuando la impresora falla; ralentiza un poco OctoPrint."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tallennetaan nimellä serial.log. Hyödyllinen, kun tulostin toimii oudosti; hidastaa OctoPrintia hieman."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enregistré sous serial.log. Utile quand l’imprimante se comporte mal ; ralentit un peu OctoPrint."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Salvato come serial.log. Utile quando la stampante si comporta male; rallenta un po' OctoPrint."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lagres som serial.log. Nyttig når skriveren oppfører seg rart. Gjør OctoPrint litt tregere."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bewaard als serial.log. Handig als de printer vreemd doet; maakt OctoPrint wat trager."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zapisywane jako serial.log. Przydatne, gdy drukarka działa dziwnie; trochę spowalnia OctoPrint."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guardado como serial.log. Útil quando a impressora se porta mal; torna o OctoPrint um pouco mais lento."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sparas som serial.log. Användbart när skrivaren krånglar, gör OctoPrint lite långsammare."
+          }
+        }
+      }
+    },
     "Saves the current settings so they survive a restart.": {
       "localizations": {
         "cs": {
@@ -98670,6 +103370,100 @@
         }
       }
     },
+    "Set. It gives full control of OctoPrint to anything that has it.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nastaven. Dává plnou kontrolu nad OctoPrintem čemukoli, co ho má."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wedi'i gosod. Mae'n rhoi rheolaeth lawn dros OctoPrint i unrhyw beth sydd â hi."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Angivet. Den giver fuld kontrol over OctoPrint til alt, der har den."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Festgelegt. Er gibt allem, was ihn hat, volle Kontrolle über OctoPrint."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set. It gives full control of OctoPrint to anything that has it."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set. It gives full control of OctoPrint to anything that has it."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definida. Da control total de OctoPrint a quien la tenga."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asetettu. Se antaa täyden hallinnan OctoPrintiin kenelle tahansa, jolla se on."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Définie. Elle donne le contrôle total d’OctoPrint à quiconque la possède."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impostata. Dà il controllo completo di OctoPrint a chiunque la possieda."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Satt. Den gir full kontroll over OctoPrint til alt som har den."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ingesteld. Alles wat hem heeft, krijgt volledige controle over OctoPrint."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ustawiony. Daje pełną kontrolę nad OctoPrint wszystkiemu, co go ma."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definida. Dá controlo total do OctoPrint a quem a tiver."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inställd. Den ger full kontroll över OctoPrint till allt som har den."
+          }
+        }
+      }
+    },
     "Sets how far each motor moves per step. Send with no values to see them. Save with M500.": {
       "localizations": {
         "cs": {
@@ -99982,6 +104776,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inställningar"
+          }
+        }
+      }
+    },
+    "Settings and data": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nastavení a data"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gosodiadau a data"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Indstillinger og data"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen und Daten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings and data"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings and data"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ajustes y datos"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asetukset ja tiedot"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Réglages et données"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impostazioni e dati"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Innstillinger og data"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instellingen en gegevens"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ustawienia i dane"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definições e dados"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inställningar och data"
           }
         }
       }
@@ -108679,6 +113567,100 @@
         }
       }
     },
+    "Test": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vyzkoušet"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Profi"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testaa"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tester"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prova"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testuj"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testar"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Testa"
+          }
+        }
+      }
+    },
     "Test connection": {
       "localizations": {
         "cs": {
@@ -111499,6 +116481,100 @@
         }
       }
     },
+    "The printer can't do anything else until it's done.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiskárna do té doby nemůže dělat nic jiného."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All yr argraffydd ddim gwneud dim byd arall nes iddo orffen."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Printeren kan ikke andet, før det er færdigt."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Drucker kann nichts anderes tun, bis das erledigt ist."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The printer can't do anything else until it's done."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The printer can't do anything else until it's done."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La impresora no puede hacer nada más hasta que termine."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tulostin ei voi tehdä muuta ennen kuin tämä on valmis."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’imprimante ne peut rien faire d’autre avant la fin."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La stampante non può fare altro finché non ha finito."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skriveren kan ikke gjøre noe annet før den er ferdig."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De printer kan niets anders doen tot dit klaar is."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do tego czasu drukarka nie może robić nic innego."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A impressora não pode fazer mais nada até terminar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skrivaren kan inte göra något annat förrän det är klart."
+          }
+        }
+      }
+    },
     "The printer can't do that right now.": {
       "localizations": {
         "cs": {
@@ -113379,6 +118455,194 @@
         }
       }
     },
+    "The slicer left a placeholder in this file that was never filled in, so the printer may move at the wrong speed. Slice it again with an up-to-date slicer.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicer v tomto souboru nechal zástupný text, který nebyl nikdy vyplněn, takže se tiskárna může pohybovat špatnou rychlostí. Soubor znovu naslicujte aktuálním slicerem."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gadawodd y slicer ddalfan yn y ffeil hon na chafodd ei llenwi, felly gallai'r argraffydd symud ar y cyflymder anghywir. Sleisiwch hi eto gyda slicer cyfredol."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sliceren efterlod en pladsholder i denne fil, som aldrig blev udfyldt, så printeren kan bevæge sig med forkert hastighed. Slice den igen med en opdateret slicer."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Slicer hat in dieser Datei einen Platzhalter hinterlassen, der nie ausgefüllt wurde, daher fährt der Drucker eventuell mit falscher Geschwindigkeit. Slice sie erneut mit einem aktuellen Slicer."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The slicer left a placeholder in this file that was never filled in, so the printer may move at the wrong speed. Slice it again with an up-to-date slicer."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The slicer left a placeholder in this file that was never filled in, so the printer may move at the wrong speed. Slice it again with an up-to-date slicer."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El slicer dejó en este archivo un marcador que nunca se rellenó, así que la impresora podría moverse a una velocidad incorrecta. Vuelve a laminarlo con un slicer actualizado."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicer jätti tähän tiedostoon paikkamerkin, jota ei koskaan täytetty, joten tulostin voi liikkua väärällä nopeudella. Slicaa tiedosto uudelleen ajantasaisella slicerillä."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le slicer a laissé dans ce fichier un paramètre fictif jamais rempli, donc l’imprimante risque de se déplacer à la mauvaise vitesse. Relancez le découpage avec un slicer à jour."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo slicer ha lasciato in questo file un segnaposto mai compilato, quindi la stampante potrebbe muoversi alla velocità sbagliata. Rifai lo slicing con uno slicer aggiornato."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sliceren la igjen en plassholder i denne filen som aldri ble fylt ut, så skriveren kan bevege seg med feil hastighet. Slice den på nytt med en oppdatert slicer."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De slicer heeft een plaatshouder in dit bestand laten staan die nooit is ingevuld, dus de printer beweegt misschien met de verkeerde snelheid. Slice het opnieuw met een actuele slicer."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicer zostawił w tym pliku niewypełniony symbol zastępczy, więc drukarka może poruszać się z niewłaściwą prędkością. Pokrój go ponownie aktualnym slicerem."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O slicer deixou neste ficheiro um marcador que nunca foi preenchido, por isso a impressora pode mover-se à velocidade errada. Volte a fatiá-lo com um slicer atualizado."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicern lämnade en platshållare i den här filen som aldrig fylldes i, så skrivaren kan röra sig med fel hastighet. Slica den igen med en uppdaterad slicer."
+          }
+        }
+      }
+    },
+    "The slicer wrote an OctoPrint API key into this file. Anyone you share it with could control your printer. Turn that off in the slicer, slice again, and make a new key.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicer do tohoto souboru zapsal klíč API OctoPrintu. Kdokoli, s kým soubor sdílíte, by mohl ovládat vaši tiskárnu. Vypněte to ve sliceru, soubor znovu naslicujte a vytvořte nový klíč."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ysgrifennodd y slicer allwedd API OctoPrint i'r ffeil hon. Gallai unrhyw un rydych chi'n ei rhannu â nhw reoli eich argraffydd. Diffoddwch hynny yn y slicer, sleisiwch eto, a chrëwch allwedd newydd."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sliceren skrev en OctoPrint-API-nøgle ind i denne fil. Alle, du deler den med, kan styre din printer. Slå det fra i sliceren, slice igen, og opret en ny nøgle."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Slicer hat einen OctoPrint-API-Schlüssel in diese Datei geschrieben. Jeder, mit dem du sie teilst, könnte deinen Drucker steuern. Schalte das im Slicer aus, slice erneut und erstelle einen neuen Schlüssel."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The slicer wrote an OctoPrint API key into this file. Anyone you share it with could control your printer. Turn that off in the slicer, slice again, and make a new key."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The slicer wrote an OctoPrint API key into this file. Anyone you share it with could control your printer. Turn that off in the slicer, slice again, and make a new key."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El slicer escribió una clave de API de OctoPrint en este archivo. Cualquiera con quien lo compartas podría controlar tu impresora. Desactiva esa opción en el slicer, vuelve a laminar y crea una clave nueva."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicer kirjoitti tähän tiedostoon OctoPrintin API-avaimen. Kuka tahansa, jolle jaat tiedoston, voisi ohjata tulostintasi. Poista tämä käytöstä slicerissä, slicaa uudelleen ja tee uusi avain."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le slicer a écrit une clé API OctoPrint dans ce fichier. Toute personne avec qui vous le partagez pourrait contrôler votre imprimante. Désactivez cette option dans le slicer, relancez le découpage et créez une nouvelle clé."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo slicer ha scritto una chiave API di OctoPrint in questo file. Chiunque lo riceva da te potrebbe controllare la tua stampante. Disattiva l'opzione nello slicer, rifai lo slicing e crea una nuova chiave."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sliceren skrev en API-nøkkel for OctoPrint inn i denne filen. Alle du deler den med, kan styre skriveren din. Slå det av i sliceren, slice på nytt og lag en ny nøkkel."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De slicer heeft een OctoPrint-API-sleutel in dit bestand gezet. Iedereen met wie je het deelt, kan je printer bedienen. Zet dat uit in de slicer, slice opnieuw en maak een nieuwe sleutel."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicer zapisał w tym pliku klucz API OctoPrint. Każdy, komu go udostępnisz, może sterować twoją drukarką. Wyłącz to w slicerze, pokrój plik ponownie i utwórz nowy klucz."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O slicer escreveu uma chave da API do OctoPrint neste ficheiro. Qualquer pessoa com quem o partilhe pode controlar a sua impressora. Desative isso no slicer, volte a fatiar e crie uma nova chave."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Slicern skrev in en OctoPrint-API-nyckel i den här filen. Alla du delar den med kan styra din skrivare. Stäng av det i slicern, slica igen och skapa en ny nyckel."
+          }
+        }
+      }
+    },
     "The update didn't finish. The update's log shows what happened.": {
       "localizations": {
         "cs": {
@@ -113469,6 +118733,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Uppdateringen blev inte klar. Uppdateringens logg visar vad som hände."
+          }
+        }
+      }
+    },
+    "There's already something called %@ here.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Něco s názvem %@ tu už je."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae rhywbeth o'r enw %@ yma'n barod."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der findes allerede noget, der hedder %@."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hier gibt es schon etwas namens %@."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There's already something called %@ here."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "There's already something called %@ here."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya hay algo llamado %@ aquí."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Täällä on jo jotain nimeltä %@."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il existe déjà un élément nommé %@ ici."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qui c'è già qualcosa che si chiama %@."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Det finnes allerede noe som heter %@ her."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Er is hier al iets met de naam %@."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Coś o nazwie %@ już tu jest."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Já existe aqui algo chamado %@."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Det finns redan något som heter %@ här."
           }
         }
       }
@@ -116199,6 +121557,334 @@
         }
       }
     },
+    "Timelapse: %lld pictures": {
+      "localizations": {
+        "cs": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld snímky"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld snímku"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld snímek"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld snímků"
+                }
+              }
+            }
+          }
+        },
+        "cy": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld llun"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld llun"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld llun"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld llun"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld lun"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld llun"
+                }
+              }
+            }
+          }
+        },
+        "da": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld billede"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld billeder"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zeitraffer: %lld Bild"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Zeitraffer: %lld Bilder"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld picture"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld pictures"
+                }
+              }
+            }
+          }
+        },
+        "en-GB": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld picture"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld pictures"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld imagen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld imágenes"
+                }
+              }
+            }
+          }
+        },
+        "fi": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld kuva"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld kuvaa"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse : %lld image"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse : %lld images"
+                }
+              }
+            }
+          }
+        },
+        "it": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld immagine"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld immagini"
+                }
+              }
+            }
+          }
+        },
+        "nb": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld bilde"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld bilder"
+                }
+              }
+            }
+          }
+        },
+        "nl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld beeld"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld beelden"
+                }
+              }
+            }
+          }
+        },
+        "pl": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld zdjęcia"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld zdjęć"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld zdjęcie"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld zdjęcia"
+                }
+              }
+            }
+          }
+        },
+        "pt-PT": {
+          "variations": {
+            "plural": {
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld imagens"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld imagem"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld imagens"
+                }
+              }
+            }
+          }
+        },
+        "sv": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld bild"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Timelapse: %lld bilder"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Timelapses": {
       "localizations": {
         "cs": {
@@ -118457,6 +124143,100 @@
         }
       }
     },
+    "Uninstalling a plugin can leave its settings and data behind. Removing them tidies OctoPrint up, and takes effect after a restart.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odinstalovaný plugin po sobě může nechat nastavení a data. Jejich odstraněním OctoPrint uklidíte a projeví se to po restartu."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gall dadosod ategyn adael ei osodiadau a'i ddata ar ôl. Mae eu tynnu'n tacluso OctoPrint, ac yn dod i rym ar ôl ailgychwyn."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når et plugin afinstalleres, kan dets indstillinger og data blive liggende. Fjerner du dem, bliver der ryddet op i OctoPrint, og det træder i kraft efter en genstart."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beim Deinstallieren eines Plugins können seine Einstellungen und Daten zurückbleiben. Sie zu entfernen räumt OctoPrint auf und wirkt nach einem Neustart."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uninstalling a plugin can leave its settings and data behind. Removing them tidies OctoPrint up, and takes effect after a restart."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uninstalling a plugin can leave its settings and data behind. Removing them tidies OctoPrint up, and takes effect after a restart."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Al desinstalar un plugin pueden quedar sus ajustes y datos. Eliminarlos deja OctoPrint ordenado, y surte efecto tras reiniciar."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lisäosan asennuksen poistaminen voi jättää sen asetukset ja tiedot jälkeensä. Niiden poistaminen siistii OctoPrintin, ja muutos tulee voimaan uudelleenkäynnistyksen jälkeen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désinstaller un plugin peut laisser ses réglages et données derrière lui. Les supprimer fait le ménage dans OctoPrint, et prend effet après un redémarrage."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Disinstallare un plugin può lasciare indietro le sue impostazioni e i suoi dati. Rimuoverli fa ordine in OctoPrint, e ha effetto dopo un riavvio."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når du avinstallerer en utvidelse, kan innstillingene og dataene bli liggende igjen. Å fjerne dem rydder opp i OctoPrint, og det trer i kraft etter en omstart."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Als je een plug-in verwijdert, kunnen de instellingen en gegevens achterblijven. Door die te verwijderen, ruim je OctoPrint op. Dit werkt na een herstart."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Po odinstalowaniu wtyczki mogą zostać jej ustawienia i dane. Usunięcie ich porządkuje OctoPrint i zadziała po ponownym uruchomieniu."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desinstalar um plugin pode deixar para trás as suas definições e dados. Removê-los arruma o OctoPrint e tem efeito depois de reiniciar."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "När du avinstallerar en plugin kan dess inställningar och data lämnas kvar. Att ta bort dem städar upp OctoPrint och gäller efter en omstart."
+          }
+        }
+      }
+    },
     "Uninstall…": {
       "localizations": {
         "cs": {
@@ -118829,6 +124609,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Matar ut filament från hotenden. På en MMU matar M702 C ut den aktuella platsen."
+          }
+        }
+      }
+    },
+    "Unstick": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uvolnit"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rhyddhau"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Løsn"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anstoßen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unstick"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unstick"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desatascar"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vapauta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débloquer"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sblocca"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Løs opp"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maak los"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Odblokuj"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Desbloquear"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lossa"
           }
         }
       }
@@ -122901,6 +128775,100 @@
         }
       }
     },
+    "Warnings and errors": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varování a chyby"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rhybuddion a gwallau"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Advarsler og fejl"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warnungen und Fehler"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warnings and errors"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warnings and errors"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisos y errores"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varoitukset ja virheet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avertissements et erreurs"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avvisi ed errori"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Advarsler og feil"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waarschuwingen en fouten"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ostrzeżenia i błędy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avisos e erros"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Varningar och fel"
+          }
+        }
+      }
+    },
     "Watch the first layer on the camera, and nudge the nozzle down if lines have gaps or don't stick, or up if they're squashed flat.": {
       "localizations": {
         "cs": {
@@ -124119,6 +130087,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Det som är enklast"
+          }
+        }
+      }
+    },
+    "While finding a fault, OctoPrint can log more detail from the part that's misbehaving. Set it back afterwards, since detailed logs grow quickly.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Při hledání chyby může OctoPrint podrobněji protokolovat tu část, která zlobí. Potom to vraťte zpět, protože podrobné protokoly rychle rostou."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrth chwilio am nam, gall OctoPrint logio mwy o fanylion o'r rhan sy'n camymddwyn. Rhowch e'n ôl wedyn, gan fod logiau manwl yn tyfu'n gyflym."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når du leder efter en fejl, kan OctoPrint logge flere detaljer fra den del, der driller. Sæt det tilbage bagefter, da detaljerede logfiler hurtigt vokser."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei der Fehlersuche kann OctoPrint mehr Details aus dem Teil protokollieren, der Probleme macht. Stell es danach zurück, da ausführliche Protokolle schnell wachsen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While finding a fault, OctoPrint can log more detail from the part that's misbehaving. Set it back afterwards, since detailed logs grow quickly."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While finding a fault, OctoPrint can log more detail from the part that's misbehaving. Set it back afterwards, since detailed logs grow quickly."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mientras buscas un fallo, OctoPrint puede registrar más detalles de la parte que falla. Después vuelve a dejarlo como estaba, porque los registros detallados crecen rápido."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vikaa etsiessäsi OctoPrint voi kirjata lisää tietoja oudosti toimivasta osasta. Palauta asetus jälkeenpäin, sillä yksityiskohtaiset lokit kasvavat nopeasti."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour trouver une panne, OctoPrint peut journaliser plus de détails sur la partie qui pose problème. Rétablissez ensuite le réglage, car les journaux détaillés grossissent vite."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mentre cerchi un guasto, OctoPrint può registrare più dettagli dalla parte che non funziona bene. Poi rimetti l'impostazione com'era, perché i log dettagliati crescono in fretta."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Når du leter etter en feil, kan OctoPrint logge flere detaljer fra delen som oppfører seg rart. Sett det tilbake etterpå, siden detaljerte logger vokser fort."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terwijl je een fout opspoort, kan OctoPrint meer details loggen van het onderdeel dat vreemd doet. Zet het daarna terug, want gedetailleerde logbestanden groeien snel."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Podczas szukania usterki OctoPrint może zapisywać w logu więcej szczegółów z części, która działa źle. Potem przywróć ustawienie, bo szczegółowe logi szybko rosną."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enquanto procura uma avaria, o OctoPrint pode registar mais detalhes da parte que se porta mal. Reponha depois, porque os registos detalhados crescem depressa."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medan du letar efter ett fel kan OctoPrint logga fler detaljer från den del som krånglar. Ställ tillbaka det efteråt, eftersom detaljerade loggar växer snabbt."
           }
         }
       }

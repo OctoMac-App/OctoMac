@@ -39,7 +39,8 @@ struct CameraSettings: Equatable {
             flipH = plugin["flipH"]?.boolValue ?? false
             flipV = plugin["flipV"]?.boolValue ?? false
             rotate90 = plugin["rotate90"]?.boolValue ?? false
-        } else if let webcam = settings?["webcam"], webcam["streamUrl"] != nil {
+        } else if let webcam = settings?["webcam"], webcam["streamUrl"]?.stringValue != nil {
+            // OctoPrint 1.9 and later still send `streamUrl`, but empty (null) when it isn't used.
             classicPlugin = false
             stream = webcam["streamUrl"]?.stringValue ?? ""
             snapshot = webcam["snapshotUrl"]?.stringValue ?? ""

@@ -333,6 +333,12 @@ struct JobPanel: View {
                                 .lineLimit(1)
                                 .contentTransition(.numericText())
                         }
+                        if session.timelapsePictures > 0 {
+                            Label("Timelapse: \(session.timelapsePictures) pictures", systemImage: "camera.fill")
+                                .font(Typeface.caption)
+                                .foregroundStyle(Palette.faint)
+                                .contentTransition(.numericText())
+                        }
 
                         if flags.cancelling {
                             VStack(alignment: .leading, spacing: 8) {
@@ -633,6 +639,7 @@ struct OpenedFilePanel: View {
                         .disabled(!session.canControl)
                 }
             }
+            if file.origin == .local, let problems = session.fileProblems[file.path] { FileProblems(problems: problems) }
             NoteSummary(session: session, path: file.path, title: SlicedName(file.displayName).title)
 
             Divider().overlay(Palette.edge.opacity(0.6))

@@ -242,6 +242,9 @@ struct MachinePage: View {
                             .foregroundStyle(Palette.dust)
                         Spacer()
                         if session.isPrinterConnected {
+                            Button("Unstick") { session.unstickConnection() }
+                                .buttonStyle(.plateQuiet)
+                                .help("If the printer seems stuck waiting partway through a conversation, this tells OctoPrint to carry on as if it had answered. Only use it when things have stopped.")
                             Button("Disconnect") { session.disconnectPrinter() }
                                 .buttonStyle(.plateQuiet)
                                 .disabled(session.flags.isJobActive)

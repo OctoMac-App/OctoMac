@@ -146,6 +146,13 @@ private struct TimelapsePanel: View {
         let unrendered = list?.unrendered ?? []
         StagePanel(title: "Timelapses", detail: list.map { timelapseMode($0) }, fills: true) {
             VStack(alignment: .leading, spacing: 12) {
+                if let rendering = session.timelapseRendering {
+                    HStack(spacing: 8) {
+                        ProgressView().controlSize(.small).tint(Palette.accent)
+                        Text(rendering.isEmpty ? "Making a timelapse video…" : "Making the video \(rendering)…")
+                            .font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1).truncationMode(.middle)
+                    }
+                }
                 if files.isEmpty && unrendered.isEmpty {
                     Text(list?.config?["type"]?.stringValue == "off"
                          ? "Timelapses are switched off. Turn them on in Timelapse settings and each print gets a video here."
