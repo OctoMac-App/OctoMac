@@ -262,12 +262,31 @@ final class PrinterSession {
     }
 
     private var offlineBecauseNoInternet = false
+    /// Set once "no internet" has lasted a few seconds. The first connection after launch often fails this way for a
+    /// moment while macOS checks OctoMac's Local Network permission, then works on the next try.
+    private var noInternetLasted = false
+    @ObservationIgnored private var noInternetCheck: Task<Void, Never>?
 
     /// macOS reports "no internet" for this printer even though the Mac is online: almost always the Local Network
     /// privacy setting blocking OctoMac (which can happen after an update).
     var localNetworkBlocked: Bool {
         guard case .offline = link else { return false }
-        return offlineBecauseNoInternet && NetworkMonitor.shared.connected
+        return offlineBecauseNoInternet && noInternetLasted && NetworkMonitor.shared.connected
+    }
+
+    private func noteNoInternet(_ noInternet: Bool) {
+        if noInternet, !offlineBecauseNoInternet {
+            noInternetCheck?.cancel()
+            noInternetCheck = Task { [weak self] in
+                try? await Task.sleep(for: .seconds(6))
+                guard !Task.isCancelled, let self, self.offlineBecauseNoInternet, case .offline = self.link else { return }
+                self.noInternetLasted = true
+            }
+        } else if !noInternet {
+            noInternetCheck?.cancel()
+            noInternetLasted = false
+        }
+        offlineBecauseNoInternet = noInternet
     }
 
     /// Ready for manual control or starting a print: connected and not running a job.
@@ -1141,6 +1160,7 @@ final class PrinterSession {
             if link != .online { link = .connecting }
         case .connected(let user):
             link = .online
+            noteNoInternet(false)
             if updatingSince != nil {
                 // Back after the update's restart.
                 updatingSince = nil
@@ -1168,7 +1188,7 @@ final class PrinterSession {
         case .disconnected(let reason, let code):
             if restartingSince != nil { restartWentAway = true }
             if link != .needsAPIKey { link = .offline(reason) }
-            offlineBecauseNoInternet = code == URLError.notConnectedToInternet.rawValue
+            noteNoInternet(code == URLError.notConnectedToInternet.rawValue)
             untrustedCertificate = trust.untrusted
         case .message(let message):
             handle(message)
