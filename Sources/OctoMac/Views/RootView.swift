@@ -206,14 +206,16 @@ struct PrinterRail: View {
 
             // Centred under the Add a printer button. In demo mode the Exit demo badge sits beside
             // the logo when there's room, or underneath it in the narrow sidebar.
+            // `--screenshots` leaves the badge out, for pictures of the app on the website and in the README.
+            let showsExit = store.isDemo && !CommandLine.arguments.contains("--screenshots")
             ViewThatFits(in: .horizontal) {
                 HStack(spacing: 8) {
-                    BrandLockup(markSize: store.isDemo ? 32 : 40)
-                    if store.isDemo { exitDemo }
+                    BrandLockup(markSize: showsExit ? 32 : 40)
+                    if showsExit { exitDemo }
                 }
                 VStack(spacing: 8) {
                     BrandLockup(markSize: 32)
-                    if store.isDemo { exitDemo }
+                    if showsExit { exitDemo }
                 }
             }
             .frame(maxWidth: .infinity)

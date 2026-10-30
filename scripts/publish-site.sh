@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Publishes the website (website/ plus the screenshots in docs/) to OctoMac-App/octomac-app.github.io, which GitHub
-# Pages serves at https://octomac-app.github.io/. Run it after changing the website or its screenshots.
+# Publishes the website (website/, built into every language by scripts/build-site.py, plus the screenshots in docs/)
+# to OctoMac-App/octomac-app.github.io, which GitHub Pages serves at https://octomac-app.github.io/. Run it after
+# changing the website or its screenshots.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -11,7 +12,8 @@ git -C "$SITE" checkout -q -B master
 
 # Replace everything but the repository itself with a fresh copy.
 find "$SITE" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-cp -R website/. "$SITE/"
+scripts/build-site.py check
+scripts/build-site.py build "$SITE"
 cp -R docs/screenshots "$SITE/screenshots"
 cp docs/social-preview.png "$SITE/"
 touch "$SITE/.nojekyll"

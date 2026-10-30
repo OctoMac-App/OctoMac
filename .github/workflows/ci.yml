@@ -45,6 +45,9 @@ jobs:
       - name: Check every string is translated
         run: scripts/translations.py check
 
+      - name: Check the website is translated
+        run: scripts/build-site.py check
+
       - name: Check llms-full.txt is up to date
         run: scripts/make-llms-full.sh --check
 

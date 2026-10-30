@@ -2270,6 +2270,9 @@ extension PrinterSession {
             activeObjectID = 1
         }
         if printing { layerProgress = LayerProgress(currentLayer: 92, totalLayers: 146, averageLayerDuration: 58, lastLayerDuration: 61) }
+        if printing, CommandLine.arguments.contains("--screenshots") {
+            layerAlerts = [.init(layer: 100, action: .pause), .init(layer: 120, action: .notify)]
+        }
         if printing {
             printerNotes = [
                 .init(date: .now.addingTimeInterval(-8_100), message: "Heating done"),

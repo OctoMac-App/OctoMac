@@ -13,6 +13,27 @@ struct LayerAlertsSheet: View {
     private var current: Int { session.layerProgress?.currentLayer ?? 1 }
     private var total: Int { max(current + 1, session.layerProgress?.totalLayers ?? current + 1) }
 
+    private var actionPicker: some View {
+        CapsulePicker(selection: $action, options: [(.pause, "Pause at"), (.notify, "Tell me at")]).fixedSize()
+    }
+
+    private var layerField: some View {
+        HStack(spacing: 10) {
+            Text("layer").font(Typeface.body).foregroundStyle(Palette.dust).lineLimit(1).fixedSize()
+            TextField("", value: $layer, format: .number)
+                .plateField()
+                .frame(width: 80)
+                .onSubmit(add)
+            Stepper("", value: $layer, in: (current + 1)...total).labelsHidden()
+        }
+    }
+
+    private var addButton: some View {
+        Button(action: add) { Text("Add").lineLimit(1).fixedSize() }
+            .buttonStyle(.plate(filament))
+            .disabled(layer <= current || layer > total)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .firstTextBaseline) {
@@ -24,18 +45,22 @@ struct LayerAlertsSheet: View {
                 .font(Typeface.body).foregroundStyle(Palette.dust)
                 .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 10) {
-                CapsulePicker(selection: $action, options: [(.pause, "Pause at"), (.notify, "Tell me at")])
-                Text("layer").font(Typeface.body).foregroundStyle(Palette.dust)
-                TextField("", value: $layer, format: .number)
-                    .plateField()
-                    .frame(width: 80)
-                    .onSubmit(add)
-                Stepper("", value: $layer, in: (current + 1)...total).labelsHidden()
-                Spacer()
-                Button("Add", action: add)
-                    .buttonStyle(.plate(filament))
-                    .disabled(layer <= current || layer > total)
+            // On one line when it fits; in longer languages the layer and Add go underneath.
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: 10) {
+                    actionPicker
+                    layerField
+                    Spacer(minLength: 0)
+                    addButton
+                }
+                VStack(alignment: .leading, spacing: 10) {
+                    actionPicker
+                    HStack(spacing: 10) {
+                        layerField
+                        Spacer(minLength: 0)
+                        addButton
+                    }
+                }
             }
 
             if session.layerAlerts.isEmpty {

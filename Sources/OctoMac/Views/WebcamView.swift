@@ -277,6 +277,8 @@ struct SnapshotMenu: View {
         }
         .sheet(isPresented: $recordingClip) { ClipSheet(session: session) }
         .animation(.easeOut(duration: 0.2), value: copied)
+        // For the website's screenshots: open the clip recorder straight away in demo mode.
+        .onAppear { if CommandLine.arguments.contains("--demo-clip") { recordingClip = true } }
     }
 
     private var menuItems: [AppMenuItem] {
