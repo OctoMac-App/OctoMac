@@ -155,10 +155,10 @@ struct InstanceEditor: View {
     }
 
     /// The name of the saved printer that is this server, matched by the ID OctoPrint announces, so a printer added by
-    /// another address (a hostname, a proxy) is still recognised.
+    /// another address (a hostname, a proxy) is still recognised, and remembered so it works while one is offline.
     private func addedName(of found: PrinterDiscovery.Found) -> String? {
         guard let uuid = found.uuid else { return nil }
-        return store.instances.first { store.session(for: $0.id)?.networkID == uuid }?.name
+        return store.instances.first { (store.session(for: $0.id)?.networkID ?? $0.networkID) == uuid }?.name
     }
 
     private func pick(_ found: PrinterDiscovery.Found) {

@@ -14,6 +14,9 @@ struct Instance: Codable, Identifiable, Hashable, Sendable {
     var filamentHex: String?
     /// SHA-256 fingerprint of a self-signed HTTPS certificate you chose to trust for this printer.
     var trustedCertificate: String?
+    /// The ID the printer announces on the local network (see `PrinterSession.networkID`), remembered so Add a
+    /// printer can recognise it even while it's switched off.
+    var networkID: String?
 
     /// Normalises user input like `octoprint1.local` or `https://host/octoprint` into a base URL.
     static func normalisedURL(from input: String) -> URL? {

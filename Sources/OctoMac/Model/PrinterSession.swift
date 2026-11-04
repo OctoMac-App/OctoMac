@@ -227,6 +227,9 @@ final class PrinterSession {
     static let temperatureWindow: TimeInterval = 30 * 60
     static let terminalLimit = 2000
 
+    /// Called when the printer's network ID is first seen or has changed, so the store can remember it.
+    @ObservationIgnored var onNetworkID: ((String) -> Void)?
+
     init(instance: Instance, apiKey: String?, access: ProxyAccess? = nil) {
         self.instance = instance
         let (urlSession, trust) = CertificateTrust.session(pinnedFingerprint: instance.trustedCertificate)
@@ -1089,6 +1092,7 @@ final class PrinterSession {
     func refreshSettings() async {
         let storedBefore = bedLevel?.stored?.z
         settings = await attempt { try await client.settings() } ?? settings
+        if let id = networkID, id != instance.networkID { onNetworkID?(id) }
         // A measurement that finished while we weren't listening (the plugin's own page saves the mesh too).
         if bedMeasuringSince != nil, let stored = bedLevel?.stored, !stored.isEmpty, stored.z != storedBefore {
             bedMeasuringSince = nil

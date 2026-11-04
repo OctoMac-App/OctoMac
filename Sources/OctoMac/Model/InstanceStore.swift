@@ -131,8 +131,16 @@ final class InstanceStore {
     private func startSession(for instance: Instance) {
         let session = PrinterSession(instance: instance, apiKey: CredentialStore.apiKey(for: instance.id),
                                      access: CredentialStore.proxyAccess(for: instance.id))
+        session.onNetworkID = { [weak self] id in self?.rememberNetworkID(id, for: instance.id) }
         sessions[instance.id] = session
         session.start()
+    }
+
+    /// Keeps a printer's network ID without reconnecting, so it's recognised on the network while it's offline.
+    private func rememberNetworkID(_ id: String, for instanceID: UUID) {
+        guard let index = instances.firstIndex(where: { $0.id == instanceID }), instances[index].networkID != id else { return }
+        instances[index].networkID = id
+        save()
     }
 
     /// The first identity colour not already used by another printer.
