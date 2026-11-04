@@ -379,6 +379,9 @@ final class PrinterSession {
     var bedMesh: BedLevelVisualizer.Mesh? { measuredMesh ?? bedLevel?.stored }
     var hasCancelObject: Bool { settings?.value(at: "plugins", CancelObject.pluginID) != nil }
     var hasLayerPlugin: Bool { settings?.value(at: "plugins", LayerProgress.pluginID) != nil }
+    /// The ID OctoPrint announces on the local network (its discovery plugin's UUID), so a printer found there can be
+    /// recognised as this one whatever address it was added with.
+    var networkID: String? { settings?.value(at: "plugins", "discovery", "upnpUuid")?.stringValue?.lowercased() }
 
     /// The printer's firmware, as it introduced itself (M115).
     var firmware: String? {

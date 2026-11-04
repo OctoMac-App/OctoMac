@@ -12,6 +12,8 @@ final class PrinterDiscovery {
         let endpoint: NWEndpoint
         let path: String
         let version: String?
+        /// The server's own ID, the same one it keeps in its settings (see `PrinterSession.networkID`).
+        let uuid: String?
         var id: String { name }
 
         /// `OctoPrint instance "Prusa MK3S+"` (or `OctoPrint instance on octopi`) shown as just `Prusa MK3S+`.
@@ -35,12 +37,13 @@ final class PrinterDiscovery {
         browser.browseResultsChangedHandler = { [weak self] results, _ in
             let list = results.compactMap { result -> Found? in
                 guard case .service(let name, _, _, _) = result.endpoint else { return nil }
-                var path = "/", version: String?
+                var path = "/", version: String?, uuid: String?
                 if case .bonjour(let txt) = result.metadata {
                     path = txt["path"] ?? "/"
                     version = txt["version"]
+                    uuid = txt["uuid"]?.lowercased()
                 }
-                return Found(name: name, endpoint: result.endpoint, path: path, version: version)
+                return Found(name: name, endpoint: result.endpoint, path: path, version: version, uuid: uuid)
             }
             // A server on both Wi-Fi and Ethernet is listed once per interface.
             .reduce(into: [Found]()) { list, item in if !list.contains(where: { $0.name == item.name }) { list.append(item) } }

@@ -115,20 +115,25 @@ struct InstanceEditor: View {
                 Text(discovery.searching ? "Looking for OctoPrint servers…" : "No OctoPrint servers found. Type the address below instead.")
                     .font(Typeface.caption).foregroundStyle(Palette.faint)
             }
-            ForEach(discovery.found) { found in
+            ForEach(discoveredInOrder) { found in
+                let added = addedName(of: found)
                 Button { pick(found) } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: "printer.fill").foregroundStyle(Palette.accent).frame(width: 20)
+                        Image(systemName: added == nil ? "printer.fill" : "checkmark.circle.fill")
+                            .foregroundStyle(added == nil ? Palette.accent : Palette.faint).frame(width: 20)
                         VStack(alignment: .leading, spacing: 1) {
-                            Text(verbatim: found.displayName).font(Typeface.bodyStrong).foregroundStyle(Palette.paper).lineLimit(1)
-                            if let version = found.version {
+                            Text(verbatim: found.displayName).font(Typeface.bodyStrong)
+                                .foregroundStyle(added == nil ? Palette.paper : Palette.dust).lineLimit(1)
+                            if let added {
+                                Text("Already added as \(added)").font(Typeface.caption).foregroundStyle(Palette.faint).lineLimit(1)
+                            } else if let version = found.version {
                                 Text("OctoPrint \(version)").font(Typeface.caption).foregroundStyle(Palette.faint)
                             }
                         }
                         Spacer()
                         if resolving == found.id {
                             ProgressView().controlSize(.small).tint(Palette.accent)
-                        } else {
+                        } else if added == nil {
                             Text("Use").font(Typeface.text(12, .demibold)).foregroundStyle(Palette.accent)
                         }
                     }
@@ -138,9 +143,22 @@ struct InstanceEditor: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                .disabled(resolving != nil)
+                .disabled(resolving != nil || added != nil)
             }
         }
+    }
+
+    /// New servers first, then the ones already in the sidebar.
+    private var discoveredInOrder: [PrinterDiscovery.Found] {
+        let found = discovery.found
+        return found.filter { addedName(of: $0) == nil } + found.filter { addedName(of: $0) != nil }
+    }
+
+    /// The name of the saved printer that is this server, matched by the ID OctoPrint announces, so a printer added by
+    /// another address (a hostname, a proxy) is still recognised.
+    private func addedName(of found: PrinterDiscovery.Found) -> String? {
+        guard let uuid = found.uuid else { return nil }
+        return store.instances.first { store.session(for: $0.id)?.networkID == uuid }?.name
     }
 
     private func pick(_ found: PrinterDiscovery.Found) {
