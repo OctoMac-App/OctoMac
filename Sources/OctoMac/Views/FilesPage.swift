@@ -16,7 +16,6 @@ struct FilesPage: View {
     /// The next upload goes to the printer's SD card rather than the Raspberry Pi.
     @State private var importingToSD = false
     @State private var renaming: FileEntry?
-    @State private var dropTargeted = false
     @State private var creatingFolder = false
     @State private var pendingDelete: FileEntry?
     @State private var sending: FileEntry?
@@ -157,20 +156,7 @@ struct FilesPage: View {
             .onGeometryChange(for: Bool.self) { $0.size.width < 820 } action: { compactList = $0 }
             .environment(\.filesCompact, compactList)
             .machined(radius: 20)
-            .overlay {
-                if dropTargeted {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .strokeBorder(Palette.accent, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
-                        .background(RoundedRectangle(cornerRadius: 20).fill(Palette.accent.opacity(0.08)))
-                        .overlay(Label("Drop to upload to \(folder.last ?? String(localized: "All files"))", systemImage: "arrow.up.doc")
-                            .font(Typeface.subhead).foregroundStyle(Palette.accent))
-                        .allowsHitTesting(false)
-                }
-            }
-            .dropDestination(for: URL.self) { urls, _ in
-                session.upload(urls, folder: folderPath)
-                return !urls.isEmpty
-            } isTargeted: { dropTargeted = $0 }
+            .modifier(UploadDropZone(session: session, folder: folder))
         }
         .fileImporter(isPresented: $importing, allowedContentTypes: Self.uploadTypes, allowsMultipleSelection: true) { result in
             if case .success(let urls) = result { session.upload(urls, folder: folderPath, toSDCard: importingToSD) }
@@ -263,6 +249,32 @@ struct FilesPage: View {
     }
 
     static let uploadTypes: [UTType] = ["gcode", "gco", "g", "bgcode", "stl", "3mf"].compactMap { UTType(filenameExtension: $0) } + [.data]
+}
+
+/// Files dropped from Finder upload to `folder` (the top level when empty), with a dashed outline while they hover.
+struct UploadDropZone: ViewModifier {
+    let session: PrinterSession
+    var folder: [String] = []
+    var radius: CGFloat = 20
+    @State private var targeted = false
+
+    func body(content: Content) -> some View {
+        content
+            .overlay {
+                if targeted {
+                    RoundedRectangle(cornerRadius: radius, style: .continuous)
+                        .strokeBorder(Palette.accent, style: StrokeStyle(lineWidth: 2, dash: [8, 6]))
+                        .background(RoundedRectangle(cornerRadius: radius).fill(Palette.accent.opacity(0.08)))
+                        .overlay(Label("Drop to upload to \(folder.last ?? String(localized: "All files"))", systemImage: "arrow.up.doc")
+                            .font(Typeface.subhead).foregroundStyle(Palette.accent))
+                        .allowsHitTesting(false)
+                }
+            }
+            .dropDestination(for: URL.self) { urls, _ in
+                session.upload(urls, folder: folder.isEmpty ? nil : folder.joined(separator: "/"))
+                return !urls.isEmpty
+            } isTargeted: { targeted = $0 }
+    }
 }
 
 private struct FilesCompactKey: EnvironmentKey { static let defaultValue = false }

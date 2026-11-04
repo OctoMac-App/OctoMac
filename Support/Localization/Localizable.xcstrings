@@ -34262,96 +34262,96 @@
         }
       }
     },
-    "Drop files on the Files tab to upload them.": {
+    "Drop files here to upload them.": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "Přetáhněte soubory na kartu Soubory a nahrajte je."
+            "value": "Pusťte sem soubory a nahrajte je."
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gollyngwch ffeiliau ar y tab Ffeiliau i'w llwytho i fyny."
+            "value": "Gollyngwch ffeiliau yma i'w llwytho i fyny."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "Slip filer på fanen Filer for at uploade dem."
+            "value": "Slip filer her for at uploade dem."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lege Dateien im Tab „Dateien“ ab, um sie hochzuladen."
+            "value": "Dateien hierher ziehen, um sie hochzuladen."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Drop files on the Files tab to upload them."
+            "value": "Drop files here to upload them."
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "Drop files on the Files tab to upload them."
+            "value": "Drop files here to upload them."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Suelta archivos en la pestaña Archivos para subirlos."
+            "value": "Suelta archivos aquí para subirlos."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lataa tiedostoja pudottamalla ne Tiedostot-välilehdelle."
+            "value": "Pudota tiedostot tähän ladataksesi ne."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Déposez des fichiers sur l’onglet Fichiers pour les téléverser."
+            "value": "Déposez des fichiers ici pour les téléverser."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trascina i file nella scheda File per caricarli."
+            "value": "Trascina qui i file per caricarli."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "Slipp filer på Filer-fanen for å laste dem opp."
+            "value": "Slipp filer her for å laste dem opp."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Zet bestanden op het tabblad Bestanden neer om ze te uploaden."
+            "value": "Sleep bestanden hierheen om ze te uploaden."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Upuść pliki na karcie Pliki, aby je przesłać."
+            "value": "Upuść tutaj pliki, aby je przesłać."
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Largue ficheiros no separador Ficheiros para os carregar."
+            "value": "Largue ficheiros aqui para os carregar."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "Släpp filer på fliken Filer för att ladda upp dem."
+            "value": "Släpp filer här för att ladda upp dem."
           }
         }
       }

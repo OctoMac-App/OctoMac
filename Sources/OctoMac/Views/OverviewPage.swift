@@ -573,6 +573,7 @@ struct ReadyPanel: View {
         .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .clipped()
         .machined(radius: 20)
+        .modifier(UploadDropZone(session: session))
         // Opening a file (here, in the Files tab or in OctoPrint itself) shows it straight away.
         .onChange(of: session.job?.file.path) { browsing = false }
     }
@@ -815,7 +816,7 @@ struct FileBrowserPanel: View {
                             .font(.system(size: 26, weight: .light)).foregroundStyle(Palette.faint)
                         Text(filter.isEmpty ? "No G-code on this printer yet" : "No files match “\(filter)”")
                             .font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
-                        Text(filter.isEmpty ? "Drop files on the Files tab to upload them." : "Try part of the name, or clear the filter.")
+                        Text(filter.isEmpty ? "Drop files here to upload them." : "Try part of the name, or clear the filter.")
                             .font(Typeface.caption).foregroundStyle(Palette.dust)
                     }
                 }
