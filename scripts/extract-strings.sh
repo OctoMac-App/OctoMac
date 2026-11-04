@@ -14,7 +14,9 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 mkdir -p "$WORK/stringsdata" "$(dirname "$CATALOG")"
 
-swift build --build-path "$WORK/build" \
+# On CI, fetch packages into a cache of our own: the runner's shared SwiftPM cache sometimes lists a copy of a
+# package that isn't on disk, which fails the build.
+swift build --build-path "$WORK/build" ${CI:+--cache-path "$WORK/cache"} \
   -Xswiftc -emit-localized-strings -Xswiftc -emit-localized-strings-path -Xswiftc "$WORK/stringsdata" >/dev/null
 [[ -f "$CATALOG" ]] || echo '{"sourceLanguage":"en-GB","strings":{},"version":"1.0"}' > "$CATALOG"
 
