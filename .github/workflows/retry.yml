@@ -1,0 +1,33 @@
+name: Retry when no Mac was free
+
+# GitHub sometimes can't find a Mac runner for "Build and test" and fails the job before it starts. When that
+# happens, run it again (up to two more times). Real failures, where the job started, are left alone.
+on:
+  workflow_run:
+    workflows: [Build and test]
+    types: [completed]
+
+permissions:
+  actions: write
+
+jobs:
+  retry:
+    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt < 3
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Re-run if the job never started
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.event.workflow_run.id }}
+          ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: |
+          # A job that never got a runner has no runner name and no steps (GitHub marks it cancelled).
+          started=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN/attempts/$ATTEMPT/jobs" \
+            --jq '[.jobs[] | select((.steps | length) > 0 or (.runner_name // "") != "")] | length')
+          if [ "$started" -gt 0 ]; then
+            echo "The build ran and failed, so there's nothing to retry."
+          else
+            echo "No Mac was free for attempt $ATTEMPT; trying again."
+            gh run rerun "$RUN" --repo "$GITHUB_REPOSITORY"
+          fi
