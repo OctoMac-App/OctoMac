@@ -58,6 +58,8 @@ struct PrinterJournal: Codable, Equatable {
     /// The bed's levelling screws, for turning a mesh into screw turns.
     var screws: BedScrews.Settings?
     var commands: [SavedCommand] = []
+    /// Layer alerts for each file, keyed by its path, so they're ready the next time it's printed.
+    var layerAlerts: [String: [LayerAlert]] = [:]
 
     static let meshLimit = 40
 
@@ -72,6 +74,7 @@ struct PrinterJournal: Codable, Equatable {
         meshes = try container.decodeIfPresent([Mesh].self, forKey: .meshes) ?? []
         screws = try container.decodeIfPresent(BedScrews.Settings.self, forKey: .screws)
         commands = try container.decodeIfPresent([SavedCommand].self, forKey: .commands) ?? []
+        layerAlerts = try container.decodeIfPresent([String: [LayerAlert]].self, forKey: .layerAlerts) ?? [:]
     }
 
     // MARK: Saving

@@ -64,8 +64,9 @@ struct UploadItem: Identifiable, Equatable {
 }
 
 /// Something to do when the print reaches a layer.
-struct LayerAlert: Identifiable, Hashable {
-    enum Action: String, CaseIterable { case pause, notify }
+struct LayerAlert: Identifiable, Hashable, Codable {
+    /// `pauseOnPrinter` is the printer's own pause (Prusa's M601): it parks the nozzle and waits for its knob.
+    enum Action: String, CaseIterable, Codable { case pause, pauseOnPrinter, notify }
     var id = UUID()
     var layer: Int
     var action: Action
@@ -142,8 +143,10 @@ final class PrinterSession {
     // Plugins and health
     /// Real layer numbers from the DisplayLayerProgress plugin.
     private(set) var layerProgress: LayerProgress?
-    /// Pause or notify when the print reaches a layer (needs DisplayLayerProgress). Cleared when a print starts.
-    private(set) var layerAlerts: [LayerAlert] = []
+    /// Alerts for the open file, saved with it, so they're set again the next time you print it.
+    var layerAlerts: [LayerAlert] { job?.file.path.flatMap { journal.layerAlerts[$0] } ?? [] }
+    /// Alerts that have already gone off during this print.
+    private(set) var firedLayerAlerts: Set<UUID> = []
     /// The first-layer notification has been sent for this print.
     private var firstLayerChecked = false
     /// Set while Bed Level Visualizer is measuring the bed.
@@ -219,6 +222,9 @@ final class PrinterSession {
     private(set) var zNudgeUnsupported = false
     /// For notifications: a pause asked for from this app needs no banner, and a disconnect only matters mid-print.
     private var pausedHere = false
+    /// The printer paused itself (M601) for a layer alert. Until it's resumed through the printer, its firmware
+    /// thinks it's still paused and ignores the next M601, so OctoMac's Resume goes through the printer too.
+    private var pausedOnPrinter = false
     private var wasPrinting = false
 
     /// The printer's camera stream. Owned here (not by a view) so it stays connected while other printers are shown.
@@ -1359,13 +1365,21 @@ final class PrinterSession {
     // MARK: Layer alerts
 
     func addLayerAlert(_ alert: LayerAlert) {
-        layerAlerts.removeAll { $0.layer == alert.layer }
-        layerAlerts.append(alert)
-        layerAlerts.sort { $0.layer < $1.layer }
+        guard let path = job?.file.path else { return }
+        updateJournal {
+            var alerts = $0.layerAlerts[path] ?? []
+            alerts.removeAll { $0.layer == alert.layer }
+            alerts.append(alert)
+            $0.layerAlerts[path] = alerts.sorted { $0.layer < $1.layer }
+        }
     }
 
     func removeLayerAlert(_ alert: LayerAlert) {
-        layerAlerts.removeAll { $0.id == alert.id }
+        guard let path = job?.file.path else { return }
+        updateJournal {
+            $0.layerAlerts[path]?.removeAll { $0.id == alert.id }
+            if $0.layerAlerts[path]?.isEmpty == true { $0.layerAlerts[path] = nil }
+        }
     }
 
     /// DisplayLayerProgress says a new layer has started: check the first layer, and run any alerts for it.
@@ -1378,11 +1392,19 @@ final class PrinterSession {
                                  body: String(localized: "\(file): check it looks right before it carries on."),
                                  picture: cameraPicture(), actions: .printControls)
         }
-        let due = layerAlerts.filter { $0.layer <= current && $0.layer > (previous ?? 0) }
+        let due = layerAlerts.filter { $0.layer <= current && $0.layer > (previous ?? 0) && !firedLayerAlerts.contains($0.id) }
         guard !due.isEmpty else { return }
-        layerAlerts.removeAll { alert in due.contains { $0.id == alert.id } }
+        firedLayerAlerts.formUnion(due.map(\.id))
         let layer = due.map(\.layer).max() ?? current
-        if due.contains(where: { $0.action == .pause }) {
+        if due.contains(where: { $0.action == .pauseOnPrinter }), canPauseOnPrinter {
+            // The firmware asks OctoPrint to pause too, and to carry on once you press Resume on the printer.
+            pausedHere = true
+            pausedOnPrinter = true
+            sendGcode("M601")
+            Notifier.shared.post(.layerReached, printer: instance, title: String(localized: "Paused at layer \(layer)"),
+                                 body: String(localized: "\(file) is paused. Resume it from the printer's screen when you're ready."),
+                                 picture: cameraPicture())
+        } else if due.contains(where: { $0.action != .notify }) {
             jobCommand(.pause)
             Notifier.shared.post(.layerReached, printer: instance, title: String(localized: "Paused at layer \(layer)"),
                                  body: String(localized: "\(file) is paused. Resume it when you're ready."), picture: cameraPicture())
@@ -1458,6 +1480,7 @@ final class PrinterSession {
 
     private func handle(_ event: ServerEvent) {
         notifyAbout(event)
+        if ["PrintResumed", "PrintStarted", "PrintDone", "PrintFailed", "PrintCancelled"].contains(event.type) { pausedOnPrinter = false }
         if event.type == "PrintDone" || event.type == "PrintFailed" { log(event) }
         if event.type == "PrintDone", let next = journal.queue.first {
             let others = journal.queue.count - 1
@@ -1475,7 +1498,7 @@ final class PrinterSession {
             layerProgress = nil
             zNudge = 0
             timelapsePictures = 0
-            layerAlerts = []
+            firedLayerAlerts = []
             firstLayerChecked = false
             printObjects = []
             activeObjectID = nil
@@ -1572,6 +1595,11 @@ final class PrinterSession {
     }
 
     func jobCommand(_ command: JobCommand) {
+        if pausedOnPrinter, command == .resume || command == .togglePause {
+            // The printer resumes itself (M602), then tells OctoPrint to carry on.
+            sendGcode("M602")
+            return
+        }
         switch command {
         case .pause, .togglePause: pausedHere = true
         default: break
@@ -1636,6 +1664,8 @@ final class PrinterSession {
 
     private var isKlipper: Bool { firmware?.localizedCaseInsensitiveContains("Klipper") == true }
     private var isPrusa: Bool { firmware?.localizedCaseInsensitiveContains("Prusa") == true }
+    /// Prusa firmware can pause itself (M601) and resume from its own knob.
+    var canPauseOnPrinter: Bool { isPrusa }
 
     /// Raises (above zero) or lowers the nozzle while printing, for getting the first layer right: M290 babystepping,
     /// or Klipper's own command.
@@ -1880,6 +1910,7 @@ final class PrinterSession {
         let target = parent.isEmpty ? name : parent + "/" + name
         perform { [client, weak self] in
             try await client.move(file.path, to: target, origin: file.origin)
+            self?.carryJournal(from: file.path, to: target)
             await self?.refreshFiles()
         }
     }
@@ -2000,7 +2031,19 @@ final class PrinterSession {
         guard !(file.isFolder && (folder == file.path || folder.hasPrefix(file.path + "/"))) else { return }
         perform { [client, weak self] in
             try await client.move(file.path, to: folder, origin: file.origin)
+            self?.carryJournal(from: file.path, to: folder.isEmpty ? file.name : folder + "/" + file.name)
             await self?.refreshFiles()
+        }
+    }
+
+    /// Keeps your notes and layer alerts with a file (or everything in a folder) when it's renamed or moved.
+    private func carryJournal(from old: String, to new: String) {
+        func moved(_ path: String) -> String? {
+            path == old ? new : path.hasPrefix(old + "/") ? new + path.dropFirst(old.count) : nil
+        }
+        updateJournal { journal in
+            for (path, note) in journal.notes { if let to = moved(path) { journal.notes[path] = nil; journal.notes[to] = note } }
+            for (path, alerts) in journal.layerAlerts { if let to = moved(path) { journal.layerAlerts[path] = nil; journal.layerAlerts[to] = alerts } }
         }
     }
 
@@ -2262,6 +2305,11 @@ extension PrinterSession {
             }
             journal.meshes.append(.init(date: Date.now.addingTimeInterval(-2 * 86400), z: mesh.z, x: mesh.x, y: mesh.y))
         }
+        if printing, CommandLine.arguments.contains("--screenshots") {
+            journal.layerAlerts["workshop/gridfinity_bins_3x2_PLA.gcode"] = [
+                .init(layer: 60, action: .pauseOnPrinter), .init(layer: 100, action: .pauseOnPrinter), .init(layer: 120, action: .notify),
+            ]
+        }
         self.journal = journal
     }
 
@@ -2277,9 +2325,6 @@ extension PrinterSession {
             activeObjectID = 1
         }
         if printing { layerProgress = LayerProgress(currentLayer: 92, totalLayers: 146, averageLayerDuration: 58, lastLayerDuration: 61) }
-        if printing, CommandLine.arguments.contains("--screenshots") {
-            layerAlerts = [.init(layer: 100, action: .pause), .init(layer: 120, action: .notify)]
-        }
         if printing {
             printerNotes = [
                 .init(date: .now.addingTimeInterval(-8_100), message: "Heating done"),

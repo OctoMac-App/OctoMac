@@ -1317,6 +1317,100 @@
         }
       }
     },
+    "%@ is paused. Resume it from the printer's screen when you're ready.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: pozastaveno. Až budete připraveni, pokračujte na displeji tiskárny."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae %@ wedi'i seibio. Ailddechreuwch o sgrin yr argraffydd pan fyddwch chi'n barod."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ er sat på pause. Genoptag fra printerens skærm, når du er klar."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ ist pausiert. Setze den Druck am Display des Druckers fort, wenn du bereit bist."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is paused. Resume it from the printer's screen when you're ready."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is paused. Resume it from the printer's screen when you're ready."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ está en pausa. Reanúdala desde la pantalla de la impresora cuando quieras."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ on tauolla. Jatka tulostimen näytöltä, kun olet valmis."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ est en pause. Reprenez-la depuis l’écran de l’imprimante quand vous voulez."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ è in pausa. Riprendila dallo schermo della stampante quando sei pronto."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ er satt på pause. Fortsett fra skjermen på skriveren når du er klar."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is gepauzeerd. Hervat de print op het scherm van de printer als je zover bent."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@: wstrzymano. Wznów na ekranie drukarki, gdy wszystko będzie gotowe."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ está em pausa. Retome no ecrã da impressora quando estiver pronto."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ är pausad. Återuppta den från skrivarens skärm när du är redo."
+          }
+        }
+      }
+    },
     "%@ is paused. Resume it when you're ready.": {
       "localizations": {
         "cs": {
@@ -6091,6 +6185,328 @@
         }
       }
     },
+    "%lld layer alerts set for this file": {
+      "localizations": {
+        "cs": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pro tento soubor: %lld upozornění na vrstvu"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pro tento soubor: %lld upozornění na vrstvu"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pro tento soubor: %lld upozornění na vrstvu"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Pro tento soubor: %lld upozornění na vrstvu"
+                }
+              }
+            }
+          }
+        },
+        "cy": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rhybudd haen wedi'u gosod ar gyfer y ffeil hon"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rhybudd haen wedi'u gosod ar gyfer y ffeil hon"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rhybudd haen wedi'i osod ar gyfer y ffeil hon"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rhybudd haen wedi'u gosod ar gyfer y ffeil hon"
+                }
+              },
+              "two": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rybudd haen wedi'u gosod ar gyfer y ffeil hon"
+                }
+              },
+              "zero": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rhybudd haen wedi'u gosod ar gyfer y ffeil hon"
+                }
+              }
+            }
+          }
+        },
+        "da": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lagadvarsel til denne fil"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lagadvarsler til denne fil"
+                }
+              }
+            }
+          }
+        },
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Schicht-Hinweis für diese Datei"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld Schicht-Hinweise für diese Datei"
+                }
+              }
+            }
+          }
+        },
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld layer alert set for this file"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld layer alerts set for this file"
+                }
+              }
+            }
+          }
+        },
+        "en-GB": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld layer alert set for this file"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld layer alerts set for this file"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld aviso de capa para este archivo"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld avisos de capa para este archivo"
+                }
+              }
+            }
+          }
+        },
+        "fi": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld kerroshälytys asetettu tälle tiedostolle"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld kerroshälytystä asetettu tälle tiedostolle"
+                }
+              }
+            }
+          }
+        },
+        "fr": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld alerte de couche définie pour ce fichier"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld alertes de couche définies pour ce fichier"
+                }
+              }
+            }
+          }
+        },
+        "it": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld avviso di layer impostato per questo file"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld avvisi di layer impostati per questo file"
+                }
+              }
+            }
+          }
+        },
+        "nb": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lagvarsel for denne filen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lagvarsler for denne filen"
+                }
+              }
+            }
+          }
+        },
+        "nl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld laagmelding ingesteld voor dit bestand"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld laagmeldingen ingesteld voor dit bestand"
+                }
+              }
+            }
+          }
+        },
+        "pl": {
+          "variations": {
+            "plural": {
+              "few": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Dla tego pliku: %lld alerty warstw"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Dla tego pliku: %lld alertów warstw"
+                }
+              },
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Dla tego pliku: %lld alert warstwy"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Dla tego pliku: %lld alertu warstw"
+                }
+              }
+            }
+          }
+        },
+        "pt-PT": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld alerta de camada definido para este ficheiro"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld alertas de camada definidos para este ficheiro"
+                }
+              }
+            }
+          }
+        },
+        "sv": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lagervarning för den här filen"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld lagervarningar för den här filen"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld more are hidden because they don't work with this OctoPrint or are no longer looked after.": {
       "localizations": {
         "cs": {
@@ -10459,6 +10875,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "1 lagervarning"
+          }
+        }
+      }
+    },
+    "1 layer alert set for this file": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pro tento soubor: 1 upozornění na vrstvu"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 rhybudd haen wedi'i osod ar gyfer y ffeil hon"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 lagadvarsel til denne fil"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 Schicht-Hinweis für diese Datei"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 layer alert set for this file"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 layer alert set for this file"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 aviso de capa para este archivo"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 kerroshälytys asetettu tälle tiedostolle"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 alerte de couche définie pour ce fichier"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 avviso di layer impostato per questo file"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 lagvarsel for denne filen"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 laagmelding ingesteld voor dit bestand"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dla tego pliku: 1 alert warstwy"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 alerta de camada definido para este ficheiro"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 lagervarning för den här filen"
           }
         }
       }
@@ -69279,96 +69789,96 @@
         }
       }
     },
-    "OctoMac needs to be open for these. A pause happens as the layer starts, and alerts are cleared when the print ends.": {
+    "OctoMac needs to be open for these, and a pause happens as the layer starts. They're saved with the file, ready for the next time you print it.": {
       "localizations": {
         "cs": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac musí být pro tyto funkce otevřený. Pozastavení nastane na začátku vrstvy a upozornění se vymažou po skončení tisku."
+            "value": "Aby fungovala, musí být OctoMac otevřený, a pozastavení nastane na začátku vrstvy. Uloží se k souboru, takže budou připravená, až ho budete příště tisknout."
           }
         },
         "cy": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mae angen i OctoMac fod ar agor ar gyfer y rhain. Mae saib yn digwydd wrth i'r haen ddechrau, ac mae rhybuddion yn cael eu clirio pan fydd yr argraffiad yn gorffen."
+            "value": "Mae angen i OctoMac fod ar agor ar gyfer y rhain, ac mae'r saib yn digwydd wrth i'r haen ddechrau. Maen nhw'n cael eu cadw gyda'r ffeil, yn barod ar gyfer y tro nesaf y byddwch chi'n ei hargraffu."
           }
         },
         "da": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac skal være åben for at disse virker. En pause sker, når laget starter, og advarsler ryddes, når printet slutter."
+            "value": "OctoMac skal være åben, for at de virker, og pausen sker, når laget begynder. De gemmes sammen med filen, klar til næste gang du printer den."
           }
         },
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dafür muss OctoMac geöffnet sein. Pausiert wird zu Beginn der Schicht, und Hinweise werden am Ende des Drucks gelöscht."
+            "value": "Dafür muss OctoMac geöffnet sein, und die Pause erfolgt zu Beginn der Schicht. Die Hinweise werden mit der Datei gespeichert, bereit für den nächsten Druck."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac needs to be open for these. A pause happens as the layer starts, and alerts are cleared when the print ends."
+            "value": "OctoMac needs to be open for these, and a pause happens as the layer starts. They're saved with the file, ready for the next time you print it."
           }
         },
         "en-GB": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac needs to be open for these. A pause happens as the layer starts, and alerts are cleared when the print ends."
+            "value": "OctoMac needs to be open for these, and a pause happens as the layer starts. They're saved with the file, ready for the next time you print it."
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac tiene que estar abierto para esto. La pausa se produce al empezar la capa, y los avisos se borran cuando termina la impresión."
+            "value": "Para que funcionen, OctoMac tiene que estar en marcha, y la pausa se hace al empezar la capa. Se guardan con el archivo, listos para la próxima vez que lo imprimas."
           }
         },
         "fi": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMacin täytyy olla auki näitä varten. Tauko tapahtuu kerroksen alkaessa, ja hälytykset tyhjennetään, kun tulostus päättyy."
+            "value": "OctoMacin täytyy olla auki, jotta nämä toimivat, ja tauko tulee kerroksen alkaessa. Ne tallennetaan tiedoston mukana valmiiksi seuraavaa tulostuskertaa varten."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac doit être ouvert pour cela. La pause se fait au début de la couche, et les alertes sont effacées à la fin de l’impression."
+            "value": "OctoMac doit être ouvert pour qu’elles fonctionnent, et la pause a lieu au début de la couche. Elles sont enregistrées avec le fichier, prêtes pour la prochaine fois que vous l’imprimerez."
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac deve essere aperto per questi avvisi. La pausa avviene all'inizio del layer e gli avvisi vengono cancellati al termine della stampa."
+            "value": "OctoMac deve essere aperto perché funzionino, e la pausa avviene all'inizio del layer. Vengono salvati con il file, pronti per la prossima volta che lo stampi."
           }
         },
         "nb": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac må være åpen for disse. Pausen skjer når laget starter, og varslene fjernes når utskriften er ferdig."
+            "value": "OctoMac må være åpen for at disse skal virke, og pausen skjer når laget begynner. De lagres sammen med filen, klare til neste gang du skriver den ut."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac moet hiervoor geopend zijn. Een pauze gebeurt bij het begin van de laag, en meldingen worden gewist als de print eindigt."
+            "value": "OctoMac moet hiervoor open zijn, en de pauze valt aan het begin van de laag. Ze worden met het bestand bewaard, klaar voor de volgende keer dat je het print."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "translated",
-            "value": "Do tego OctoMac musi być otwarty. Pauza następuje na początku warstwy, a alerty są usuwane po zakończeniu wydruku."
+            "value": "Do tego OctoMac musi być otwarty, a pauza następuje na początku warstwy. Alerty są zapisywane razem z plikiem, gotowe na następny wydruk."
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "O OctoMac tem de estar aberto para isto. A pausa acontece quando a camada começa e os alertas são limpos quando a impressão termina."
+            "value": "O OctoMac tem de estar aberto para que funcionem, e a pausa acontece quando a camada começa. São guardados com o ficheiro, prontos para a próxima vez que o imprimir."
           }
         },
         "sv": {
           "stringUnit": {
             "state": "translated",
-            "value": "OctoMac måste vara öppet för detta. En paus sker när lagret börjar, och varningar rensas när utskriften är klar."
+            "value": "OctoMac måste vara öppet för att de ska fungera, och pausen sker när lagret börjar. De sparas med filen, redo till nästa gång du skriver ut den."
           }
         }
       }
@@ -80505,6 +81015,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pausa för att lägga i magneter, muttrar eller byta färg, eller få bara en notis när utskriften kommer dit."
+          }
+        }
+      }
+    },
+    "Pause to drop in magnets, nuts or a new colour, or just get a notification when the print gets there. Use the layer numbers from your slicer's preview.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pozastavte tisk a vložte magnety, matice nebo novou barvu, nebo jen dostaňte oznámení, až tam tisk dojde. Použijte čísla vrstev z náhledu ve vašem sliceru."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seibio i ollwng magnetau, nytiau neu liw newydd i mewn, neu ddim ond cael hysbysiad pan fydd yr argraffiad yn cyrraedd yno. Defnyddiwch rifau'r haenau o ragolwg eich sleisiwr."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sæt på pause for at lægge magneter, møtrikker eller en ny farve i, eller få bare en notifikation, når printet når dertil. Brug lagnumrene fra din slicers forhåndsvisning."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausiere, um Magnete, Muttern oder eine neue Farbe einzulegen, oder lass dich einfach benachrichtigen, wenn der Druck so weit ist. Nimm die Schichtnummern aus der Vorschau deines Slicers."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause to drop in magnets, nuts or a new color, or just get a notification when the print gets there. Use the layer numbers from your slicer's preview."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause to drop in magnets, nuts or a new colour, or just get a notification when the print gets there. Use the layer numbers from your slicer's preview."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausa para meter imanes, tuercas o un color nuevo, o simplemente recibe una notificación cuando la impresión llegue ahí. Usa los números de capa de la vista previa de tu slicer."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pidä tauko lisätäksesi magneetteja, muttereita tai uuden värin, tai saa vain ilmoitus, kun tulostus etenee sinne. Käytä kerrosnumeroita slicerisi esikatselusta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faites une pause pour insérer des aimants, des écrous ou une nouvelle couleur, ou recevez simplement une notification quand l’impression y arrive. Utilisez les numéros de couche de l’aperçu de votre slicer."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Metti in pausa per inserire magneti, dadi o un nuovo colore, oppure ricevi solo una notifica quando la stampa arriva lì. Usa i numeri dei layer dall'anteprima dello slicer."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sett på pause for å legge inn magneter, muttere eller en ny farge, eller få bare et varsel når utskriften kommer dit. Bruk lagnumrene fra forhåndsvisningen i sliceren din."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pauzeer om magneten, moeren of een nieuwe kleur toe te voegen, of krijg gewoon een melding als de print daar is. Gebruik de laagnummers uit de voorvertoning van je slicer."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wstrzymaj, aby włożyć magnesy, nakrętki lub zmienić kolor, albo po prostu otrzymaj powiadomienie, gdy wydruk tam dotrze. Użyj numerów warstw z podglądu w slicerze."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause para inserir ímanes, porcas ou uma nova cor, ou receba apenas uma notificação quando a impressão lá chegar. Utilize os números de camada da pré-visualização do slicer."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausa för att lägga i magneter, muttrar eller byta färg, eller få bara en notis när utskriften kommer dit. Använd lagernumren från förhandsvisningen i din slicer."
           }
         }
       }
@@ -97256,6 +97860,194 @@
           "stringUnit": {
             "state": "translated",
             "value": "Återuppta utskrift"
+          }
+        }
+      }
+    },
+    "Resume from the printer": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokračování na tiskárně"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailddechrau o'r argraffydd"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genoptag fra printeren"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Am Drucker fortsetzen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume from the printer"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume from the printer"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reanudar desde la impresora"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jatka tulostimelta"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprise depuis l’imprimante"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riprendi dalla stampante"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortsett fra skriveren"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hervatten op de printer"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wznowienie na drukarce"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retomar na impressora"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Återuppta från skrivaren"
+          }
+        }
+      }
+    },
+    "Resume from the printer's knob": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pokračovat otočným ovladačem tiskárny"
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ailddechrau gyda bwlyn yr argraffydd"
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Genoptag med printerens drejeknap"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Am Drehknopf des Druckers fortsetzen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume from the printer's knob"
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Resume from the printer's knob"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reanudar con el mando de la impresora"
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jatka tulostimen säätönupista"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reprendre avec le bouton de l’imprimante"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Riprendi con la manopola della stampante"
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fortsett med skriverens dreieknapp"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hervatten met de draaiknop van de printer"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wznów pokrętłem drukarki"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retomar com o botão da impressora"
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Återuppta med skrivarens ratt"
           }
         }
       }
@@ -117981,6 +118773,100 @@
           "stringUnit": {
             "state": "translated",
             "value": "Skrivaren är inte ansluten. Anslut den och försök sedan igen."
+          }
+        }
+      }
+    },
+    "The printer pauses itself (M601): it parks the nozzle and waits until you choose Resume on its screen.": {
+      "localizations": {
+        "cs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiskárna se pozastaví sama (M601): zaparkuje trysku a počká, až na jejím displeji zvolíte Pokračovat."
+          }
+        },
+        "cy": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mae'r argraffydd yn seibio ei hun (M601): mae'n parcio'r ffroenell ac yn aros nes i chi ddewis Ailddechrau ar ei sgrin."
+          }
+        },
+        "da": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Printeren sætter selv på pause (M601): den parkerer dysen og venter, til du vælger Genoptag på dens skærm."
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Drucker pausiert selbst (M601): Er parkt die Düse und wartet, bis du an seinem Display Fortsetzen wählst."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The printer pauses itself (M601): it parks the nozzle and waits until you choose Resume on its screen."
+          }
+        },
+        "en-GB": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The printer pauses itself (M601): it parks the nozzle and waits until you choose Resume on its screen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La impresora se pausa sola (M601): aparca la boquilla y espera a que elijas Reanudar en su pantalla."
+          }
+        },
+        "fi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tulostin pitää tauon itse (M601): se pysäköi suuttimen ja odottaa, kunnes valitset sen näytöltä Jatka."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’imprimante se met elle-même en pause (M601) : elle gare la buse et attend que vous choisissiez Reprendre sur son écran."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La stampante si mette in pausa da sola (M601): parcheggia l'ugello e aspetta che tu scelga Riprendi sul suo schermo."
+          }
+        },
+        "nb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skriveren tar pause selv (M601): den parkerer dysen og venter til du velger Fortsett på skjermen."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De printer pauzeert zelf (M601): hij parkeert de nozzle en wacht tot je op het scherm Hervatten kiest."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Drukarka sama się wstrzymuje (M601): parkuje dyszę i czeka, aż wybierzesz Wznów na jej ekranie."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A impressora pausa sozinha (M601): estaciona o bico e espera até escolher Retomar no respetivo ecrã."
+          }
+        },
+        "sv": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Skrivaren pausar själv (M601): den parkerar munstycket och väntar tills du väljer Återuppta på dess skärm."
           }
         }
       }

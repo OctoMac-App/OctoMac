@@ -2,16 +2,27 @@ import OctoPrintKit
 import SwiftUI
 
 /// Pause or get a notification when the print reaches a layer: for dropping in magnets or nuts, a colour change,
-/// or just keeping an eye on it.
+/// or just keeping an eye on it. Set them while printing or before, and they're saved with the file for next time.
 struct LayerAlertsSheet: View {
     @Environment(\.dismiss) private var dismiss
     let session: PrinterSession
     let filament: Color
     @State private var layer = 2
     @State private var action = LayerAlert.Action.pause
+    /// Pause with the printer's own pause and resume from its knob (Prusa firmware), rather than from OctoMac.
+    @AppStorage("layerAlerts.resumeOnPrinter") private var resumeOnPrinter = true
 
-    private var current: Int { session.layerProgress?.currentLayer ?? 1 }
-    private var total: Int { max(current + 1, session.layerProgress?.totalLayers ?? current + 1) }
+    private var printing: Bool { session.flags.isJobActive }
+    /// The layer being printed, or 1 before the print starts (no alert makes sense on the first layer).
+    private var current: Int { printing ? session.layerProgress?.currentLayer ?? 1 : 1 }
+    /// The file's layer count, once the print has started; before that, any layer.
+    private var total: Int {
+        guard printing, let count = session.layerProgress?.totalLayers else { return 9_999 }
+        return max(current + 1, count)
+    }
+    private var chosenAction: LayerAlert.Action {
+        action == .pause && resumeOnPrinter && session.canPauseOnPrinter ? .pauseOnPrinter : action
+    }
 
     private var actionPicker: some View {
         CapsulePicker(selection: $action, options: [(.pause, "Pause at"), (.notify, "Tell me at")]).fixedSize()
@@ -39,9 +50,13 @@ struct LayerAlertsSheet: View {
             HStack(alignment: .firstTextBaseline) {
                 Text("Layer alerts").font(Typeface.title).foregroundStyle(Palette.paper)
                 Spacer()
-                Text("Now on layer \(current) of \(total)").font(Typeface.number(13)).foregroundStyle(Palette.faint)
+                if printing, let count = session.layerProgress?.totalLayers {
+                    Text("Now on layer \(current) of \(count)").font(Typeface.number(13)).foregroundStyle(Palette.faint)
+                }
             }
-            Text("Pause to drop in magnets, nuts or a new colour, or just get a notification when the print gets there.")
+            Text(printing
+                 ? "Pause to drop in magnets, nuts or a new colour, or just get a notification when the print gets there."
+                 : "Pause to drop in magnets, nuts or a new colour, or just get a notification when the print gets there. Use the layer numbers from your slicer's preview.")
                 .font(Typeface.body).foregroundStyle(Palette.dust)
                 .fixedSize(horizontal: false, vertical: true)
 
@@ -63,19 +78,35 @@ struct LayerAlertsSheet: View {
                 }
             }
 
+            if action == .pause, session.canPauseOnPrinter {
+                Toggle(isOn: $resumeOnPrinter) {
+                    Text("Resume from the printer's knob").font(Typeface.body).foregroundStyle(Palette.paper)
+                }
+                .toggleStyle(.checkbox)
+                .help("The printer pauses itself (M601): it parks the nozzle and waits until you choose Resume on its screen.")
+            }
+
             if session.layerAlerts.isEmpty {
                 Text("No alerts yet.").font(Typeface.caption).foregroundStyle(Palette.faint)
             } else {
                 VStack(spacing: 0) {
                     ForEach(session.layerAlerts) { alert in
+                        let done = printing && (session.firedLayerAlerts.contains(alert.id) || alert.layer <= current)
                         HStack(spacing: 12) {
-                            Image(systemName: alert.action == .pause ? "pause.circle.fill" : "bell.fill")
-                                .foregroundStyle(alert.action == .pause ? Palette.warm : Palette.accent)
+                            Image(systemName: alert.action == .notify ? "bell.fill" : "pause.circle.fill")
+                                .foregroundStyle(done ? Palette.faint : alert.action == .notify ? Palette.accent : Palette.warm)
                                 .frame(width: 20)
-                            Text(alert.action == .pause ? "Pause at layer \(alert.layer)" : "Tell me at layer \(alert.layer)")
-                                .font(Typeface.bodyStrong).foregroundStyle(Palette.paper)
+                            VStack(alignment: .leading, spacing: 1) {
+                                Text(alert.action == .notify ? "Tell me at layer \(alert.layer)" : "Pause at layer \(alert.layer)")
+                                    .font(Typeface.bodyStrong).foregroundStyle(done ? Palette.dust : Palette.paper)
+                                if alert.action == .pauseOnPrinter {
+                                    Text("Resume from the printer").font(Typeface.caption).foregroundStyle(Palette.faint)
+                                }
+                            }
                             Spacer()
-                            if let average = session.layerProgress?.averageLayerDuration, average > 0 {
+                            if done {
+                                Text("Done").font(Typeface.caption).foregroundStyle(Palette.faint)
+                            } else if printing, let average = session.layerProgress?.averageLayerDuration, average > 0 {
                                 Text("in about \(Fmt.duration(Double(alert.layer - current) * average))")
                                     .font(Typeface.caption).foregroundStyle(Palette.faint)
                             }
@@ -93,7 +124,7 @@ struct LayerAlertsSheet: View {
             }
 
             HStack(alignment: .top) {
-                Text("OctoMac needs to be open for these. A pause happens as the layer starts, and alerts are cleared when the print ends.")
+                Text("OctoMac needs to be open for these, and a pause happens as the layer starts. They're saved with the file, ready for the next time you print it.")
                     .font(Typeface.caption).foregroundStyle(Palette.faint)
                     .fixedSize(horizontal: false, vertical: true)
                 Spacer(minLength: 16)
@@ -103,12 +134,12 @@ struct LayerAlertsSheet: View {
         .padding(26)
         .frame(width: 520)
         .background(Palette.extrusion)
-        .onAppear { layer = min(total, current + 1) }
+        .onAppear { layer = min(total, max(2, current + 1)) }
     }
 
     private func add() {
         guard layer > current, layer <= total else { return }
-        session.addLayerAlert(LayerAlert(layer: layer, action: action))
+        session.addLayerAlert(LayerAlert(layer: layer, action: chosenAction))
         layer = min(total, layer + 1)
     }
 }

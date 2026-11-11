@@ -589,6 +589,7 @@ struct OpenedFilePanel: View {
     @State private var previewing = false
     @State private var scheduling = false
     @State private var startingNext = false
+    @State private var settingAlerts = false
 
     var body: some View {
         let name = SlicedName(file.displayName)
@@ -672,6 +673,7 @@ struct OpenedFilePanel: View {
         .frame(minWidth: 0, maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .clipped()
         .sheet(isPresented: $scheduling) { ScheduleSheet(session: session, file: file, filament: filament) }
+        .sheet(isPresented: $settingAlerts) { LayerAlertsSheet(session: session, filament: filament) }
         .sheet(isPresented: $startingNext) {
             ConfirmSheet(symbol: "list.number", title: session.journal.queue.first.map { "Start \($0.name)?" } ?? "Start the next print?",
                          message: "Make sure the bed is clear first. The printer starts straight away.",
@@ -691,6 +693,14 @@ struct OpenedFilePanel: View {
             }
             .buttonStyle(.plateQuiet)
             .help("Plan when to print: finish by a time that suits you")
+            Button { settingAlerts = true } label: {
+                Image(systemName: session.layerAlerts.isEmpty ? "bell" : "bell.badge.fill")
+            }
+            .buttonStyle(.plateQuiet)
+            .disabled(!session.hasLayerPlugin)
+            .help(!session.hasLayerPlugin ? "Layer alerts need the DisplayLayerProgress plugin in OctoPrint"
+                  : session.layerAlerts.isEmpty ? "Pause or get a notification when the print reaches a layer"
+                  : session.layerAlerts.count == 1 ? "1 layer alert set for this file" : "\(session.layerAlerts.count) layer alerts set for this file")
             Button(action: openPreview) {
                 if let preview {
                     Label(preview, systemImage: "square.stack.3d.up").font(Typeface.text(14, .demibold)).lineLimit(1)

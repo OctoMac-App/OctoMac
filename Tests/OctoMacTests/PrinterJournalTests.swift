@@ -12,6 +12,7 @@ struct PrinterJournalTests {
         journal.notes["a.gcode"] = .init(rating: 4, text: "Needs a brim")
         journal.meshes = [.init(date: Date(timeIntervalSince1970: 1_779_000_000), z: [[0.1, nil], [0.2, -0.1]], x: [0, 200], y: [0, 200])]
         journal.commands = [.init(name: "Settings", gcode: "M503\nM115")]
+        journal.layerAlerts["a.gcode"] = [.init(layer: 40, action: .pauseOnPrinter), .init(layer: 80, action: .notify)]
 
         let id = UUID()
         defer { PrinterJournal.remove(for: id) }
@@ -26,6 +27,7 @@ struct PrinterJournalTests {
         #expect(journal.queue.count == 1)
         #expect(journal.notes["a.gcode"]?.rating == 4)
         #expect(journal.commands.isEmpty)
+        #expect(journal.layerAlerts.isEmpty)
     }
 
     @Test func emptyNotesAreNotKept() {
